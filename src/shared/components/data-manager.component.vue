@@ -7,9 +7,9 @@ export default {
   inheritAttrs: false,
 
   props: {
-    items: {type: Array, required: true},
-    title: {type: {singular: '', plural: ''}, required: true},
-    dynamic: {type: Boolean, default: false},
+    items: {type: Array, required: true},title: {type: {singular: '', plural: ''}, required: true},
+    dynamic
+    : {type: Boolean, default: false},
     columns: {type: Array, default: () => []}
   },
 
@@ -25,6 +25,7 @@ export default {
     initFilters() {
       this.filters = {global: {value: null, matchMode: FilterMatchMode.CONTAINS}};
     },
+
 
     newItem() {
       this.$emit('new-item-requested-manager');
@@ -66,23 +67,6 @@ export default {
         reject: () => {
         }
       })
-    }
-  },
-
-  computed: {
-    buttons() {
-      return [
-        {
-          titleKey: 'winemaking.button-option-1',
-          icon: 'wine',
-          component: 'batch-management',
-        },
-        {
-          titleKey: 'winemaking.button-option-1',
-          icon: 'fermentation',
-          component: 'batch-management',
-        },
-      ];
     }
   },
 
@@ -143,11 +127,14 @@ export default {
       :rows="5"
       :rows-per-page-options="[5, 10, 15]"
       :value="items"
+      scrollable
+      scroll-height="400px"
       current-page-report-template="Showing {first} to {last} of {totalRecords} ${{title.plural}}"
       data-key="id"
       paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown">
 
-    <pv-column :exportable="false" selection-mode="multiple" style="width: 3em"/>
+
+  <pv-column :exportable="false" selection-mode="multiple" style="width: 3em"/>
 
     <slot name="custom-columns-manager"></slot>
 

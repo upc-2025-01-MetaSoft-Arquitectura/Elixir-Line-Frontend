@@ -2,7 +2,7 @@ import axios from "axios";
 
 const http = axios.create({baseURL: "http://localhost:3000"});
 
-export class batchApiService {
+export class batchAndCampaignApiService {
 
     constructor(_resourceEndpoint) {
         this.resourceEndpoint = _resourceEndpoint;

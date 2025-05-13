@@ -20,9 +20,16 @@
   "sign-up-option":           "Regístrate",
 
   "wine-batch": {
-    "title": "Proceso de vinificación de lotes"
-
+    "title": "Batch Winemaking Process"
   },
+
+
+  "components": {
+    "title-wine-batch": "Proceso de vinificación de lotes",
+    "title-campaign": "Gestion de campañas"
+  },
+
+
 
   "winemaking": {
     "option-1": "Vinificación",

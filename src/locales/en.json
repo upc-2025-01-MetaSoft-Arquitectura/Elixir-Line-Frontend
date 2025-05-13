@@ -22,6 +22,8 @@
   },
 
 
+
+
   "winemaking": {
     "option-1": "Winemaking Process",
     "option-2": "Campaigns",
@@ -29,6 +31,10 @@
     "button-option-2": "Delete"
   },
 
+  "components": {
+    "title-wine-batch": "Batch Winemaking Process",
+    "title-campaign": "Campaign Management"
+  },
 
   "menu": {
     "label-settings": "Settings",

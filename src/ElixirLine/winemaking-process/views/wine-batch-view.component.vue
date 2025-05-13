@@ -1,6 +1,7 @@
 <script>
-import {WineBatch} from "../model/wine-batch.entity.js";
 import BatchManagement from "../pages/batch-management.component.vue";
+import {Campaign} from "../model/campaign.entity.js";
+import {batchAndCampaignApiService} from "../services/batch-and-campaign-api.service.js";
 
 export default {
   name: "wine-batch-views",
@@ -8,76 +9,70 @@ export default {
 
   data() {
     return {
-      title: { singular: 'Batch', plural: 'Batches' },
-      batches: [],
-      batch: new WineBatch({}),
-      selectedBatches: [],
-      batchApiService: null,
-      createAndEditDialogIsVisible: false,
-      isEdit: false,
-      submitted: false,
+      itemObject: new Campaign({}),
+      ArrayItems: [],
+      batchAndCampaignApiService: null,
     }
+  },
+
+  methods:{
+
+    getAll(){
+      this.batchAndCampaignApiService.getAllResources()
+        .then(response => {
+          this.ArrayItems = response.data;
+          console.log( 'Campañas recuperadas' ,this.ArrayItems);
+        })
+        .catch(error => {
+          console.error("Error fetching data:", error);
+        });
+    }
+
   },
 
   computed: {
-    buttons() {
-      return [
-        {
-          titleKey: 'winemaking.button-option-1',
-          icon: 'wine',
-          component: 'batch-management',
-        },
-        {
-          titleKey: 'winemaking.button-option-1',
-          icon: 'fermentation',
-          component: 'batch-management',
-        },
-      ];
+    campaignQuantity() {
+      return this.ArrayItems.length ? this.ArrayItems.length : 0;
     }
-  },
-
-  methods: {
-    newItem() {
-      this.$emit('new-item-requested-manager');
-    },
   },
 
 
   created() {
-    console.log("Batch Management Component Created");
+    this.batchAndCampaignApiService = new batchAndCampaignApiService('/campaigns');
+
+    this.getAll();
+
+    console.log("Wine Batch view Component Created");
   }
-
-
 }
 
 </script>
 
 <template>
 
-  <pv-toast/>
-  <pv-confirm-dialog/>
+  <div class="winemaking-component ">
 
-  <div>
-
-    <div class="header-container flex w-full h-full justify-content-center">
-      <h2>{{$t('wine-batch.title')}}</h2>
+    <div class="header-container w-full">
+      <h2>{{$t('components.title-wine-batch')}}</h2>
     </div>
 
     <!-- Acordeón -->
-    <pv-accordion >
-      <pv-accordion-panel >
-        <pv-accordion-header style="background: #F5F5DC">
+    <div class="w-full mt-6">
+      <pv-accordion>
+        <pv-accordion-panel>
+          <pv-accordion-header v-for="item in ArrayItems" :key="item" style="background: #F5F5DC; margin-top: 1rem;">
           <span class="flex items-center gap-2 w-full">
-            <span class="font-bold whitespace-nowrap">Amy Elsner</span>
-            <pv-badge value="3" class="ml-auto mr-2" />
+            <span class="font-bold whitespace-nowrap">{{item.name}}</span>
+            <pv-badge class="ml-auto mr-2">{{item.batchesQuantity}} </pv-badge>
           </span>
-        </pv-accordion-header>
+          </pv-accordion-header>
 
-        <pv-accordion-content>
-          <BatchManagement :campana-id="1" />
-        </pv-accordion-content>
-      </pv-accordion-panel>
-    </pv-accordion>
+          <pv-accordion-content>
+            <BatchManagement :campanaId="1" />
+          </pv-accordion-content>
+        </pv-accordion-panel>
+      </pv-accordion>
+    </div>
   </div>
 
 

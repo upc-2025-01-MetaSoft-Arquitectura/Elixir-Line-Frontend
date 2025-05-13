@@ -22,6 +22,7 @@ export default {
       return [
         {
           titleKey: 'winemaking.option-1',
+          title: 'components.title-wine-batch',
           icon: 'wine',
           tab: 'batch-management',
           component: 'WineBatchViewComponent',
@@ -29,9 +30,10 @@ export default {
         },
         {
           titleKey: 'winemaking.option-2',
+          title: 'components.title-campaign',
           icon: 'fermentation',
-          tab: 'fermentation',
-          component: 'batch-management',
+          tab: 'campaign-management',
+          component: 'CampaignManagement',
           value: '1'
         },
       ];
@@ -55,26 +57,34 @@ export default {
 
   <div class="winemaking-component">
 
-    <pv-tabs v-model="activeTab">
+    <pv-tabs v-model="activeTab" style="background: white">
 
-      <pv-tab-list class="tab-list" >
-        <pv-tab
-            class="tab w-10rem"
-            v-for="item in  lisTabs"
-            :key="item.value"
-            :value="item.value"
-        >
-          <span>{{$t(item.titleKey)}}</span>
-        </pv-tab>
-      </pv-tab-list>
+      <div class="header-container w-full fixed z-1 h-4" >
 
-      <pv-tab-panels>
-        <pv-tab-panel v-for="tab in  lisTabs" :key="tab.tab" :value="tab.value">
-          <component :is="tab.component" />
-        </pv-tab-panel>
-      </pv-tab-panels>
+        <pv-tab-list class="tab-list"  >
+          <pv-tab
+              class="tab w-10rem"
+              v-for="item in  lisTabs"
+              :key="item.value"
+              :value="item.value"
+          >
+            <span>{{$t(item.titleKey)}}</span>
+            <i :class="item.icon" class="ml-2"></i>
+          </pv-tab>
 
+        </pv-tab-list>
+      </div>
+
+      <div class="content-container" >
+        <pv-tab-panels>
+          <pv-tab-panel v-for="tab in  lisTabs" :key="tab.tab" :value="tab.value">
+            <component class="mt-7" :is="tab.component" />
+          </pv-tab-panel>
+        </pv-tab-panels>
+      </div>
     </pv-tabs>
+
+
 
   </div>
 
@@ -86,7 +96,6 @@ export default {
 <style>
 
 .tab-list .p-tab-active {
-  background: none;
   border-color: #DAA520 !important;
   color: #DAA520;
 }

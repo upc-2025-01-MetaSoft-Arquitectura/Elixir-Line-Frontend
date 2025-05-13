@@ -1,0 +1,111 @@
+{
+  "wine-batches": [
+    {
+      "id": "b123e456-78d9-42a3-b456-426614174000",
+      "internalCode": "B2025-VINEYARD01",
+      "receptionDate": "14/03/2025",
+      "harvestCampaign": "2025",
+      "vineyardOrigin": "Valle de Ica",
+      "grapeVariety": "Malbec",
+      "initialGrapeQuantityKg": 1500,
+      "createdBy": "juan.perez@elixirline.com",
+      "status": "InProcess",
+      "currentStage": "Fermentation"
+    },
+    {
+      "id": "a223c789-11af-47c2-8bf7-227399911000",
+      "internalCode": "B2025-VINEYARD02",
+      "receptionDate": "17/03/2025",
+      "harvestCampaign": "2025",
+      "vineyardOrigin": "Valle del Colca",
+      "grapeVariety": "Cabernet Sauvignon",
+      "initialGrapeQuantityKg": 2000,
+      "createdBy": "maria.lopez@elixirline.com",
+      "status": "Completed",
+      "currentStage": "Aging"
+    },
+    {
+      "id": "c323f111-9abf-4d21-91a1-132145889000",
+      "internalCode": "B2024-VINEYARD03",
+      "receptionDate": "20/04/2024",
+      "harvestCampaign": "2024",
+      "vineyardOrigin": "Cañete",
+      "grapeVariety": "Syrah",
+      "initialGrapeQuantityKg": 1200,
+      "createdBy": "carlos.fernandez@elixirline.com",
+      "status": "InProcess",
+      "currentStage": "Clarification"
+    },
+    {
+      "id": "d423e222-56cd-4d43-bb3e-556700008000",
+      "internalCode": "B2023-VINEYARD04",
+      "receptionDate": "10/05/2023",
+      "harvestCampaign": "2023",
+      "vineyardOrigin": "Moquegua",
+      "grapeVariety": "Tannat",
+      "initialGrapeQuantityKg": 1800,
+      "createdBy": "ana.silva@elixirline.com",
+      "status": "Archived",
+      "currentStage": "Completed"
+    },
+    {
+      "id": "e523a333-8ef5-4012-9873-661211119000",
+      "internalCode": "B2025-VINEYARD05",
+      "receptionDate": "20/03/2025",
+      "harvestCampaign": "2025",
+      "vineyardOrigin": "Arequipa",
+      "grapeVariety": "Tempranillo",
+      "initialGrapeQuantityKg": 1700,
+      "createdBy": "luis.rios@elixirline.com",
+      "status": "InProcess",
+      "currentStage": "Pressing"
+    }
+  ],
+  "campaigns": [
+    {
+      "id": "cmp-2025-001",
+      "name": "Vendimia 2025",
+      "createdBy": "ana.silva@elixirline.com",
+      "startDate": "01/03/2025",
+      "endDate": "30/04/2025",
+      "batchesQuantity": 12,
+      "status": "InProcess"
+    },
+    {
+      "id": "cmp-2024-002",
+      "name": "Vendimia 2024",
+      "createdBy": "carlos.mendoza@elixirline.com",
+      "startDate": "10/02/2024",
+      "endDate": "25/04/2024",
+      "batchesQuantity": 9,
+      "status": "Completed"
+    },
+    {
+      "id": "cmp-2023-003",
+      "name": "Vendimia Experimental",
+      "createdBy": "sofia.gomez@elixirline.com",
+      "startDate": "05/01/2023",
+      "endDate": "28/02/2023",
+      "batchesQuantity": 5,
+      "status": "Archived"
+    },
+    {
+      "id": "cmp-2025-004",
+      "name": "Selección Premium 2025",
+      "createdBy": "juan.vera@elixirline.com",
+      "startDate": "15/03/2025",
+      "endDate": "20/05/2025",
+      "batchesQuantity": 7,
+      "status": "InProcess"
+    },
+    {
+      "id": "cmp-2022-005",
+      "name": "Microvinificación 2022",
+      "createdBy": "mariana.luna@elixirline.com",
+      "startDate": "01/02/2022",
+      "endDate": "15/03/2022",
+      "batchesQuantity": 3,
+      "status": "Archived"
+    }
+  ]
+}
