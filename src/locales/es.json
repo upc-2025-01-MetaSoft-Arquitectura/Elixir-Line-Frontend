@@ -1,4 +1,25 @@
 {
+  "title-home":  "De la uva a la botella, todo bajo control.",
+  "sub-title-home": "Elixir Control: Tu mejor aliado en el proceso de elaboración del vino",
+
+
+
+  "title-home-option":          "Inicio",
+  "title-inventory-option":     "Inventario",
+  "title-winemaking-option":    "Elaboración de vinos",
+  "title-my-employees-option":  "Mis empleados",
+  "title-agriculture-option":   "Actividades agrícolas",
+
+
+  "title-support-option":     "Soporte",
+  "sign-in-option":           "Iniciar sesión",
+  "sign-up-option":           "Regístrate",
+
+
+  "menu": {
+    "label-settings": "Configuración",
+    "label-sign-out": "Cerrar sesión"
+  }
 
 
 }

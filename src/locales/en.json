@@ -1,4 +1,23 @@
 {
+  "title-home": "From the grape to the bottle, everything under control.",
+  "sub-title-home": "ElixirControl: Your best ally in the wine production process",
 
+
+  "title-home-option":          "Home",
+  "title-inventory-option":     "Inventory",
+  "title-winemaking-option":    "Winemaking",
+  "title-my-employees-option":  "My Employees",
+  "title-agriculture-option":   "Agricultural Activities",
+
+
+  "title-support-option":      "Support",
+  "sign-in-option":            "Sign In",
+  "sign-up-option":            "Sign Up",
+
+
+  "menu": {
+    "label-settings": "Settings",
+    "label-sign-out":   "Logout"
+  }
 
 }

@@ -22,7 +22,7 @@ export default {
       // Si la autenticación es exitosa, redirige a la ruta deseada
 
       this.isAuthenticated = true;
-      this.$router.push("/home");
+      this.$router.push({ name: 'ElixirLineHome', params :{id:'1'} });
       console.log('Autenticación exitosa');
     },
 
@@ -48,7 +48,7 @@ export default {
       <h1 style="color: #e5edf6"> "Hacemos que el proceso fluya como un buen vino" </h1>
 
       <div class="flex flex-column align-items-center justify-content-center">
-        <img src="../../../assets/img/login.png" width="70%" />
+        <img src="../../../assets/img/login.png" width="70%" alt="" />
       </div>
 
 

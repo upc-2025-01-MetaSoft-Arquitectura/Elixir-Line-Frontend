@@ -18,7 +18,7 @@ export default {
 
 <template>
 
-  <pv-select-button v-model="$i18n.locale" :options="languages">
+  <pv-select-button class="select-button" v-model="$i18n.locale" :options="languages">
     <template #option="slotProps" >
       {{ slotProps.option.toUpperCase() }}
     </template>
@@ -26,6 +26,15 @@ export default {
 
 </template>
 
-<style scoped>
+<style>
+
+.select-button {
+  width: 100px;
+  height: 30px;
+  background-color: #8B0000;
+  color: #e5edf6;
+  border-radius: 5px;
+  border: none;
+}
 
 </style>

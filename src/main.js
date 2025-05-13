@@ -51,7 +51,7 @@ import router from "./router/index.js";
 import SelectButton from "primevue/selectbutton";
 import Tabs from "primevue/tabs";
 import DataView from "primevue/dataview";
-import Panel from "primevue/panel";
+import {SplitButton} from "primevue";
 
 
 
@@ -105,6 +105,7 @@ app.component('pv-button', Button)
     .component('pv-tab-list', TabList)
     .component('pv-tab', Tab)
     .component('pv-tab-panel', TabPanel)
-    .component('pv-data-view', DataView);
+    .component('pv-data-view', DataView)
+    .component('pv-split-button', SplitButton);
 
 app.mount('#app')
