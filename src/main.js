@@ -51,7 +51,7 @@ import router from "./router/index.js";
 import SelectButton from "primevue/selectbutton";
 import Tabs from "primevue/tabs";
 import DataView from "primevue/dataview";
-import {SplitButton} from "primevue";
+import {Accordion, AccordionContent, AccordionHeader, AccordionPanel, Badge, SplitButton, TabPanels} from "primevue";
 
 
 
@@ -105,7 +105,13 @@ app.component('pv-button', Button)
     .component('pv-tab-list', TabList)
     .component('pv-tab', Tab)
     .component('pv-tab-panel', TabPanel)
+    .component('pv-tab-panels', TabPanels)
     .component('pv-data-view', DataView)
+    .component('pv-accordion', Accordion)
+    .component('pv-accordion-panel',AccordionPanel)
+    .component('pv-accordion-header',AccordionHeader)
+    .component('pv-accordion-content',AccordionContent)
+    .component('pv-badge', Badge)
     .component('pv-split-button', SplitButton);
 
 app.mount('#app')

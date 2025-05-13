@@ -4,17 +4,32 @@
 
 
 
-  "title-home-option":          "Inicio",
-  "title-inventory-option":     "Inventario",
-  "title-winemaking-option":    "Elaboración de vinos",
-  "title-my-employees-option":  "Mis empleados",
-  "title-agriculture-option":   "Actividades agrícolas",
+  "navbar": {
+    "title-dashboard-option":   "Dashboard",
+    "title-batch-option":       "Proceso de vinificación",
+    "title-map-option":         "Mapa",
+    "title-supplies-option":    "Suministro",
+    "title-calendar-option":    "Calendario",
+    "title-reports-option":     "Reportes"
+  },
+
 
 
   "title-support-option":     "Soporte",
   "sign-in-option":           "Iniciar sesión",
   "sign-up-option":           "Regístrate",
 
+  "wine-batch": {
+    "title": "Proceso de vinificación de lotes"
+
+  },
+
+  "winemaking": {
+    "option-1": "Vinificación",
+    "option-2": "Campañas",
+    "button-option-1": "Nuevo lote",
+    "button-option-2": "Eliminar"
+  },
 
   "menu": {
     "label-settings": "Configuración",

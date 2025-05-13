@@ -69,6 +69,23 @@ export default {
     }
   },
 
+  computed: {
+    buttons() {
+      return [
+        {
+          titleKey: 'winemaking.button-option-1',
+          icon: 'wine',
+          component: 'batch-management',
+        },
+        {
+          titleKey: 'winemaking.button-option-1',
+          icon: 'fermentation',
+          component: 'batch-management',
+        },
+      ];
+    }
+  },
+
   created() {
     this.initFilters();
   }
@@ -81,19 +98,38 @@ export default {
   <pv-toast/>
   <pv-confirm-dialog/>
 
-  <h3 >Manage {{ title.plural }}</h3>
-
   <!-- Toolbar section -->
   <pv-toolbar class="mb-4 mt-4">
 
     <template #start>
-      <pv-button class="mr-2" icon="pi pi-plus" label="New" severity="success" @click="newItem"/>
-      <pv-button :disabled="!selectedItems || !selectedItems.length" icon="pi pi-trash" label="Delete" severity="danger"
-                 @click="confirmDeleteSelected"/>
+      <pv-button
+          class="mr-2 w-8rem"
+          icon="pi pi-plus"
+          :label="$t('winemaking.button-option-1')"
+          severity="success"
+          @click="newItem"
+          style="background: #556B2F; color: white; border: none;"
+      />
+      <pv-button
+          class="w-8rem"
+          :disabled="!selectedItems || !selectedItems.length"
+          icon="pi pi-trash"
+          :label="$t('winemaking.button-option-2')"
+          severity="danger"
+          @click="confirmDeleteSelected"
+          style="background: #8B0000; color: white; border: none;"
+      />
     </template>
 
     <template #end>
-      <pv-button icon="pi pi-download" label="Export" severity="help" @click="exportToCsv($event)"/>
+      <pv-button
+          class="w-8rem"
+          icon="pi pi-download"
+          label="Export"
+          severity="help"
+          @click="exportToCsv($event)"
+          style="background: #708090; color: white; border: none;"
+      />
     </template>
 
   </pv-toolbar>

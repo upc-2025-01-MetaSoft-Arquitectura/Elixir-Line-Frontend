@@ -3,16 +3,31 @@
   "sub-title-home": "ElixirControl: Your best ally in the wine production process",
 
 
-  "title-home-option":          "Home",
-  "title-inventory-option":     "Inventory",
-  "title-winemaking-option":    "Winemaking",
-  "title-my-employees-option":  "My Employees",
-  "title-agriculture-option":   "Agricultural Activities",
+  "navbar": {
+    "title-dashboard-option":   "Dashboard",
+    "title-batch-option":       "Winemaking",
+    "title-map-option":         "Map",
+    "title-supplies-option":    "Supplies",
+    "title-calendar-option":    "Calendar",
+    "title-reports-option":      "reports"
+  },
 
 
   "title-support-option":      "Support",
   "sign-in-option":            "Sign In",
   "sign-up-option":            "Sign Up",
+
+  "wine-batch": {
+    "title": "Batch Winemaking Process"
+  },
+
+
+  "winemaking": {
+    "option-1": "Winemaking Process",
+    "option-2": "Campaigns",
+    "button-option-1": "New Batch",
+    "button-option-2": "Delete"
+  },
 
 
   "menu": {

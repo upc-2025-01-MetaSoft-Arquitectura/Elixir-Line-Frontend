@@ -10,11 +10,12 @@ export default {
       drawer: true,
       visible: true,
       items: [
-        { label:"title-home-option",         to: "/vitivinicultor/home",                 icon: 'pi pi-home' },
-        { label:"title-inventory-option",    to: "/vitivinicultor/supplies",             icon: 'pi pi-receipt' },
-        { label:"title-winemaking-option",   to: '/vitivinicultor/winemaking-process',   icon: 'pi pi-spinner-dotted' },
-        { label:"title-my-employees-option", to: '/vitivinicultor/customers',            icon: 'pi pi-user' },
-        { label:"title-agriculture-option",  to: '/vitivinicultor/orders/history',       icon: 'pi pi-list-check' },
+        { label: 'navbar.title-dashboard-option', icon: 'pi pi-fw pi-home', to: '/dashboard' },
+        { label: 'navbar.title-batch-option', icon: 'pi pi-fw pi-table', to: '/vinicultor/winemaking' },
+        { label: 'navbar.title-map-option', icon: 'pi pi-fw pi-map', to: '/map' },
+        { label: 'navbar.title-supplies-option', icon: 'pi pi-fw pi-box', to: '/supplies' },
+        { label: 'navbar.title-calendar-option', icon: 'pi pi-fw pi-calendar', to: '/calendar' },
+        { label: 'navbar.title-reports-option', icon: 'pi pi-fw pi-chart-bar', to: '/reports' }
       ]
     }
   },
