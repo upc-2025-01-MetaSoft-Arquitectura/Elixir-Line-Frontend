@@ -19,11 +19,6 @@
   "sign-in-option":           "Iniciar sesión",
   "sign-up-option":           "Regístrate",
 
-  "wine-batch": {
-    "title": "Batch Winemaking Process"
-  },
-
-
   "components": {
     "title-wine-batch": "Proceso de vinificación de lotes",
     "title-campaign": "Gestion de campañas"
@@ -32,10 +27,12 @@
 
 
   "winemaking": {
-    "option-1": "Vinificación",
+    "option-1": "Proceso de vinificación",
     "option-2": "Campañas",
-    "button-option-1": "Nuevo lote",
-    "button-option-2": "Eliminar"
+    "button-new-batch": "Nuevo lote",
+    "button-delete": "Eliminar",
+    "button-export": "Exportar",
+    "button-new-campaign": "Campaña"
   },
 
   "menu": {

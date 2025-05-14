@@ -1,53 +1,18 @@
 <script>
 
-import WineBatchViewComponent from "./wine-batch-view.component.vue";
+import WineBatchViews from "./wine-batch-view.component.vue";
+import CampaignsManagement from "../pages/campaigns-management.component.vue";
 
 export default {
   name: 'winemaking-view',
   components: {
-    WineBatchViewComponent
-    // Import your components here
-  },
-  data() {
-    return {
-      activeTab: '0',
-
-      // Define your data properties here
-    };
-  },
-
-  computed: {
-    // Define your computed properties here
-    lisTabs() {
-      return [
-        {
-          titleKey: 'winemaking.option-1',
-          title: 'components.title-wine-batch',
-          icon: 'wine',
-          tab: 'batch-management',
-          component: 'WineBatchViewComponent',
-          value: '0'
-        },
-        {
-          titleKey: 'winemaking.option-2',
-          title: 'components.title-campaign',
-          icon: 'fermentation',
-          tab: 'campaign-management',
-          component: 'CampaignManagement',
-          value: '1'
-        },
-      ];
-    }
+    CampaignsManagement,
+    WineBatchViews
   },
 
 
-
-
-  methods: {
-    // Define your methods here
-  },
-  mounted() {
-    // Code to run when the component is mounted
+  created() {
+    console.log("Winemaking view Component Created");
   }
 }
 
@@ -55,41 +20,31 @@ export default {
 
 <template>
 
+
+
   <div class="winemaking-component">
+    <pv-tabs value="0">
 
-    <pv-tabs v-model="activeTab" style="background: white">
+      <pv-tab-list class="tab-list w-full  fixed z-1"  style="background: white">
+        <pv-tab value="0">{{$t('winemaking.option-1')}}</pv-tab>
+        <pv-tab value="1">{{$t('winemaking.option-2')}}</pv-tab>
+      </pv-tab-list>
 
-      <div class="header-container w-full fixed z-1 h-4" >
+      <pv-tab-panels class="w-full mt-5 z-0">
+        <pv-tab-panel value="0">
 
-        <pv-tab-list class="tab-list"  >
-          <pv-tab
-              class="tab w-10rem"
-              v-for="item in  lisTabs"
-              :key="item.value"
-              :value="item.value"
-          >
-            <span>{{$t(item.titleKey)}}</span>
-            <i :class="item.icon" class="ml-2"></i>
-          </pv-tab>
+          <WineBatchViews></WineBatchViews>
 
-        </pv-tab-list>
-      </div>
+        </pv-tab-panel>
+        <pv-tab-panel value="1">
+          <CampaignsManagement></CampaignsManagement>
+        </pv-tab-panel>
 
-      <div class="content-container" >
-        <pv-tab-panels>
-          <pv-tab-panel v-for="tab in  lisTabs" :key="tab.tab" :value="tab.value">
-            <component class="mt-7" :is="tab.component" />
-          </pv-tab-panel>
-        </pv-tab-panels>
-      </div>
+      </pv-tab-panels>
     </pv-tabs>
 
 
-
   </div>
-
-
-
 
 </template>
 

@@ -8,6 +8,7 @@ export default {
 
   props: {
     items: {type: Array, required: true},title: {type: {singular: '', plural: ''}, required: true},
+    labelName: {type: String, required: true},
     dynamic
     : {type: Boolean, default: false},
     columns: {type: Array, default: () => []}
@@ -89,7 +90,7 @@ export default {
       <pv-button
           class="mr-2 w-8rem"
           icon="pi pi-plus"
-          :label="$t('winemaking.button-option-1')"
+          :label="labelName"
           severity="success"
           @click="newItem"
           style="background: #556B2F; color: white; border: none;"
@@ -98,7 +99,7 @@ export default {
           class="w-8rem"
           :disabled="!selectedItems || !selectedItems.length"
           icon="pi pi-trash"
-          :label="$t('winemaking.button-option-2')"
+          :label="$t('winemaking.button-delete')"
           severity="danger"
           @click="confirmDeleteSelected"
           style="background: #8B0000; color: white; border: none;"
@@ -109,7 +110,7 @@ export default {
       <pv-button
           class="w-8rem"
           icon="pi pi-download"
-          label="Export"
+          :label="$t('winemaking.button-export')"
           severity="help"
           @click="exportToCsv($event)"
           style="background: #708090; color: white; border: none;"
@@ -124,8 +125,8 @@ export default {
       v-model:selection="selectedItems"
       :filters="filters"
       :paginator="true"
-      :rows="5"
-      :rows-per-page-options="[5, 10, 15]"
+      :rows="4"
+      :rows-per-page-options="[4, 8, 12]"
       :value="items"
       scrollable
       scroll-height="400px"

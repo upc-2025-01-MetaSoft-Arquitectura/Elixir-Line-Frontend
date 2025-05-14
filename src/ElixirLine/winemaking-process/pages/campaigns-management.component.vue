@@ -1,30 +1,21 @@
 <script>
 
-import DataManager from "../../../shared/components/data-manager.component.vue";
 import {batchAndCampaignApiService} from "../services/batch-and-campaign-api.service.js";
 import {Campaign} from "../model/campaign.entity.js";
-import BatchesCreateAndEdit from "../components/batches-create-and-edit.component.vue";
 import CampaignCreateAndEdit from "../components/campaign-create-and-edit.vue";
+import DataManager from "../../../shared/components/data-manager.component.vue";
 
 export default {
   name: "campaigns-management",
 
   components: {
-    CampaignCreateAndEdit,
     DataManager,
-    BatchesCreateAndEdit
-  },
-
-  props: {
-    campanaId: {
-      type: Number,
-      required: true
-    }
+    CampaignCreateAndEdit
   },
 
   data() {
     return {
-      title: { singular: 'Batch', plural: 'Batches' },
+      title: { singular: 'Campaign', plural: 'Campaigns' },
       arrayItems: [],
       itemObject: new Campaign({}),
       selectedItems: [],
@@ -45,7 +36,7 @@ export default {
     },
 
     findIndexById(id) {
-      return this.arrayItems.findIndex(batch => batch.id === id);
+      return this.arrayItems.findIndex(item => item.id === id);
     },
     //#endregion
 
@@ -83,6 +74,7 @@ export default {
     onSaveRequested(item) {
 
       console.log('onSaveRequestedManagement', item);
+
       this.submitted = true;
 
       if (item.id) {
@@ -97,8 +89,8 @@ export default {
     //#endregion
 
     //#region CRUD Operations
-    createBatch() {
-      this.batchAndCampaignApiService.create(this.batch).then(response => {
+    create() {
+      this.batchAndCampaignApiService.create(this.itemObject).then(response => {
         let newItem = new Campaign(response.data);
         this.arrayItems.push(newItem);
         this.notifySuccessfulAction('Campaign created successfully');
@@ -143,9 +135,11 @@ export default {
     getAllCampaigns() {
 
       this.batchAndCampaignApiService.getAllResources().then(response => {
-        this.arrayItems = response.data.map(item => new Campaign(item));
+        console.log("Campaigns response", response.data);
 
-        console.log("Batch resources", this.arrayItems);
+        this.arrayItems = response.data.map(resource => new Campaign(resource));
+
+        console.log("Campaigns resources", this.arrayItems);
       }).catch(error => {
         console.error("Error getting campaigns",error);
       });
@@ -153,13 +147,13 @@ export default {
   },
 
 
-
   //#region Lifecycle Hooks
   created() {
-    this.batchAndCampaignApiService = new batchAndCampaignApiService('/campaigns');
 
+    this.batchAndCampaignApiService = new batchAndCampaignApiService('/campaigns');
     this.getAllCampaigns();
-    console.log('Campaign Management component created');
+
+    console.log("Campaigns Management component created");
   }
   //#endregion
 
@@ -172,55 +166,24 @@ export default {
 
   <div>
 
+    <div class="header-container w-full">
+      <h2>{{$t('components.title-campaign')}}</h2>
+    </div>
+
+
     <data-manager :title="title"
                   v-bind:items="arrayItems"
+                  v-bind:label-name="$t('winemaking.button-new-campaign')"
                   v-on:new-item-requested-manager="onNewItem"
                   v-on:edit-item-requested-manager="onEditItem($event)"
                   v-on:delete-item-requested-manager="onDeleteItem($event)"
                   v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)">
 
       <template #custom-columns-manager >
-        <!--
         <pv-column
             :sortable="true"
-            field="id"
-            header="Id"
-        />
-        -->
-        <pv-column
-            :sortable="true"
-            field="internalCode"
-            header="Code"
-        />
-
-        <pv-column
-            :sortable="true"
-            field="receptionDate"
-            header="Reception"
-        />
-
-        <pv-column
-            :sortable="true"
-            field="harvestCampaign"
-            header="Campaign"
-        />
-
-        <pv-column
-            :sortable="true"
-            field="vineyardOrigin"
-            header="Vineyard"
-        />
-
-        <pv-column
-            :sortable="true"
-            field="grapeVariety"
-            header="Grape Variety"
-        />
-
-        <pv-column
-            :sortable="true"
-            field="initialGrapeQuantityKg"
-            header="Quantity Kg"
+            field="name"
+            header="Name"
         />
 
         <pv-column
@@ -231,14 +194,26 @@ export default {
 
         <pv-column
             :sortable="true"
-            field="status"
-            header="Status"
+            field="startDate"
+            header="Start Date"
         />
 
         <pv-column
             :sortable="true"
-            field="currentStage"
-            header="Stage"
+            field="endDate"
+            header="End Date"
+        />
+
+        <pv-column
+            :sortable="true"
+            field="batchesQuantity"
+            header="Batches Quantity"
+        />
+
+        <pv-column
+            :sortable="true"
+            field="status"
+            header="Status"
         />
 
       </template>
@@ -246,7 +221,7 @@ export default {
 
     <campaign-create-and-edit
         :edit = "isEdit"
-        :item="itemObject"
+        :item-entity="itemObject"
         :visible="createAndEditDialogIsVisible"
         v-on:cancel-requested="onCancelRequested"
         v-on:save-requested="onSaveRequested($event)">

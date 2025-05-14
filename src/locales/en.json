@@ -17,18 +17,14 @@
   "sign-in-option":            "Sign In",
   "sign-up-option":            "Sign Up",
 
-  "wine-batch": {
-    "title": "Batch Winemaking Process"
-  },
-
-
-
 
   "winemaking": {
     "option-1": "Winemaking Process",
     "option-2": "Campaigns",
-    "button-option-1": "New Batch",
-    "button-option-2": "Delete"
+    "button-new-batch": "New Batch",
+    "button-delete": "Delete",
+    "button-export": "Export",
+    "button-new-campaign": "Campaign"
   },
 
   "components": {

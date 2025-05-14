@@ -57,19 +57,20 @@ export default {
     </div>
 
     <!-- Acordeón -->
-    <div class="w-full mt-6">
+    <div class="w-full mt-2">
       <pv-accordion>
-        <pv-accordion-panel>
-          <pv-accordion-header v-for="item in ArrayItems" :key="item" style="background: #F5F5DC; margin-top: 1rem;">
+        <pv-accordion-panel v-for="item in ArrayItems" :key="item.id" :value="item.id">
+          <pv-accordion-header style="background: #F5F5DC; margin-top: 1rem;">
           <span class="flex items-center gap-2 w-full">
             <span class="font-bold whitespace-nowrap">{{item.name}}</span>
             <pv-badge class="ml-auto mr-2">{{item.batchesQuantity}} </pv-badge>
           </span>
           </pv-accordion-header>
 
-          <pv-accordion-content>
-            <BatchManagement :campanaId="1" />
+          <pv-accordion-content value ="item.id" class="bg-white">
+            <BatchManagement :campanaName="item.name" />
           </pv-accordion-content>
+
         </pv-accordion-panel>
       </pv-accordion>
     </div>

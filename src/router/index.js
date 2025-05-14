@@ -4,6 +4,7 @@ import PageNotFoundComponent from "../public/pages/page-not-found.component.vue"
 import LayoutElixirLineComponent from "../public/pages/layout-elixir-line.component.vue";
 import WinemakingViewComponent
     from "../ElixirLine/winemaking-process/views/winemaking-view.component.vue";
+import CampaignsManagementComponent from "../ElixirLine/winemaking-process/pages/campaigns-management.component.vue";
 
 
 const router = createRouter({
@@ -23,6 +24,8 @@ const router = createRouter({
             path: '/elixir-line/:id/home', name: 'ElixirLineHome', component: LayoutElixirLineComponent,
             children:[
                 {path: '/vinicultor/winemaking',      name: 'Winemaking Process', component: WinemakingViewComponent,     meta: { title: 'Winemaking'}},
+
+                {path:'/vinicultor/campaigns', name: 'Campaigns Management', component: CampaignsManagementComponent, meta: { title: 'Campaigns'}},
 
             ], meta: { title: 'Wine Batches' },
 

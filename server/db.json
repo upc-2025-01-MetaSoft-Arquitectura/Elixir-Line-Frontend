@@ -65,10 +65,10 @@
     {
       "id": "cmp-2025-001",
       "name": "Vendimia 2025",
-      "createdBy": "ana.silva@elixirline.com",
       "startDate": "01/03/2025",
-      "endDate": "30/04/2025",
-      "batchesQuantity": 12,
+      "createdBy": "Gonzalo Saldaña",
+      "endDate": "30/05/2025",
+      "batchesQuantity": "5",
       "status": "InProcess"
     },
     {

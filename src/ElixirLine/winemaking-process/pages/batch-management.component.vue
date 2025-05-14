@@ -14,8 +14,8 @@ export default {
   },
 
   props: {
-    campanaId: {
-      type: Number,
+    campanaName: {
+      type: String,
       required: true
     }
   },
@@ -141,6 +141,7 @@ export default {
     getAllBatches() {
 
       this.batchAndCampaignApiService.getAllResources().then(response => {
+
         this.batches = response.data.map(batch => new WineBatch(batch));
 
         console.log("Batch resources", this.batches);
@@ -170,10 +171,11 @@ export default {
 
     <data-manager :title="title"
                   v-bind:items="batches"
+                  v-bind:label-name="$t('winemaking.button-new-batch')"
                   v-on:new-item-requested-manager="onNewItem"
                   v-on:edit-item-requested-manager="onEditItem($event)"
                   v-on:delete-item-requested-manager="onDeleteItem($event)"
-                  v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)">
+                  v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)" >
 
       <template #custom-columns-manager >
         <!--
