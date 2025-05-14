@@ -1,23 +1,30 @@
 <script>
-
-import {batchAndCampaignApiService} from "../services/batch-and-campaign-api.service.js";
-import {Campaign} from "../model/campaign.entity.js";
-import CampaignCreateAndEdit from "../components/campaign-create-and-edit.vue";
+import SupplyCreateAndEdit from "../components/supply-create-and-edit.component.vue";
 import DataManager from "../../../shared/components/data-manager.component.vue";
+import {supplyApiService} from "../services/supply-api.service.js";
+import {Supply} from "../model/supply.entity.js";
+import slotProps from "@primevue/core/baseeditableholder";
 
 export default {
-  name: "campaigns-management",
+  name: "supply-management",
+  computed: {
+    slotProps() {
+      return slotProps
+    }
+  },
+
 
   components: {
     DataManager,
-    CampaignCreateAndEdit
+    SupplyCreateAndEdit
+
   },
 
   data() {
     return {
-      title: { singular: 'Campaign', plural: 'Campaigns' },
+      title: { singular: 'Supply', plural: 'Supplies' },
       arrayItems: [],
-      itemObject: new Campaign({}),
+      itemObject: new Supply({}),
       selectedItems: [],
       batchAndCampaignApiService: null,
       createAndEditDialogIsVisible: false,
@@ -42,21 +49,21 @@ export default {
 
     //#region Event Handlers
     onNewItem() {
-      this.itemObject = new Campaign({});
+      this.itemObject = new Supply({});
       this.isEdit = false;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
     },
 
     onEditItem(item) {
-      this.itemObject = new Campaign(item);
+      this.itemObject = new Supply(item);
       this.isEdit = true;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
     },
 
     onDeleteItem(item) {
-      this.itemObject = new Campaign(item);
+      this.itemObject = new Supply(item);
       this.deleteBatch();
     },
 
@@ -91,7 +98,7 @@ export default {
     //#region CRUD Operations
     create() {
       this.batchAndCampaignApiService.create(this.itemObject).then(response => {
-        let newItem = new Campaign(response.data);
+        let newItem = new Supply(response.data);
         this.arrayItems.push(newItem);
         this.notifySuccessfulAction('Campaign created successfully');
       }).catch(error => {
@@ -102,7 +109,7 @@ export default {
     update() {
       this.batchAndCampaignApiService.update(this.itemObject.id, this.itemObject).then(response => {
         let index = this.findIndexById(this.itemObject.id);
-        this.arrayItems[index] = new Campaign(response.data);
+        this.arrayItems[index] = new Supply(response.data);
         this.notifySuccessfulAction('campaign updated successfully');
       }).catch(error => {
         console.error("Error updating a campaign",error);
@@ -132,12 +139,12 @@ export default {
     },
     //#endregion
 
-    getAllCampaigns() {
+    getAllSupplies() {
 
       this.batchAndCampaignApiService.getAllResources().then(response => {
         console.log("Campaigns response", response.data);
 
-        this.arrayItems = response.data.map(resource => new Campaign(resource));
+        this.arrayItems = response.data.map(resource => new Supply(resource));
 
         console.log("Campaigns resources", this.arrayItems);
       }).catch(error => {
@@ -150,8 +157,8 @@ export default {
   //#region Lifecycle Hooks
   created() {
 
-    this.batchAndCampaignApiService = new batchAndCampaignApiService('/campaigns');
-    this.getAllCampaigns();
+    this.batchAndCampaignApiService = new supplyApiService('/supplies');
+    this.getAllSupplies();
 
     console.log("Campaigns Management component created");
   }
@@ -164,68 +171,66 @@ export default {
 <template>
 
 
-  <div class="page-container flex-1 w-full mt-2">
+  <div class="page-container p-2 flex flex-column h-full w-full overflow-hidden">
 
     <div class="header-container w-full">
-      <h2>{{$t('components.title-campaign')}}</h2>
+      <h2>{{$t('components.title-supply')}}</h2>
     </div>
 
 
-    <data-manager :title="title"
+    <data-manager
+                  :title="title"
                   v-bind:items="arrayItems"
-                  v-bind:label-name="$t('winemaking.button-new-campaign')"
+                  v-bind:label-name="$t('supplies.button-new-supply')"
                   v-on:new-item-requested-manager="onNewItem"
                   v-on:edit-item-requested-manager="onEditItem($event)"
                   v-on:delete-item-requested-manager="onDeleteItem($event)"
                   v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)">
 
       <template #custom-columns-manager >
+        
         <pv-column
             :sortable="true"
             field="name"
             header="Name"
         />
-
+        
         <pv-column
             :sortable="true"
-            field="createdBy"
-            header="Created By"
+            field="quantity"
+            header="Quantity"
         />
-
+        
         <pv-column
             :sortable="true"
-            field="startDate"
-            header="Start Date"
+            field="unidad"
+            header="Unidad"
         />
 
-        <pv-column
-            :sortable="true"
-            field="endDate"
-            header="End Date"
-        />
+        <!-- Imagen en la última columna -->
+        <pv-column header="Image">
+          <template #body="slotProps">
+            <img
+                :src="`${slotProps.data.image}`"
+                :alt="slotProps.data.name"
+                style="width: 48px; height: 48px; object-fit: contain"
+            />
+          </template>
+        </pv-column>
 
-        <pv-column
-            :sortable="true"
-            field="batchesQuantity"
-            header="Batches Quantity"
-        />
 
-        <pv-column
-            :sortable="true"
-            field="status"
-            header="Status"
-        />
+
 
       </template>
     </data-manager>
 
-    <campaign-create-and-edit
+    <supply-create-and-edit
         :edit = "isEdit"
         :item-entity="itemObject"
         :visible="createAndEditDialogIsVisible"
         v-on:cancel-requested="onCancelRequested"
         v-on:save-requested="onSaveRequested($event)">
-    </campaign-create-and-edit>
+    </supply-create-and-edit>
 
   </div>
 
@@ -233,5 +238,12 @@ export default {
 
 <style>
 
+.page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
 
 </style>

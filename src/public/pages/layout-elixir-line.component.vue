@@ -37,7 +37,7 @@ export default {
       </div>
 
       <!-- Vista principal -->
-      <div class="view-container flex flex-column flex-1 w-full overflow-auto">
+      <div class="view-container flex flex-column flex-1 w-full h-full overflow-auto">
         <router-view/>
       </div>
 
@@ -50,7 +50,14 @@ export default {
 
 </template>
 
-<style scoped>
+<style>
+
+.view-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
 
 
 

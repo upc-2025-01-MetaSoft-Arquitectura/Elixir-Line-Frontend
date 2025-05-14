@@ -80,84 +80,89 @@ export default {
 
 <template>
 
-  <pv-toast/>
-  <pv-confirm-dialog/>
+  <div class="page-container">
+    <!-- Notificaciones -->
+    <pv-toast />
+    <pv-confirm-dialog />
 
-  <!-- Toolbar section -->
-  <pv-toolbar class="mb-4 mt-4">
-
-    <template #start>
-      <pv-button
-          class="mr-2 w-8rem"
-          icon="pi pi-plus"
-          :label="labelName"
-          severity="success"
-          @click="newItem"
-          style="background: #556B2F; color: white; border: none;"
-      />
-      <pv-button
-          class="w-8rem"
-          :disabled="!selectedItems || !selectedItems.length"
-          icon="pi pi-trash"
-          :label="$t('winemaking.button-delete')"
-          severity="danger"
-          @click="confirmDeleteSelected"
-          style="background: #8B0000; color: white; border: none;"
-      />
-    </template>
-
-    <template #end>
-      <pv-button
-          class="w-8rem"
-          icon="pi pi-download"
-          :label="$t('winemaking.button-export')"
-          severity="help"
-          @click="exportToCsv($event)"
-          style="background: #708090; color: white; border: none;"
-      />
-    </template>
-
-  </pv-toolbar>
-
-  <!-- Data table section -->
-  <pv-data-table
-      ref="dt"
-      v-model:selection="selectedItems"
-      :filters="filters"
-      :paginator="true"
-      :rows="4"
-      :rows-per-page-options="[4, 8, 12]"
-      :value="items"
-      scrollable
-      scroll-height="400px"
-      current-page-report-template="Showing {first} to {last} of {totalRecords} ${{title.plural}}"
-      data-key="id"
-      paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown">
-
-
-  <pv-column :exportable="false" selection-mode="multiple" style="width: 3em"/>
-
-    <slot name="custom-columns-manager"></slot>
-
-
-    <pv-column v-if="dynamic" v-for="column in columns"
-               :key="column.field"
-               :field="column.field" :header="column.header">
-    </pv-column>
-
-
-    <pv-column :exportable="false" style="min-width:8rem">
-      <template #body="slotProps">
-        <pv-button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editItem(slotProps.data)"/>
-        <pv-button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteItem(slotProps.data)"/>
+    <!-- Toolbar fija arriba -->
+    <pv-toolbar class="mb-4 mt-4 w-full h-4rem">
+      <template #start>
+        <pv-button
+            class="mr-2 w-8rem"
+            icon="pi pi-plus"
+            :label="labelName"
+            severity="success"
+            @click="newItem"
+            style="background: #556B2F; color: white; border: none;"
+        />
+        <pv-button
+            class="w-8rem"
+            :disabled="!selectedItems || !selectedItems.length"
+            icon="pi pi-trash"
+            :label="$t('winemaking.button-delete')"
+            severity="danger"
+            @click="confirmDeleteSelected"
+            style="background: #8B0000; color: white; border: none;"
+        />
       </template>
-    </pv-column>
 
-  </pv-data-table>
+      <template #end>
+        <pv-button
+            class="w-8rem"
+            icon="pi pi-download"
+            :label="$t('winemaking.button-export')"
+            severity="help"
+            @click="exportToCsv($event)"
+            style="background: #708090; color: white; border: none;"
+        />
+      </template>
+    </pv-toolbar>
 
+    <!-- Tabla que ocupa el resto del espacio -->
+    <div class="table-wrapper">
+      <pv-data-table
+          class="flex-1 w-full h-full"
+          ref="dt"
+          v-model:selection="selectedItems"
+          :filters="filters"
+          :paginator="true"
+          :rows="4"
+          :rows-per-page-options="[4, 8, 12]"
+          :value="items"
+          scrollable
+          scroll-height="flex"
+          current-page-report-template="Showing {first} to {last} of {totalRecords} ${{title.plural}}"
+          data-key="id"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown">
 
+        <pv-column :exportable="false" selection-mode="multiple" style="width: 3em" />
+        <slot name="custom-columns-manager"></slot>
+        <pv-column
+            v-if="dynamic"
+            v-for="column in columns"
+            :key="column.field"
+            :field="column.field"
+            :header="column.header" />
+        <pv-column :exportable="false" style="min-width:8rem">
+          <template #body="slotProps">
+            <pv-button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editItem(slotProps.data)" />
+            <pv-button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteItem(slotProps.data)" />
+          </template>
+        </pv-column>
+
+      </pv-data-table>
+    </div>
+  </div>
 </template>
 
 <style scoped>
 
+
+.table-wrapper {
+  flex: 1;                /* ocupa el espacio restante */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;       /* previene scrolls dobles */
+}
 </style>

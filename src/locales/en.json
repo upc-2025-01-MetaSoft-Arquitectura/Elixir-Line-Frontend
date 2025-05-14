@@ -18,6 +18,13 @@
   "sign-up-option":            "Sign Up",
 
 
+  "supplies": {
+    "button-new-supply": "Supply",
+    "button-delete": "Delete",
+    "button-export": "Export"
+  },
+
+
   "winemaking": {
     "option-1": "Winemaking Process",
     "option-2": "Campaigns",
@@ -29,7 +36,8 @@
 
   "components": {
     "title-wine-batch": "Batch Winemaking Process",
-    "title-campaign": "Campaign Management"
+    "title-campaign": "Campaign Management",
+    "title-supply": "Supply Management"
   },
 
   "menu": {

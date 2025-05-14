@@ -50,14 +50,14 @@ export default {
 
 <template>
 
-  <div class="winemaking-component ">
+  <div class="page-container w-full h-full">
 
-    <div class="header-container w-full">
+    <div class="header-container w-full h-5rem">
       <h2>{{$t('components.title-wine-batch')}}</h2>
     </div>
 
     <!-- Acordeón -->
-    <div class="w-full mt-2">
+    <div class="flex-1 w-full mt-2">
       <pv-accordion>
         <pv-accordion-panel v-for="item in ArrayItems" :key="item.id" :value="item.id">
           <pv-accordion-header style="background: #F5F5DC; margin-top: 1rem;">
@@ -82,5 +82,6 @@ export default {
 </template>
 
 <style>
+
 
 </style>

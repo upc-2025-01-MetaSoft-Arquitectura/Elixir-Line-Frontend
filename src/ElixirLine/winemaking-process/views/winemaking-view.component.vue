@@ -20,9 +20,7 @@ export default {
 
 <template>
 
-
-
-  <div class="winemaking-component">
+  <div class="page-container w-full h-full overflow-auto">
     <pv-tabs value="0">
 
       <pv-tab-list class="tab-list w-full  fixed z-1"  style="background: white">
@@ -49,6 +47,7 @@ export default {
 </template>
 
 <style>
+
 
 .tab-list .p-tab-active {
   border-color: #DAA520 !important;

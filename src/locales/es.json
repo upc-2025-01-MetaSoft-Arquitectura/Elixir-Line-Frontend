@@ -21,9 +21,15 @@
 
   "components": {
     "title-wine-batch": "Proceso de vinificación de lotes",
-    "title-campaign": "Gestion de campañas"
+    "title-campaign": "Gestion de campañas",
+    "title-supply": "Gestión de suministros"
   },
 
+  "supplies": {
+    "button-new-supply": "Insumo",
+    "button-delete": "Delete",
+    "button-export": "Export"
+  },
 
 
   "winemaking": {

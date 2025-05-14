@@ -107,5 +107,77 @@
       "batchesQuantity": 3,
       "status": "Archived"
     }
+  ],
+  "supplies": [
+    {
+      "id": "sup-001",
+      "name": "Metabisulfito de Potasio",
+      "quantity": "30",
+      "unidad": "kg",
+      "image": "https://w7.pngwing.com/pngs/218/434/png-transparent-computer-icons-box-cargo-packaging-and-labeling-box-miscellaneous-service-logo.png"
+    },
+    {
+      "id": "sup-002",
+      "name": "Ácido Tartárico",
+      "quantity": 10,
+      "unidad": "kg",
+      "image": "https://w7.pngwing.com/pngs/218/434/png-transparent-computer-icons-box-cargo-packaging-and-labeling-box-miscellaneous-service-logo.png"
+    },
+    {
+      "id": "sup-003",
+      "name": "Bentonita",
+      "quantity": 15,
+      "unidad": "kg",
+      "image": "https://w7.pngwing.com/pngs/218/434/png-transparent-computer-icons-box-cargo-packaging-and-labeling-box-miscellaneous-service-logo.png"
+    },
+    {
+      "id": "sup-004",
+      "name": "Contenedor de Acero Inoxidable 500L",
+      "quantity": 4,
+      "unidad": "units",
+      "image": "https://w7.pngwing.com/pngs/218/434/png-transparent-computer-icons-box-cargo-packaging-and-labeling-box-miscellaneous-service-logo.png"
+    },
+    {
+      "id": "sup-005",
+      "name": "Desinfectante Enológico",
+      "quantity": 20,
+      "unidad": "L",
+      "image": "https://w7.pngwing.com/pngs/218/434/png-transparent-computer-icons-box-cargo-packaging-and-labeling-box-miscellaneous-service-logo.png"
+    },
+    {
+      "id": "sup-001",
+      "name": "Metabisulfito de Potasio",
+      "quantity": 25,
+      "unidad": "kg",
+      "image": "https://w7.pngwing.com/pngs/218/434/png-transparent-computer-icons-box-cargo-packaging-and-labeling-box-miscellaneous-service-logo.png"
+    },
+    {
+      "id": "sup-002",
+      "name": "Ácido Tartárico",
+      "quantity": 10,
+      "unidad": "kg",
+      "image": "https://w7.pngwing.com/pngs/218/434/png-transparent-computer-icons-box-cargo-packaging-and-labeling-box-miscellaneous-service-logo.png"
+    },
+    {
+      "id": "sup-003",
+      "name": "Bentonita",
+      "quantity": 15,
+      "unidad": "kg",
+      "image": "https://w7.pngwing.com/pngs/218/434/png-transparent-computer-icons-box-cargo-packaging-and-labeling-box-miscellaneous-service-logo.png"
+    },
+    {
+      "id": "sup-004",
+      "name": "Contenedor de Acero Inoxidable 500L",
+      "quantity": 4,
+      "unidad": "units",
+      "image": "https://w7.pngwing.com/pngs/218/434/png-transparent-computer-icons-box-cargo-packaging-and-labeling-box-miscellaneous-service-logo.png"
+    },
+    {
+      "id": "sup-005",
+      "name": "Desinfectante Enológico",
+      "quantity": 20,
+      "unidad": "L",
+      "image": "https://w7.pngwing.com/pngs/218/434/png-transparent-computer-icons-box-cargo-packaging-and-labeling-box-miscellaneous-service-logo.png"
+    }
   ]
 }

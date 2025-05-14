@@ -167,7 +167,7 @@ export default {
 
 <template>
 
-  <div>
+  <div class="page-container">
 
     <data-manager :title="title"
                   v-bind:items="batches"
@@ -255,6 +255,7 @@ export default {
 </template>
 
 <style>
+
 
 .p-datatable-column-header-content {
   font-size: 0.85rem;
