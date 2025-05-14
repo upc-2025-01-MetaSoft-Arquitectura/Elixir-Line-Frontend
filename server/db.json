@@ -179,5 +179,87 @@
       "unidad": "L",
       "image": "https://w7.pngwing.com/pngs/218/434/png-transparent-computer-icons-box-cargo-packaging-and-labeling-box-miscellaneous-service-logo.png"
     }
+  ],
+  "employees": [
+    {
+      "id": "u001",
+      "firstName": "Maria",
+      "lastName": "Silva",
+      "email": "ana.silva@elixirline.com",
+      "phoneNumber": "+51 987654321",
+      "password": "Ana@2025"
+    },
+    {
+      "id": "u002",
+      "firstName": "Carlos",
+      "lastName": "Mendoza",
+      "email": "carlos.mendoza@elixirline.com",
+      "phoneNumber": "+51 956782341",
+      "password": "Carlos#2024"
+    },
+    {
+      "id": "u003",
+      "firstName": "Sofía",
+      "lastName": "Gómez",
+      "email": "sofia.gomez@elixirline.com",
+      "phoneNumber": "+51 912345678",
+      "password": "Sofia2023!"
+    },
+    {
+      "id": "u004",
+      "firstName": "Juan",
+      "lastName": "Vera",
+      "email": "juan.vera@elixirline.com",
+      "phoneNumber": "+51 934567890",
+      "password": "Jv!123456"
+    },
+    {
+      "id": "u005",
+      "firstName": "Mariana",
+      "lastName": "Luna",
+      "email": "mariana.luna@elixirline.com",
+      "phoneNumber": "+51 923456789",
+      "password": "Mari@1234"
+    },
+    {
+      "id": "u006",
+      "firstName": "Ana",
+      "lastName": "Silva",
+      "email": "ana.silva@elixirline.com",
+      "phoneNumber": "+51 987654321",
+      "password": "Ana@2025"
+    },
+    {
+      "id": "u007",
+      "firstName": "Carlos",
+      "lastName": "Mendoza",
+      "email": "carlos.mendoza@elixirline.com",
+      "phoneNumber": "+51 956782341",
+      "password": "Carlos#2024"
+    },
+    {
+      "id": "u008",
+      "firstName": "Sofía",
+      "lastName": "Gómez",
+      "email": "sofia.gomez@elixirline.com",
+      "phoneNumber": "+51 912345678",
+      "password": "Sofia2023!"
+    },
+    {
+      "id": "u009",
+      "firstName": "Juan",
+      "lastName": "Vera",
+      "email": "juan.vera@elixirline.com",
+      "phoneNumber": "+51 934567890",
+      "password": "Jv!123456"
+    },
+    {
+      "id": "u010",
+      "firstName": "Mariana",
+      "lastName": "Luna",
+      "email": "mariana.luna@elixirline.com",
+      "phoneNumber": "+51 923456789",
+      "password": "Mari@1234"
+    }
   ]
 }

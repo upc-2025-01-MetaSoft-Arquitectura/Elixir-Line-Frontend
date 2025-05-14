@@ -27,7 +27,10 @@ export default {
         {
           label: this.$t('menu.label-settings'),
           to: "/home/settings",
-          icon: 'pi pi-user'
+          icon: 'pi pi-user',
+          command: () => {
+            this.$router.push({name: 'ProfileSettings'})  // Navegación usando Vue Router
+          }
         },
         {
           label: this.$t('menu.label-sign-out'),
@@ -65,7 +68,7 @@ export default {
       <div class="flex flex-row w-full h-full justify-content-between align-items-center ">
 
         <div class="flex align-items-center pr-2">
-          <pv-split-button class="split-button" :model="itemsUser"> {{user.name}} </pv-split-button>
+          <pv-split-button class="split-button" :model="itemsUser" > {{user.name}} </pv-split-button>
         </div>
 
         <div>

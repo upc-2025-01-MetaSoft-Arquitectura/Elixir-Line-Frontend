@@ -24,6 +24,16 @@
     "button-export": "Export"
   },
 
+  "employees": {
+    "button-new-employee": "Employee",
+    "button-delete": "Delete",
+    "button-export": "Export"
+  },
+
+  "profile": {
+    "tab-1": "My Profile",
+    "tab-2": "My Employees"
+  },
 
   "winemaking": {
     "option-1": "Winemaking Process",
@@ -37,7 +47,8 @@
   "components": {
     "title-wine-batch": "Batch Winemaking Process",
     "title-campaign": "Campaign Management",
-    "title-supply": "Supply Management"
+    "title-supply": "Supply Management",
+    "title-employees": "Employee Management"
   },
 
   "menu": {

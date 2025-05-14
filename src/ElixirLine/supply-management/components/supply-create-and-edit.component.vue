@@ -42,7 +42,7 @@ export default {
 
 <template>
 
-  <create-and-edit :entity="itemEntity" :visible="visible" entity-name="Campaign"
+  <create-and-edit :entity="itemEntity" :visible="visible" entity-name="Supply"
                    @canceled-shared="onCancelRequested" @saved-shared="onSaveRequested">
 
     <!--Definimos el contenido del diálogo de creación y edición de lotes en el slot content del componente -->

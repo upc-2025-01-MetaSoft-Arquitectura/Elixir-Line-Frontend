@@ -80,13 +80,13 @@ export default {
 
 <template>
 
-  <div class="page-container">
+  <div class="page-container-shared">
     <!-- Notificaciones -->
     <pv-toast />
     <pv-confirm-dialog />
 
     <!-- Toolbar fija arriba -->
-    <pv-toolbar class="mb-4 mt-4 w-full h-4rem">
+    <pv-toolbar class="w-full h-4rem">
       <template #start>
         <pv-button
             class="mr-2 w-8rem"
@@ -157,7 +157,6 @@ export default {
 </template>
 
 <style scoped>
-
 
 .table-wrapper {
   flex: 1;                /* ocupa el espacio restante */

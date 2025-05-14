@@ -50,15 +50,15 @@ export default {
 
 <template>
 
-  <div class="page-container w-full h-full">
+  <div class="page-wine-batch-view w-full h-full">
 
-    <div class="header-container w-full h-5rem">
+    <div class="header-container w-full h-4rem ">
       <h2>{{$t('components.title-wine-batch')}}</h2>
     </div>
 
     <!-- Acordeón -->
-    <div class="flex-1 w-full mt-2">
-      <pv-accordion>
+
+      <pv-accordion class="w-full h-full" multiple>
         <pv-accordion-panel v-for="item in ArrayItems" :key="item.id" :value="item.id">
           <pv-accordion-header style="background: #F5F5DC; margin-top: 1rem;">
           <span class="flex items-center gap-2 w-full">
@@ -67,21 +67,24 @@ export default {
           </span>
           </pv-accordion-header>
 
-          <pv-accordion-content value ="item.id" class="bg-white">
+          <pv-accordion-content value ="item.id" class="bg-white overflow-hidden">
             <BatchManagement :campanaName="item.name" />
           </pv-accordion-content>
 
         </pv-accordion-panel>
       </pv-accordion>
-    </div>
+
   </div>
-
-
-
 
 </template>
 
-<style>
+<style scoped>
+
+.page-wine-batch-view {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
 
 
 </style>

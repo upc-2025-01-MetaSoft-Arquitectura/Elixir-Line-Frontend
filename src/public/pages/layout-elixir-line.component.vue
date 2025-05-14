@@ -20,24 +20,24 @@ export default {
 
 <template>
 
-  <div class="home-elixir-line flex flex-column h-screen w-full overflow-hidden">
+  <div class="home-elixir-line flex flex-column h-screen w-screen overflow-hidden">
 
     <!-- Toolbar ocupa altura fija -->
-    <div class="toolbar-elixir-line w-full">
+    <div class="toolbar-elixir-line w-full h-4rem">
       <toolbar-elixir-line/>
     </div>
 
 
     <!-- Contenedor principal -->
-    <div class="content-container flex flex-row flex-1 w-full overflow-hidden">
+    <div class="content-container flex flex-row flex-1 w-full h-full overflow-hidden">
 
       <!-- Barra lateral -->
-      <div class="navbar-elixir-line w-1/6 h-full flex flex-column border-top-1 border-white">
+      <div class="navbar-elixir-line w-1/6 h-full flex flex-column border-white">
         <navbar-elixir-line/>
       </div>
 
       <!-- Vista principal -->
-      <div class="view-container flex flex-column flex-1 w-full h-full overflow-auto">
+      <div class="view-container flex-1 h-full w-full overflow-auto">
         <router-view/>
       </div>
 
@@ -51,14 +51,6 @@ export default {
 </template>
 
 <style>
-
-.view-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
-
 
 
 </style>

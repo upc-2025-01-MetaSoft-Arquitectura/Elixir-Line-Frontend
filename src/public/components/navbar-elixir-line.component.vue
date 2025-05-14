@@ -33,7 +33,6 @@ export default {
 
   <div class="navbar-elixir-line flex flex-1 flex-column w-1/6 " style="background-color: #8B0000; color: #e5edf6">
 
-
     <div class="header-navbar flex flex-1 flex-column h-full" style="background-color: #8B0000; color: #e5edf6">
 
 
@@ -58,8 +57,6 @@ export default {
 </template>
 
 <style>
-
-
 
 .options{
   display: flex;

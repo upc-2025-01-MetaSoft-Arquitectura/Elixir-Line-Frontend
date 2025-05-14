@@ -22,7 +22,13 @@
   "components": {
     "title-wine-batch": "Proceso de vinificación de lotes",
     "title-campaign": "Gestion de campañas",
-    "title-supply": "Gestión de suministros"
+    "title-supply": "Gestión de suministros",
+    "title-employees": "Gestión de empleados"
+  },
+
+  "profile": {
+    "tab-1": "Mi perfil",
+    "tab-2": "Mis empleados"
   },
 
   "supplies": {
@@ -45,6 +51,5 @@
     "label-settings": "Configuración",
     "label-sign-out": "Cerrar sesión"
   }
-
 
 }

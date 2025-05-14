@@ -7,6 +7,7 @@ import slotProps from "@primevue/core/baseeditableholder";
 
 export default {
   name: "supply-management",
+
   computed: {
     slotProps() {
       return slotProps

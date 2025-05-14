@@ -20,22 +20,22 @@ export default {
 
 <template>
 
-  <div class="page-container w-full h-full overflow-auto">
+  <div class="page-winemaking-view w-full h-screen">
     <pv-tabs value="0">
 
-      <pv-tab-list class="tab-list w-full  fixed z-1"  style="background: white">
+      <pv-tab-list class="tab-list w-full fixed z-1"  style="background: white">
         <pv-tab value="0">{{$t('winemaking.option-1')}}</pv-tab>
         <pv-tab value="1">{{$t('winemaking.option-2')}}</pv-tab>
       </pv-tab-list>
 
-      <pv-tab-panels class="w-full mt-5 z-0">
+      <pv-tab-panels class="w-full h-full z-0 mt-5" >
         <pv-tab-panel value="0">
 
           <WineBatchViews></WineBatchViews>
 
         </pv-tab-panel>
         <pv-tab-panel value="1">
-          <CampaignsManagement></CampaignsManagement>
+          <CampaignsManagement ></CampaignsManagement>
         </pv-tab-panel>
 
       </pv-tab-panels>

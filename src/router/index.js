@@ -5,6 +5,7 @@ import LayoutElixirLineComponent from "../public/pages/layout-elixir-line.compon
 import WinemakingViewComponent
     from "../ElixirLine/winemaking-process/views/winemaking-view.component.vue";
 import SupplyManagement from "../ElixirLine/supply-management/pages/supply-management.vue";
+import ProfileViewsConfigurationComponent from "../ElixirLine/profile/views/profile-views-configuration.component.vue";
 
 
 const router = createRouter({
@@ -23,8 +24,11 @@ const router = createRouter({
         {
             path: '/elixir-line/:id/home', name: 'ElixirLineHome', component: LayoutElixirLineComponent,
             children:[
-                {path: '/vinicultor/winemaking',      name: 'Winemaking Process', component: WinemakingViewComponent,     meta: { title: 'Winemaking'}},
-                {path:'/vinicultor/supplies', name: 'Supplies Management', component: SupplyManagement, meta: { title: 'Supplies'}},
+                {path: '/vinicultor/winemaking',      name: 'WinemakingProcess', component: WinemakingViewComponent,     meta: { title: 'Winemaking'}},
+                {path:'/vinicultor/supplies', name: 'SuppliesManagement', component: SupplyManagement, meta: { title: 'Supplies'}},
+                {path: '/vinicultor/profile/settings', name: 'ProfileSettings', component: ProfileViewsConfigurationComponent, meta: { title: 'Profile Settings'}},
+
+
 
             ], meta: { title: 'Wine Batches' },
 

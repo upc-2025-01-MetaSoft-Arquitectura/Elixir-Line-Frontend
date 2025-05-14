@@ -167,7 +167,7 @@ export default {
 
 <template>
 
-  <div class="page-container">
+  <div class="page-container-batch-management flex w-full h-full">
 
     <data-manager :title="title"
                   v-bind:items="batches"
