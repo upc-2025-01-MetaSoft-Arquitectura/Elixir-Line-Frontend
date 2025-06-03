@@ -2,7 +2,7 @@
 
 import CampaignsManagement from "../../winemaking-process/pages/campaigns-management.component.vue";
 import WineBatchViews from "../../winemaking-process/views/wine-batch-view.component.vue";
-import EmployeeManagement from "../pages/employee-management.component.vue";
+import EmployeeManagement from "../../employee-management/pages/employee-management.component.vue";
 import ProfileManagement from "../pages/profile-management.component.vue";
 
 export default {
