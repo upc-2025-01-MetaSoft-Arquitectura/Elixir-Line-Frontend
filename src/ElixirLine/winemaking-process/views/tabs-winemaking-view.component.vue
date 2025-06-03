@@ -1,29 +1,34 @@
 <script>
 
-import CampaignsManagement from "../../winemaking-process/pages/campaigns-management.component.vue";
-import AccordionCampaignsComponent from "../../winemaking-process/views/accordion-campaigns.component.vue";
-import EmployeeManagement from "../../employee-management/pages/employee-management.component.vue";
-import ProfileManagement from "../pages/profile-management.component.vue";
+import AccordionCampaignsComponent from "./accordion-campaigns.component.vue";
+import CampaignsManagement from "../pages/campaigns-management.component.vue";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
-
+import EmployeeManagement from "../../employee-management/pages/employee-management.component.vue";
 
 export default {
-  name: "profile-views-configuration",
-  components: {BasePageLayout, ProfileManagement, EmployeeManagement, WineBatchViews: AccordionCampaignsComponent, CampaignsManagement},
+  name: 'winemaking-view',
+  components: {
+    EmployeeManagement, BasePageLayout,
+    CampaignsManagement,
+    WineBatchViews: AccordionCampaignsComponent
+  },
 
   data() {
     return {
       activeTab: '0'
     }
+  },
+
+
+  created() {
+    console.log("Winemaking view Component Created");
   }
-
-
-
 }
+
 </script>
 
-
 <template>
+
 
   <base-page-layout>
     <!-- Tabs en el header -->
@@ -33,7 +38,7 @@ export default {
         <!-- Botones de navegación tipo tab -->
         <pv-button
             @click="activeTab = '0'"
-            :label="$t('profile.tab-1')"
+            :label="$t('winemaking.option-1')"
             :outlined="false"
             class="tab-button"
             :class="{ 'active-tab': activeTab === '0' }"
@@ -41,7 +46,7 @@ export default {
 
         <pv-button
             @click="activeTab = '1'"
-            :label="$t('profile.tab-2')"
+            :label="$t('winemaking.option-2')"
             :outlined="false"
             class="tab-button"
             :class="{ 'active-tab': activeTab === '1' }"
@@ -57,24 +62,22 @@ export default {
 
       <!-- Contenido que cambia por tab -->
       <div v-if="activeTab === '0'" class="flex-1 flex-column w-full  overflow-hidden">
-        <p>PROFILE</p>
+        <WineBatchViews></WineBatchViews>
       </div>
 
       <div v-if="activeTab === '1'" class="flex-1 flex-column w-full overflow-hidden">
-        <employee-management />
+        <CampaignsManagement ></CampaignsManagement>
       </div>
 
     </div>
 
-
-
   </base-page-layout>
-
 
 
 </template>
 
 <style>
+
 
 .tab-button {
   color: white !important;
@@ -88,5 +91,6 @@ export default {
   color: #DAA520 !important; /* Dorado cuando está activo */
   background-color: rgba(255, 255, 255, 0.1); /* Leve fondo para resaltar si quieres */
 }
+
 
 </style>

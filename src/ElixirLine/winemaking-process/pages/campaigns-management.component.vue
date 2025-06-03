@@ -164,9 +164,10 @@ export default {
 <template>
 
 
-  <div class="page-container flex flex-column flex-1 w-full h-full">
+  <div class="campaigns-container flex flex-column flex-1 w-full h-full overflow-hidden">
 
-    <div class="header-container w-full">
+
+    <div class="header-container w-full border-bottom-1 border-300">
       <h2>{{$t('components.title-campaign')}}</h2>
     </div>
 

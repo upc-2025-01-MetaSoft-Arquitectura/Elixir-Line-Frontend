@@ -2,26 +2,29 @@
 import BatchManagement from "../pages/batch-management.component.vue";
 import {Campaign} from "../model/campaign.entity.js";
 import {batchAndCampaignApiService} from "../services/batch-and-campaign-api.service.js";
+import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
 
 export default {
   name: "wine-batch-views",
-  components: {BatchManagement},
+  components: {BasePageLayout, BatchManagement},
 
   data() {
     return {
-      itemObject: new Campaign({}),
-      ArrayItems: [],
+      arrayItems: [],
       batchAndCampaignApiService: null,
     }
   },
 
   methods:{
 
+
     getAll(){
       this.batchAndCampaignApiService.getAllResources()
         .then(response => {
-          this.ArrayItems = response.data;
-          console.log( 'Campañas recuperadas' ,this.ArrayItems);
+
+          this.arrayItems = response.data.map(resource => new Campaign(resource));
+
+          console.log( 'Campañas recuperadas' ,this.arrayItems);
         })
         .catch(error => {
           console.error("Error fetching data:", error);
@@ -32,7 +35,7 @@ export default {
 
   computed: {
     campaignQuantity() {
-      return this.ArrayItems.length ? this.ArrayItems.length : 0;
+      return this.arrayItems.length ? this.arrayItems.length : 0;
     }
   },
 
@@ -50,16 +53,21 @@ export default {
 
 <template>
 
-  <div class="page-wine-batch-view w-full h-full">
+  <base-page-layout>
 
-    <div class="header-container w-full h-4rem ">
+
+    <template #header>
       <h2>{{$t('components.title-wine-batch')}}</h2>
-    </div>
+    </template>
 
     <!-- Acordeón -->
+    <div class="accordion-content flex-1 flex flex-column p-2 overflow-auto">
 
-      <pv-accordion class="w-full h-full" multiple>
-        <pv-accordion-panel v-for="item in ArrayItems" :key="item.id" :value="item.id">
+      <pv-accordion multiple>
+
+        <pv-accordion-panel v-for="item in arrayItems" :key="item.id" :value="item.id">
+
+          <!-- Encabezado del acordeón -->
           <pv-accordion-header style="background: #F5F5DC; margin-top: 1rem;">
           <span class="flex items-center gap-2 w-full">
             <span class="font-bold whitespace-nowrap">{{item.name}}</span>
@@ -67,24 +75,22 @@ export default {
           </span>
           </pv-accordion-header>
 
-          <pv-accordion-content value ="item.id" class="bg-white overflow-hidden">
+          <!-- Contenido del acordeón -->
+          <pv-accordion-content value ="item.id" class="bg-white overflow-auto">
             <BatchManagement :campanaName="item.name" />
           </pv-accordion-content>
 
         </pv-accordion-panel>
       </pv-accordion>
+    </div>
 
-  </div>
+
+  </base-page-layout>
+
 
 </template>
 
 <style scoped>
-
-.page-wine-batch-view {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
 
 
 </style>
