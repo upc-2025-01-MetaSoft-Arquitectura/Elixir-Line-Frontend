@@ -13,26 +13,27 @@
   color-scheme: light dark;
 }
 
+html, body, #app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Previene scroll innecesario */
+}
+
 /* === Elementos base (solo mínimos estilos necesarios) === */
 body {
-  margin: 0;
-  font-family: var(--font-default);
+  font-family: var(--font-default), serif;
   background-color: var(--color-bg-dark);
   color: var(--color-text-dark);
-  min-width: 320px;
-  min-height: 100vh;
 }
 
 /* Elimina el flex global en <body> */
 /* Que la app ocupe el espacio disponible en pantalla */
 #app {
-  margin: 0 auto;
-  padding: 0;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-
 }
 
 /* === Estilos semánticos que no rompen PrimeVue === */
@@ -94,3 +95,6 @@ h1 {
     color: #747bff;
   }
 }
+
+
+
