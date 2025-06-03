@@ -171,6 +171,8 @@ export default {
 
     <!-- Scroll solo dentro del área del contenido -->
 
+  <div class="data-table-container pt-2 h-full flex-1 overflow-hidden flex flex-column">
+
     <data-manager
         :title="title"
         :items="arrayItems"
@@ -218,6 +220,8 @@ export default {
         @cancel-requested="onCancelRequested"
         @save-requested="onSaveRequested($event)"
     />
+
+  </div>
 
 
 </div>

@@ -22,7 +22,7 @@ export default {
     </div>
 
 
-    <div class="layout-body flex-1 overflow-hidden flex flex-column">
+    <div class="layout-body flex-1 overflow-hidden flex flex-column mt-2">
       <slot />
     </div>
 

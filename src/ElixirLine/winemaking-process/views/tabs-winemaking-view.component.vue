@@ -1,6 +1,6 @@
 <script>
 
-import AccordionCampaignsComponent from "./accordion-campaigns.component.vue";
+import AccordionBatchesByCampaignsComponent from "./accordion-batches-by-campaigns.component.vue";
 import CampaignsManagement from "../pages/campaigns-management.component.vue";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
 import EmployeeManagement from "../../employee-management/pages/employee-management.component.vue";
@@ -10,7 +10,7 @@ export default {
   components: {
     EmployeeManagement, BasePageLayout,
     CampaignsManagement,
-    WineBatchViews: AccordionCampaignsComponent
+    WineBatchViews: AccordionBatchesByCampaignsComponent
   },
 
   data() {

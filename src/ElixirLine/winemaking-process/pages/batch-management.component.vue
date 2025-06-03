@@ -169,87 +169,91 @@ export default {
 
   <div class="page-container-batch-management flex w-full h-full">
 
-    <data-manager :title="title"
-                  v-bind:items="batches"
-                  v-bind:label-name="$t('winemaking.button-new-batch')"
-                  v-on:new-item-requested-manager="onNewItem"
-                  v-on:edit-item-requested-manager="onEditItem($event)"
-                  v-on:delete-item-requested-manager="onDeleteItem($event)"
-                  v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)" >
 
-      <template #custom-columns-manager >
-        <!--
-        <pv-column
-            :sortable="true"
-            field="id"
-            header="Id"
-        />
-        -->
-        <pv-column
-            :sortable="true"
-            field="internalCode"
-            header="Code"
-        />
+    <div class="data-table-container pt-2 h-full flex-1 overflow-hidden flex flex-column">
 
-        <pv-column
-            :sortable="true"
-            field="receptionDate"
-            header="Reception"
-        />
+      <data-manager :title="title"
+                    v-bind:items="batches"
+                    v-bind:label-name="$t('winemaking.button-new-batch')"
+                    v-on:new-item-requested-manager="onNewItem"
+                    v-on:edit-item-requested-manager="onEditItem($event)"
+                    v-on:delete-item-requested-manager="onDeleteItem($event)"
+                    v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)" >
 
-        <pv-column
-            :sortable="true"
-            field="harvestCampaign"
-            header="Campaign"
-        />
+        <template #custom-columns-manager >
+          <!--
+          <pv-column
+              :sortable="true"
+              field="id"
+              header="Id"
+          />
+          -->
+          <pv-column
+              :sortable="true"
+              field="internalCode"
+              header="Code"
+          />
 
-        <pv-column
-            :sortable="true"
-            field="vineyardOrigin"
-            header="Vineyard"
-        />
+          <pv-column
+              :sortable="true"
+              field="receptionDate"
+              header="Reception"
+          />
 
-        <pv-column
-            :sortable="true"
-            field="grapeVariety"
-            header="Grape Variety"
-        />
+          <pv-column
+              :sortable="true"
+              field="harvestCampaign"
+              header="Campaign"
+          />
 
-        <pv-column
-            :sortable="true"
-            field="initialGrapeQuantityKg"
-            header="Quantity Kg"
-        />
+          <pv-column
+              :sortable="true"
+              field="vineyardOrigin"
+              header="Vineyard"
+          />
 
-        <pv-column
-            :sortable="true"
-            field="createdBy"
-            header="Created By"
-        />
+          <pv-column
+              :sortable="true"
+              field="grapeVariety"
+              header="Grape Variety"
+          />
 
-        <pv-column
-            :sortable="true"
-            field="status"
-            header="Status"
-        />
+          <pv-column
+              :sortable="true"
+              field="initialGrapeQuantityKg"
+              header="Quantity Kg"
+          />
 
-        <pv-column
-            :sortable="true"
-            field="currentStage"
-            header="Stage"
-        />
+          <pv-column
+              :sortable="true"
+              field="createdBy"
+              header="Created By"
+          />
 
-      </template>
-    </data-manager>
+          <pv-column
+              :sortable="true"
+              field="status"
+              header="Status"
+          />
 
-    <batches-create-and-edit
-        :edit = "isEdit"
-        :item-entity="batch"
-        :visible="createAndEditDialogIsVisible"
-        v-on:cancel-requested="onCancelRequested"
-        v-on:save-requested="onSaveRequested($event)">
-    </batches-create-and-edit>
+          <pv-column
+              :sortable="true"
+              field="currentStage"
+              header="Stage"
+          />
 
+        </template>
+      </data-manager>
+
+      <batches-create-and-edit
+          :edit = "isEdit"
+          :item-entity="batch"
+          :visible="createAndEditDialogIsVisible"
+          v-on:cancel-requested="onCancelRequested"
+          v-on:save-requested="onSaveRequested($event)">
+      </batches-create-and-edit>
+
+    </div>
   </div>
 
 </template>

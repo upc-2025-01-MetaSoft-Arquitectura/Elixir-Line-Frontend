@@ -172,61 +172,63 @@ export default {
     </div>
 
 
-    <data-manager :title="title"
-                  v-bind:items="arrayItems"
-                  v-bind:label-name="$t('winemaking.button-new-campaign')"
-                  v-on:new-item-requested-manager="onNewItem"
-                  v-on:edit-item-requested-manager="onEditItem($event)"
-                  v-on:delete-item-requested-manager="onDeleteItem($event)"
-                  v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)">
+    <div class="data-table-container pt-2 h-full flex-1 overflow-hidden flex flex-column">
+      <data-manager :title="title"
+                    v-bind:items="arrayItems"
+                    v-bind:label-name="$t('winemaking.button-new-campaign')"
+                    v-on:new-item-requested-manager="onNewItem"
+                    v-on:edit-item-requested-manager="onEditItem($event)"
+                    v-on:delete-item-requested-manager="onDeleteItem($event)"
+                    v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)">
 
-      <template #custom-columns-manager >
-        <pv-column
-            :sortable="true"
-            field="name"
-            header="Name"
-        />
+        <template #custom-columns-manager >
+          <pv-column
+              :sortable="true"
+              field="name"
+              header="Name"
+          />
 
-        <pv-column
-            :sortable="true"
-            field="createdBy"
-            header="Created By"
-        />
+          <pv-column
+              :sortable="true"
+              field="createdBy"
+              header="Created By"
+          />
 
-        <pv-column
-            :sortable="true"
-            field="startDate"
-            header="Start Date"
-        />
+          <pv-column
+              :sortable="true"
+              field="startDate"
+              header="Start Date"
+          />
 
-        <pv-column
-            :sortable="true"
-            field="endDate"
-            header="End Date"
-        />
+          <pv-column
+              :sortable="true"
+              field="endDate"
+              header="End Date"
+          />
 
-        <pv-column
-            :sortable="true"
-            field="batchesQuantity"
-            header="Batches Quantity"
-        />
+          <pv-column
+              :sortable="true"
+              field="batchesQuantity"
+              header="Batches Quantity"
+          />
 
-        <pv-column
-            :sortable="true"
-            field="status"
-            header="Status"
-        />
+          <pv-column
+              :sortable="true"
+              field="status"
+              header="Status"
+          />
 
-      </template>
-    </data-manager>
+        </template>
+      </data-manager>
 
-    <campaign-create-and-edit
-        :edit = "isEdit"
-        :item-entity="itemObject"
-        :visible="createAndEditDialogIsVisible"
-        v-on:cancel-requested="onCancelRequested"
-        v-on:save-requested="onSaveRequested($event)">
-    </campaign-create-and-edit>
+      <campaign-create-and-edit
+          :edit = "isEdit"
+          :item-entity="itemObject"
+          :visible="createAndEditDialogIsVisible"
+          v-on:cancel-requested="onCancelRequested"
+          v-on:save-requested="onSaveRequested($event)">
+      </campaign-create-and-edit>
+    </div>
 
   </div>
 
