@@ -80,13 +80,13 @@ export default {
 
 <template>
 
-  <div class="page-container-shared">
+  <div class="page-container-shared flex flex-column h-full w-full overflow-hidden">
     <!-- Notificaciones -->
     <pv-toast />
     <pv-confirm-dialog />
 
     <!-- Toolbar fija arriba -->
-    <pv-toolbar class="w-full h-4rem">
+    <pv-toolbar class="w-full" style="height: 4rem;">
       <template #start>
         <pv-button
             class="mr-2 w-8rem"
@@ -120,9 +120,10 @@ export default {
     </pv-toolbar>
 
     <!-- Tabla que ocupa el resto del espacio -->
-    <div class="table-wrapper">
+    <div class="table-wrapper flex-1 overflow-auto">
+
       <pv-data-table
-          class="flex-1 w-full h-full"
+          class="w-full"
           ref="dt"
           v-model:selection="selectedItems"
           :filters="filters"
@@ -137,13 +138,16 @@ export default {
           paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown">
 
         <pv-column :exportable="false" selection-mode="multiple" style="width: 3em" />
+
         <slot name="custom-columns-manager"></slot>
+
         <pv-column
             v-if="dynamic"
             v-for="column in columns"
             :key="column.field"
             :field="column.field"
             :header="column.header" />
+
         <pv-column :exportable="false" style="min-width:8rem">
           <template #body="slotProps">
             <pv-button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editItem(slotProps.data)" />
@@ -152,6 +156,7 @@ export default {
         </pv-column>
 
       </pv-data-table>
+
     </div>
   </div>
 </template>
@@ -159,9 +164,9 @@ export default {
 <style scoped>
 
 .table-wrapper {
-  flex: 1;                /* ocupa el espacio restante */
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;       /* previene scrolls dobles */
+  flex: 1;
+  min-height: 0; /* 🔧 necesario para que flex-children no crezcan indefinidamente */
+  overflow: auto;
 }
+
 </style>
