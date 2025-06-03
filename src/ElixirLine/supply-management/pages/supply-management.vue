@@ -4,6 +4,7 @@ import DataManager from "../../../shared/components/data-manager.component.vue";
 import {supplyApiService} from "../services/supply-api.service.js";
 import {Supply} from "../model/supply.entity.js";
 import slotProps from "@primevue/core/baseeditableholder";
+import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
 
 export default {
   name: "supply-management",
@@ -16,6 +17,7 @@ export default {
 
 
   components: {
+    BasePageLayout,
     DataManager,
     SupplyCreateAndEdit
 
@@ -171,37 +173,36 @@ export default {
 
 <template>
 
+  <base-page-layout>
 
-  <div class="page-container p-2 flex flex-column h-full w-full overflow-hidden">
-
-    <div class="header-container w-full">
+    <template #header>
       <h2>{{$t('components.title-supply')}}</h2>
-    </div>
+    </template>
 
 
     <data-manager
-                  :title="title"
-                  v-bind:items="arrayItems"
-                  v-bind:label-name="$t('supplies.button-new-supply')"
-                  v-on:new-item-requested-manager="onNewItem"
-                  v-on:edit-item-requested-manager="onEditItem($event)"
-                  v-on:delete-item-requested-manager="onDeleteItem($event)"
-                  v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)">
+        :title="title"
+        v-bind:items="arrayItems"
+        v-bind:label-name="$t('supplies.button-new-supply')"
+        v-on:new-item-requested-manager="onNewItem"
+        v-on:edit-item-requested-manager="onEditItem($event)"
+        v-on:delete-item-requested-manager="onDeleteItem($event)"
+        v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)">
 
-      <template #custom-columns-manager >
-        
+      <template #custom-columns-manager class="flex-1 overflow-scroll" >
+
         <pv-column
             :sortable="true"
             field="name"
             header="Name"
         />
-        
+
         <pv-column
             :sortable="true"
             field="quantity"
             header="Quantity"
         />
-        
+
         <pv-column
             :sortable="true"
             field="unidad"
@@ -219,11 +220,9 @@ export default {
           </template>
         </pv-column>
 
-
-
-
       </template>
     </data-manager>
+
 
     <supply-create-and-edit
         :edit = "isEdit"
@@ -233,18 +232,13 @@ export default {
         v-on:save-requested="onSaveRequested($event)">
     </supply-create-and-edit>
 
-  </div>
+
+  </base-page-layout>
 
 </template>
 
 <style>
 
-.page-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
+
 
 </style>
