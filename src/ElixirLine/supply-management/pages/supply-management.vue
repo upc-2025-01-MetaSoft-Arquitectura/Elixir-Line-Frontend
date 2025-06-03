@@ -179,7 +179,6 @@ export default {
       <h2>{{$t('components.title-supply')}}</h2>
     </template>
 
-
     <data-manager
         :title="title"
         v-bind:items="arrayItems"
@@ -189,7 +188,7 @@ export default {
         v-on:delete-item-requested-manager="onDeleteItem($event)"
         v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)">
 
-      <template #custom-columns-manager class="flex-1 overflow-scroll" >
+      <template #custom-columns-manager>
 
         <pv-column
             :sortable="true"

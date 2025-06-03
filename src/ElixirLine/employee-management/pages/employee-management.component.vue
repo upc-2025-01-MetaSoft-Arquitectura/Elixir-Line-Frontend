@@ -3,11 +3,13 @@ import DataManager from "../../../shared/components/data-manager.component.vue";
 import {Employee} from "../model/employee.entity.js";
 import {EmployeeApiService} from "../services/employee-api.service.js";
 import EmployeeCreateAndEdit from "../component/employee-create-and-edit.component.vue";
+import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
 
 export default {
   name: "employee-management",
 
   components: {
+    BasePageLayout,
     EmployeeCreateAndEdit,
     DataManager,
   },
@@ -159,79 +161,71 @@ export default {
 }
 
 </script>
-
 <template>
 
-  <div class="page-container flex flex-column h-full w-full ">
+<div class="employee-container h-full flex-1 overflow-hidden flex flex-column">
 
-      <data-manager :title="title"
-                    v-bind:items="arrayItems"
-                    v-bind:label-name="$t('employees.button-new-employee')"
-                    v-on:new-item-requested-manager="onNewItem"
-                    v-on:edit-item-requested-manager="onEditItem($event)"
-                    v-on:delete-item-requested-manager="onDeleteItem($event)"
-                    v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)">
+    <div class="border-bottom-1 border-300">
+      <h2>{{$t('components.title-employees')}}</h2>
+    </div>
 
-        <template #custom-columns-manager >
+    <!-- Scroll solo dentro del área del contenido -->
 
-          <pv-column
-              :sortable="true"
-              field="firstName"
-              header="First Name"
-          />
+    <data-manager
+        :title="title"
+        :items="arrayItems"
+        :label-name="$t('employees.button-new-employee')"
+        @new-item-requested-manager="onNewItem"
+        @edit-item-requested-manager="onEditItem($event)"
+        @delete-item-requested-manager="onDeleteItem($event)"
+        @delete-selected-items-requested-manager="onDeleteSelectedItems($event)"
+    >
 
-          <pv-column
-              :sortable="true"
-              field="lastName"
-              header="Last Name"
-          />
+      <template #custom-columns-manager>
+        <pv-column
+            :sortable
+            field="firstName"
+            header="First Name" />
 
-          <pv-column
-              :sortable="true"
-              field="email"
-              header="Email"
+        <pv-column
+            :sortable
+            field="lastName"
+            header="Last Name" />
 
-          />
+        <pv-column
+            :sortable
+            field="email"
+            header="Email" />
 
-          <pv-column
-              :sortable="true"
-              field="phoneNumber"
-              header="Phone Number"
-          />
+        <pv-column
+            :sortable
+            field="phoneNumber"
+            header="Phone Number" />
 
-          <pv-column
-              :sortable="true"
-              field="password"
-              header="Password"
-          />
+        <pv-column
+            :sortable
+            field="password"
+            header="Password" />
 
-        </template>
-      </data-manager>
+      </template>
 
-      <employee-create-and-edit
-          :edit = "isEdit"
-          :item-entity="itemObject"
-          :visible="createAndEditDialogIsVisible"
-          v-on:cancel-requested="onCancelRequested"
-          v-on:save-requested="onSaveRequested($event)">
-      </employee-create-and-edit>
+    </data-manager>
+
+    <employee-create-and-edit
+        :edit="isEdit"
+        :item-entity="itemObject"
+        :visible="createAndEditDialogIsVisible"
+        @cancel-requested="onCancelRequested"
+        @save-requested="onSaveRequested($event)"
+    />
 
 
-  </div>
-
+</div>
 
 </template>
 
+
 <style>
-
-
-.page-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
 
 
 </style>

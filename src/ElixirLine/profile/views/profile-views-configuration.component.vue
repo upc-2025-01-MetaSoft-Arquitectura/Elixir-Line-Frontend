@@ -4,64 +4,89 @@ import CampaignsManagement from "../../winemaking-process/pages/campaigns-manage
 import WineBatchViews from "../../winemaking-process/views/wine-batch-view.component.vue";
 import EmployeeManagement from "../../employee-management/pages/employee-management.component.vue";
 import ProfileManagement from "../pages/profile-management.component.vue";
+import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
+
 
 export default {
   name: "profile-views-configuration",
-  components: {ProfileManagement, EmployeeManagement, WineBatchViews, CampaignsManagement},
+  components: {BasePageLayout, ProfileManagement, EmployeeManagement, WineBatchViews, CampaignsManagement},
+
+  data() {
+    return {
+      activeTab: '0'
+    }
+  }
+
+
 
 }
 </script>
 
+
 <template>
 
-  <div class="page-container-profile-views flex flex-1 flex-column h-full w-full">
+  <base-page-layout>
+    <!-- Tabs en el header -->
+    <template #header>
 
-    <pv-tabs value="0">
+      <div class="button-tabs flex flex-row p-1">
+        <!-- Botones de navegación tipo tab -->
+        <pv-button
+            @click="activeTab = '0'"
+            :label="$t('profile.tab-1')"
+            :outlined="false"
+            class="tab-button"
+            :class="{ 'active-tab': activeTab === '0' }"
+        />
 
-      <pv-tab-list class="profile-tab-list  w-full h-3rem fixed z-1" style="background: white">
-        <pv-tab  value="0">{{$t('profile.tab-1')}}</pv-tab>
-        <pv-tab  value="1">{{$t('profile.tab-2')}}</pv-tab>
-      </pv-tab-list>
+        <pv-button
+            @click="activeTab = '1'"
+            :label="$t('profile.tab-2')"
+            :outlined="false"
+            class="tab-button"
+            :class="{ 'active-tab': activeTab === '1' }"
+        />
 
-      <!-- ============================================== -->
+      </div>
 
-      <pv-tab-panels class="w-full h-full z-0" style="margin-top: 2rem">
-
-        <pv-tab-panel value="0" >
-           <router-link to="/home/profile"> </router-link>
-        </pv-tab-panel>
-
-        <!-- ============================================== -->
-
-        <pv-tab-panel value="1" >
-
-          <div class="w-full h-full flex flex-column ">
-            <div class="header-container w-full h-5rem ">
-              <h2>{{$t('components.title-employees')}}</h2>
-            </div>
-
-            <employee-management></employee-management>
-
-          </div>
-        </pv-tab-panel>
-
-      </pv-tab-panels>
-    </pv-tabs>
+    </template>
 
 
-  </div>
+    <!-- Contenido de los tabs -->
+    <div class="flex-1 h-full overflow-hidden flex flex-column">
+
+      <!-- Contenido que cambia por tab -->
+      <div v-if="activeTab === '0'" class="flex-1 flex-column w-full  overflow-hidden">
+        <p>PROFILE</p>
+      </div>
+
+      <div v-if="activeTab === '1'" class="flex-1 flex-column w-full overflow-hidden">
+        <employee-management />
+      </div>
+
+    </div>
+
+
+
+  </base-page-layout>
+
+
+
 </template>
 
 <style>
 
-.p-tab-active {
-  background: none;
-  color: #DAA520;
+.tab-button {
+  color: white !important;
+  padding: 10px 20px;
+  border: none !important;
+  background-color: transparent !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.profile-tab-list .p-tab-active {
-  background: none;
-  color: #DAA520;
+.tab-button.active-tab {
+  color: #DAA520 !important; /* Dorado cuando está activo */
+  background-color: rgba(255, 255, 255, 0.1); /* Leve fondo para resaltar si quieres */
 }
 
 </style>

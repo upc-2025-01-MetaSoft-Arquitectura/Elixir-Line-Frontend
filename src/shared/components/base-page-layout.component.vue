@@ -11,10 +11,13 @@ export default {
 
 </script>
 <template>
+
+
+
   <div class="base-page-layout flex flex-column h-full w-full overflow-hidden">
 
 
-    <div class="layout-header p-3 border-bottom-1 border-300">
+    <div class="layout-header border-bottom-1 border-300">
       <slot name="header" />
     </div>
 
@@ -24,6 +27,9 @@ export default {
     </div>
 
   </div>
+
+
+
 </template>
 
 <style scoped>
