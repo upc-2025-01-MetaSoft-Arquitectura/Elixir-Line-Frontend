@@ -55,6 +55,10 @@ export default {
       this.$emit('edit-item-requested-manager', item);
     },
 
+    viewItemDetails(item) {
+      this.$emit('view-item-details-requested-manager', item);
+    },
+
     confirmDeleteItem(item) {
       this.$confirm.require({
         message: `Are you sure you want to delete the selected ${this.title.singular}?`,
@@ -150,8 +154,23 @@ export default {
 
         <pv-column :exportable="false" style="min-width:8rem">
           <template #body="slotProps">
-            <pv-button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editItem(slotProps.data)" />
-            <pv-button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteItem(slotProps.data)" />
+            <pv-button
+                icon="pi pi-pencil"
+                outlined rounded class="mr-2"
+                @click="editItem(slotProps.data)" />
+
+            <pv-button
+                icon="pi pi-trash"
+                outlined rounded
+                class="mr-2"
+                severity="danger"
+                @click="confirmDeleteItem(slotProps.data)" />
+
+            <pv-button
+                icon="pi pi-eye"
+                outlined rounded
+                severity="info"
+                @click="viewItemDetails(slotProps.data)" />
           </template>
         </pv-column>
 

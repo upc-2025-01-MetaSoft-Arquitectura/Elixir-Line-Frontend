@@ -55,6 +55,22 @@ export default {
       this.createAndEditDialogIsVisible = true;
     },
 
+
+    onViewItemDetails(item) {
+
+      //dirigir a otro componente o vista para ver los detalles de la campaña
+      console.log('View item details', item);
+
+      // Aquí podrías redirigir a una vista de detalles o mostrar un modal con la información detallada
+      // Por ejemplo, podrías usar Vue Router para redirigir a una ruta de detalles:
+      // this.$router.push({ name: 'CampaignDetails', params: { id: item.id } });
+      // O si prefieres mostrar un modal, podrías establecer una propiedad para mostrar un modal con los detalles
+      // this.createAndEditDialogIsVisible = true; // Si decides mostrar un modal
+      // pasar los detalles del item a un componente de detalles
+
+
+    },
+
     onDeleteItem(item) {
       this.itemObject = new Campaign(item);
       this.deleteBatch();
@@ -178,6 +194,7 @@ export default {
                     v-bind:label-name="$t('winemaking.button-new-campaign')"
                     v-on:new-item-requested-manager="onNewItem"
                     v-on:edit-item-requested-manager="onEditItem($event)"
+                    v-on:view-item-details-requested-manager="onViewItemDetails($event)"
                     v-on:delete-item-requested-manager="onDeleteItem($event)"
                     v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)">
 
