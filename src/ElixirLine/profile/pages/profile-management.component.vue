@@ -162,6 +162,7 @@ export default {
       <profile-edit
           :edit="isEdit"
           :item-entity="itemObjectAux"
+          :entity-name="title.singular"
           :visible="createAndEditDialogIsVisible"
           @cancel-requested="onCancelRequested"
           @save-requested="onSaveRequested($event)"

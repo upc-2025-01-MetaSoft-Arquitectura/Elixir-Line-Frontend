@@ -12,7 +12,8 @@ export default {
 
   props: {
     itemEntity: null,
-    visible: Boolean
+    visible: Boolean,
+    entityName: String,
   },
 
   data() {
@@ -45,7 +46,7 @@ export default {
 
   <div class="page-container">
 
-    <create-and-edit :entity="itemEntity" :visible="visible" entity-name="Employee"
+    <create-and-edit :entity="itemEntity" :visible="visible" :entity-name="entityName"
                      @canceled-shared="onCancelRequested" @saved-shared="onSaveRequested">
 
       <!--Definimos el contenido del diálogo de creación y edición de lotes en el slot content del componente -->
