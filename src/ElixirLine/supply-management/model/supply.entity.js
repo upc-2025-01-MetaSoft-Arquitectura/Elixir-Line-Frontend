@@ -2,11 +2,11 @@
 export class Supply {
   constructor(
       {
-          id,
-          name,
-          quantity,
-          unidad,
-          image
+          id = '',
+          name = '',
+          quantity = '',
+          unidad = '',
+          image = ''
       }
   ) {
     this.id = id;

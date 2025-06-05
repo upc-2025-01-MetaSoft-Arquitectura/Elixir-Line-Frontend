@@ -13,22 +13,24 @@ export class Campaign {
      */
     constructor(
         {
-            id,
-            name,
-            createdBy,
-            startDate,
-            endDate,
-            batchesQuantity,
-            status,
+            id = '',
+            name = '',
+            createdBy = '',
+            startDate = '',
+            endDate = '',
+            batchesQuantity = '',
+            status = '',
+            acciones = ''
         }
     ) {
         this.id = id;
         this.name = name;
-        this.startDate = startDate;
         this.createdBy = createdBy;
+        this.startDate = startDate;
         this.endDate = endDate;
         this.batchesQuantity = batchesQuantity;
         this.status = status;
+        this.acciones = acciones;
     }
 
 

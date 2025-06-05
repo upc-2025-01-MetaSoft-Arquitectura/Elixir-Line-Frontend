@@ -57,7 +57,7 @@ export default {
 
       <!-- Contenido que cambia por tab -->
       <div v-if="activeTab === '0'" class="flex-1 flex-column w-full  overflow-hidden">
-        <p>PROFILE</p>
+        <profile-management/>
       </div>
 
       <div v-if="activeTab === '1'" class="flex-1 flex-column w-full overflow-hidden">
@@ -77,7 +77,7 @@ export default {
 <style>
 
 .tab-button {
-  color: white !important;
+  color: #708090 !important;
   padding: 10px 20px;
   border: none !important;
   background-color: transparent !important;

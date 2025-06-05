@@ -261,5 +261,179 @@
       "phoneNumber": "+51 923456789",
       "password": "Mari@1234"
     }
+  ],
+  "users": [
+    {
+      "id": "USR-001",
+      "email": "luisprada@gmail.com",
+      "password": "securePass01",
+      "role": "admin"
+    },
+    {
+      "id": "USR-002",
+      "email": "mfsalazar@gmail.com",
+      "password": "securePass02",
+      "role": "admin"
+    },
+    {
+      "id": "USR-003",
+      "email": "jorgeparedes@outlook.com",
+      "password": "securePass03",
+      "role": "admin"
+    },
+    {
+      "id": "USR-004",
+      "email": "lucia.nt@gmail.com",
+      "password": "securePass04",
+      "role": "admin"
+    },
+    {
+      "id": "USR-005",
+      "email": "rgomez@hotmail.com",
+      "password": "securePass05",
+      "role": "admin"
+    },
+    {
+      "id": "USR-006",
+      "email": "valenriosi@gmail.com",
+      "password": "securePass06",
+      "role": "admin"
+    },
+    {
+      "id": "USR-007",
+      "email": "cerv_ramirez@gmail.com",
+      "password": "securePass07",
+      "role": "admin"
+    },
+    {
+      "id": "USR-008",
+      "email": "ana.mendoza@correo.com",
+      "password": "securePass08",
+      "role": "admin"
+    },
+    {
+      "id": "USR-009",
+      "email": "g.sotoq@gmail.com",
+      "password": "securePass09",
+      "role": "admin"
+    },
+    {
+      "id": "USR-010",
+      "email": "isabelacd@correo.pe",
+      "password": "securePass10",
+      "role": "admin"
+    }
+  ],
+  "profiles": [
+    {
+      "id": "1",
+      "user_id": "USR-001",
+      "name": "Luis Carlos",
+      "surname": "Prada Naez",
+      "email": "luisprada@gmail.com",
+      "country": "Peru",
+      "phone": "+51 903 456 781",
+      "user_type": "Winemaker"
+    },
+    {
+      "id": "2",
+      "user_id": "USR-002",
+      "name": "María Fernanda",
+      "surname": "Salazar Ruiz",
+      "email": "mfsalazar@gmail.com",
+      "country": "Chile",
+      "phone": "+56 912 334 889",
+      "user_type": "Enologist"
+    },
+    {
+      "id": "3",
+      "user_id": "USR-003",
+      "name": "Jorge Andrés",
+      "surname": "Paredes León",
+      "email": "jorgeparedes@outlook.com",
+      "country": "Argentina",
+      "phone": "+54 911 2345 6789",
+      "user_type": "Winemaker"
+    },
+    {
+      "id": "4",
+      "user_id": "USR-004",
+      "name": "Lucía",
+      "surname": "Navarro Torres",
+      "email": "lucia.nt@gmail.com",
+      "country": "Mexico",
+      "phone": "+52 553 001 2233",
+      "user_type": "Field Technician"
+    },
+    {
+      "id": "5",
+      "user_id": "USR-005",
+      "name": "Ricardo",
+      "surname": "Gómez Yupanqui",
+      "email": "rgomez@hotmail.com",
+      "country": "Peru",
+      "phone": "+51 988 234 112",
+      "user_type": "Winemaker"
+    },
+    {
+      "id": "6",
+      "user_id": "USR-006",
+      "name": "Valentina",
+      "surname": "Ríos Ibáñez",
+      "email": "valenriosi@gmail.com",
+      "country": "Chile",
+      "phone": "+56 987 123 456",
+      "user_type": "Agronomist"
+    },
+    {
+      "id": "7",
+      "user_id": "USR-007",
+      "name": "Carlos Eduardo",
+      "surname": "Ramírez Vega",
+      "email": "cerv_ramirez@gmail.com",
+      "country": "Colombia",
+      "phone": "+57 300 456 7890",
+      "user_type": "Winemaker"
+    },
+    {
+      "id": "8",
+      "user_id": "USR-008",
+      "name": "Ana Sofía",
+      "surname": "Mendoza López",
+      "email": "ana.mendoza@correo.com",
+      "country": "Ecuador",
+      "phone": "+593 99 456 7891",
+      "user_type": "Enologist"
+    },
+    {
+      "id": "9",
+      "user_id": "USR-009",
+      "name": "Gabriel",
+      "surname": "Soto Quispe",
+      "email": "g.sotoq@gmail.com",
+      "country": "Peru",
+      "phone": "+51 912 876 345",
+      "user_type": "Field Technician"
+    },
+    {
+      "id": "10",
+      "user_id": "USR-010",
+      "name": "Isabela",
+      "surname": "Castro Durand",
+      "email": "isabelacd@correo.pe",
+      "country": "Peru",
+      "phone": "+51 984 112 768",
+      "user_type": "Winemaker"
+    },
+    {
+      "id": "",
+      "user_id": "",
+      "name": "",
+      "surname": "",
+      "email": "",
+      "country": "",
+      "phone": "",
+      "user_type": ""
+    }
   ]
 }

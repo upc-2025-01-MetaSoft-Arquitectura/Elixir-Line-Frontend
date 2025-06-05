@@ -80,7 +80,7 @@ export default {
 
 
 .tab-button {
-  color: white !important;
+  color: #708090 !important;
   padding: 10px 20px;
   border: none !important;
   background-color: transparent !important;

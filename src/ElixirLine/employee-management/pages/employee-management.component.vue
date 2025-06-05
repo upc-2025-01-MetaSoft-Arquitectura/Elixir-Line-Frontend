@@ -133,7 +133,7 @@ export default {
     },
     //#endregion
 
-    getAllSupplies() {
+    getAllEmployees() {
 
       this.batchAndCampaignApiService.getAllResources().then(response => {
         console.log("Employees response", response.data);
@@ -152,7 +152,7 @@ export default {
   created() {
 
     this.batchAndCampaignApiService = new EmployeeApiService('/employees');
-    this.getAllSupplies();
+    this.getAllEmployees();
 
     console.log("Employees Management component created");
   }
