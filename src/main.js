@@ -41,6 +41,8 @@ import Toolbar from "primevue/toolbar";
 import TabList from "primevue/tablist";
 import Tab from "primevue/tab";
 import TabPanel from "primevue/tabpanel";
+import Calendar from "primevue/calendar";
+import Multiselect from "primevue/multiselect";
 
 
 import Toast from "primevue/toast";
@@ -112,7 +114,8 @@ app.component('pv-button', Button)
     .component('pv-accordion-header',AccordionHeader)
     .component('pv-accordion-content',AccordionContent)
     .component('pv-badge', Badge)
-    .component('pv-split-button', SplitButton);
+    .component('pv-split-button', SplitButton)
+    .component('pv-calendar', Calendar)
 
 
 app.mount('#app')

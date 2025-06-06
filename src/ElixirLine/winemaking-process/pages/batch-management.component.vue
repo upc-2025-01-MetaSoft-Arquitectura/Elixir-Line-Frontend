@@ -28,6 +28,7 @@ export default {
       selectedBatches: [],
       batchAndCampaignApiService: null,
       createAndEditDialogIsVisible: false,
+      taskDialogIsVisible: false,
       isEdit: false,
       submitted: false,
     }
@@ -60,12 +61,55 @@ export default {
       this.isEdit = true;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
+      this.taskDialogIsVisible = false;
     },
 
     onDeleteItem(item) {
       this.batch = new WineBatch(item);
       this.deleteBatch();
+      this.taskDialogIsVisible = false;
     },
+
+    onAddTaskItem(employee) {
+      this.selectedEmployeeForTask = employee;
+      this.taskObject = {
+        employee: employee,
+        batchInternalCode: '',
+        currentStage: '',
+        title: '',
+        dueDate: null,
+        description: ''
+      };
+      this.taskDialogIsVisible = true;
+
+      this.loadAvailableBatches(); // Cargar dropdown si no lo tienes aún
+    },
+
+    onCancelTask() {
+      this.taskDialogIsVisible = false;
+    },
+
+    onSaveTask() {
+      const taskToSend = {
+        employeeId: this.selectedEmployeeForTask.id,
+        batchInternalCode: this.taskObject.batchInternalCode,
+        currentStage: this.taskObject.currentStage,
+        status: this.taskObject.status,
+        title: this.taskObject.title,
+        dueDate: this.taskObject.dueDate,
+        description: this.taskObject.description
+      };
+
+      this.batchApiService.createTask(taskToSend)
+          .then(() => {
+            this.notifySuccessfulAction("¡Tarea guardada exitosamente!");
+            this.taskDialogIsVisible = false;
+          })
+          .catch((error) => {
+            console.error("Error al guardar tarea:", error);
+          });
+    },
+
 
     onDeleteSelectedItems(selectedItems) {
       this.selectedBatches = selectedItems;
@@ -74,6 +118,7 @@ export default {
 
     onCancelRequested() {
       this.createAndEditDialogIsVisible = false;
+      this.taskDialogIsVisible = false;
       this.submitted = false;
       this.isEdit = false;
     },
@@ -178,6 +223,7 @@ export default {
                     v-on:new-item-requested-manager="onNewItem"
                     v-on:edit-item-requested-manager="onEditItem($event)"
                     v-on:delete-item-requested-manager="onDeleteItem($event)"
+                    v-on:add-task-item-requested-manager="onAddTaskItem($event)"
                     v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)" >
 
         <template #custom-columns-manager >
@@ -253,6 +299,82 @@ export default {
           v-on:save-requested="onSaveRequested($event)">
       </batches-create-and-edit>
 
+      <pv-dialog
+          :visible="taskDialogIsVisible"
+          modal
+          header="Asignar Tarea"
+          @hide="onCancelRequested"
+          class="task-dialog"
+      >
+        <div class="task-form">
+
+          <div class="field">
+            <label class="field-label">Título de la tarea</label>
+            <pv-input-text class="field-input" v-model="taskObject.title" />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Trabajador</label>
+            <pv-select
+                class="field-input"
+                v-model="taskObject.batchInternalCode"
+                :options="availableBatches"
+                optionLabel="internalCode"
+                optionValue="internalCode"
+                placeholder="Trabajador"
+                @change="onBatchChanged"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Trabajador</label>
+            <pv-select
+                class="field-input"
+                :value="selectedEmployeeForTask.firstName + ' ' + selectedEmployeeForTask.lastName"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Parcela</label>
+            <pv-input-text
+                class="field-input"
+                :value="selectedEmployeeForTask.firstName + ' ' + selectedEmployeeForTask.lastName"
+                disabled
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Insumos agricolas</label>
+            <pv-select
+                class="field-input"
+                v-model="taskObject.batchInternalCode"
+                :options="availableBatches"
+                optionLabel="internalCode"
+                optionValue="internalCode"
+                placeholder="Insumos"
+                @change="onBatchChanged"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Fecha límite</label>
+            <pv-calendar class="field-input" v-model="taskObject.dueDate" show-icon />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Descripción</label>
+            <pv-textarea class="field-input" v-model="taskObject.description" rows="3" auto-resize />
+          </div>
+        </div>
+
+        <template #footer>
+          <div class="dialog-footer">
+            <pv-button label="Cancelar" icon="pi pi-times" @click="onCancelTask" class="p-button-text" />
+            <pv-button label="Guardar" icon="pi pi-check" @click="onSaveTask" autofocus />
+          </div>
+        </template>
+      </pv-dialog>
+
     </div>
   </div>
 
@@ -260,6 +382,34 @@ export default {
 
 <style>
 
+.task-dialog {
+  width: 100%;
+  max-width: 500px;
+}
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 0.5rem;
+}
+
+.field-label {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  display: block;
+  color: #333;
+}
+
+.field-input {
+  width: 100%;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
 
 .p-datatable-column-header-content {
   font-size: 0.85rem;
