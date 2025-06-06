@@ -74,20 +74,42 @@ export default {
     },
 
     loadAvailableBatches() {
-      // Simula o usa tu API real
-      this.availableBatches = [
-        { internalCode: 'BATCH001', stage: 'Inicial' },
-        { internalCode: 'BATCH002', stage: 'Medio' },
-        { internalCode: 'BATCH003', stage: 'Final' },
-      ];
+      const batchApiService = new EmployeeApiService('/wine-batches'); // o crea un servicio separado si prefieres
+
+      batchApiService.getAllResources().then(response => {
+        this.availableBatches = response.data;
+      }).catch(error => {
+        console.error("Error loading batches", error);
+      });
     },
 
-    onBatchChanged() {
-      const batch = this.availableBatches.find(
-          b => b.internalCode === this.taskObject.batchInternalCode
-      );
-      this.taskObject.currentStage = batch ? batch.stage : '';
+
+    async onBatchChanged() {
+      if (!this.taskObject.batchInternalCode) {
+        this.taskObject.currentStage = '';
+        this.taskObject.status = '';
+        return;
+      }
+
+      try {
+        const response = await this.batchApiService.getStatusByInternalCode(this.taskObject.batchInternalCode);
+        // response.data es el array que mostraste, buscar el objeto que coincide
+        if (response.data && response.data.length > 0) {
+          const batchInfo = response.data[0]; // normalmente debería ser un solo objeto
+          this.taskObject.currentStage = batchInfo.currentStage || '';
+          this.taskObject.status = batchInfo.status || '';
+        } else {
+          this.taskObject.currentStage = '';
+          this.taskObject.status = '';
+        }
+      } catch (error) {
+        console.error("Error fetching batch status", error);
+        this.taskObject.currentStage = '';
+        this.taskObject.status = '';
+      }
     },
+
+
 
     onCancelTask() {
       this.taskDialogIsVisible = false;
@@ -203,6 +225,8 @@ export default {
   created() {
 
     this.batchAndCampaignApiService = new EmployeeApiService('/employees');
+    this.batchApiService = new EmployeeApiService('/wine-batches');
+
     this.getAllEmployees();
 
     console.log("Employees Management component created");
@@ -303,8 +327,8 @@ export default {
         </div>
 
         <div class="field">
-          <label class="field-label">Etapa actual</label>
-          <pv-input-text class="field-input" v-model="taskObject.currentStage" disabled />
+          <label class="field-label">Estado</label>
+          <pv-input-text class="field-input" v-model="taskObject.status" disabled />
         </div>
 
         <div class="field">
