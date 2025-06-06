@@ -116,6 +116,7 @@ app.component('pv-button', Button)
     .component('pv-badge', Badge)
     .component('pv-split-button', SplitButton)
     .component('pv-calendar', Calendar)
+    .component('pv-multiselect', Multiselect);
 
 
 app.mount('#app')

@@ -31,6 +31,18 @@ export default {
       taskDialogIsVisible: false,
       isEdit: false,
       submitted: false,
+      availableEmployees: [],
+      availableBatches: [],
+      availableSupplies: [],
+      taskObject: {
+        employeeId: null,
+        batchInternalCode: '',
+        parcel: '',
+        supplies: [],
+        dueDate: null,
+        title: '',
+        description: ''
+      },
     }
   },
 
@@ -47,6 +59,20 @@ export default {
       return this.batches.findIndex(batch => batch.id === id);
     },
     //#endregion
+
+    loadTaskData() {
+      fetch("/db.json") // Asegúrate que esté accesible localmente o usa axios con una URL real
+          .then(res => res.json())
+          .then(data => {
+            this.availableEmployees = data.employees;
+            this.availableBatches = data["wine-batches"];
+            this.availableSupplies = data.supplies;
+          })
+          .catch(err => {
+            console.error("Error cargando datos para tarea", err);
+          });
+    },
+
 
     //#region Event Handlers
     onNewItem() {
@@ -71,18 +97,10 @@ export default {
     },
 
     onAddTaskItem(employee) {
+      this.loadTaskData(); // Cargar los datos cuando se abre el diálogo
       this.selectedEmployeeForTask = employee;
-      this.taskObject = {
-        employee: employee,
-        batchInternalCode: '',
-        currentStage: '',
-        title: '',
-        dueDate: null,
-        description: ''
-      };
+      this.taskObject.employeeId = employee.id;
       this.taskDialogIsVisible = true;
-
-      this.loadAvailableBatches(); // Cargar dropdown si no lo tienes aún
     },
 
     onCancelTask() {
@@ -302,14 +320,13 @@ export default {
       <pv-dialog
           :visible="taskDialogIsVisible"
           modal
-          header="Asignar Tarea"
+          header="Añadir Nueva Tarea"
           @hide="onCancelRequested"
           class="task-dialog"
       >
         <div class="task-form">
-
           <div class="field">
-            <label class="field-label">Título de la tarea</label>
+            <label class="field-label">Título</label>
             <pv-input-text class="field-input" v-model="taskObject.title" />
           </div>
 
@@ -317,53 +334,57 @@ export default {
             <label class="field-label">Trabajador</label>
             <pv-select
                 class="field-input"
-                v-model="taskObject.batchInternalCode"
-                :options="availableBatches"
-                optionLabel="internalCode"
-                optionValue="internalCode"
-                placeholder="Trabajador"
-                @change="onBatchChanged"
-            />
-          </div>
-
-          <div class="field">
-            <label class="field-label">Trabajador</label>
-            <pv-select
-                class="field-input"
-                :value="selectedEmployeeForTask.firstName + ' ' + selectedEmployeeForTask.lastName"
+                v-model="taskObject.employeeId"
+                :options="availableEmployees"
+                optionLabel="firstName"
+                optionValue="id"
+                placeholder="Seleccionar trabajador"
             />
           </div>
 
           <div class="field">
             <label class="field-label">Parcela</label>
-            <pv-input-text
-                class="field-input"
-                :value="selectedEmployeeForTask.firstName + ' ' + selectedEmployeeForTask.lastName"
-                disabled
-            />
-          </div>
-
-          <div class="field">
-            <label class="field-label">Insumos agricolas</label>
             <pv-select
                 class="field-input"
                 v-model="taskObject.batchInternalCode"
                 :options="availableBatches"
                 optionLabel="internalCode"
                 optionValue="internalCode"
-                placeholder="Insumos"
-                @change="onBatchChanged"
+                placeholder="Parcela"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Insumos agrícolas a usar (selección múltiple)</label>
+            <pv-multiselect
+                class="field-input"
+                v-model="taskObject.supplies"
+                :options="availableSupplies"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Seleccionar insumos"
+                display="chip"
             />
           </div>
 
           <div class="field">
             <label class="field-label">Fecha límite</label>
-            <pv-calendar class="field-input" v-model="taskObject.dueDate" show-icon />
+            <pv-calendar
+                class="field-input"
+                v-model="taskObject.dueDate"
+                date-format="dd/mm/yy"
+                show-icon
+            />
           </div>
 
           <div class="field">
             <label class="field-label">Descripción</label>
-            <pv-textarea class="field-input" v-model="taskObject.description" rows="3" auto-resize />
+            <pv-textarea
+                class="field-input"
+                v-model="taskObject.description"
+                rows="3"
+                auto-resize
+            />
           </div>
         </div>
 
