@@ -68,8 +68,13 @@ export default {
         reject: () => {
         }
       })
+    },
+    onAddTask(item) {
+      this.$emit('add-task-item-requested-manager', item);
     }
   },
+  
+
 
   created() {
     this.initFilters();
@@ -150,10 +155,34 @@ export default {
 
         <pv-column :exportable="false" style="min-width:8rem">
           <template #body="slotProps">
-            <pv-button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editItem(slotProps.data)" />
-            <pv-button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteItem(slotProps.data)" />
+            <pv-button
+                icon="pi pi-pencil"
+                outlined
+                rounded
+                class="mr-2"
+                @click="editItem(slotProps.data)"
+            />
+
+            <pv-button
+                icon="pi pi-trash"
+                outlined
+                rounded
+                severity="danger"
+                class="mr-2"
+                @click="confirmDeleteItem(slotProps.data)"
+            />
+
+            <pv-button
+                icon="pi pi-check-square"
+                outlined
+                rounded
+                severity="info"
+                class="mr-2"
+                @click="onAddTask(slotProps.data)"
+            />
           </template>
         </pv-column>
+
 
       </pv-data-table>
 

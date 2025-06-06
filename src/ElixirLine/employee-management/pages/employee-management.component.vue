@@ -24,6 +24,16 @@ export default {
       createAndEditDialogIsVisible: false,
       isEdit: false,
       submitted: false,
+      taskDialogIsVisible: false,
+      selectedEmployeeForTask: {},
+      taskObject: {
+        batchInternalCode: '',
+        currentStage: '',
+        title: '',
+        dueDate: null,
+        description: ''
+      },
+      availableBatches: [],
     }
   },
 
@@ -48,6 +58,47 @@ export default {
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
     },
+    onAddTaskItem(employee) {
+      this.selectedEmployeeForTask = employee;
+      this.taskObject = {
+        employee: employee,
+        batchInternalCode: '',
+        currentStage: '',
+        title: '',
+        dueDate: null,
+        description: ''
+      };
+      this.taskDialogIsVisible = true;
+
+      this.loadAvailableBatches(); // Cargar dropdown si no lo tienes aún
+    },
+
+    loadAvailableBatches() {
+      // Simula o usa tu API real
+      this.availableBatches = [
+        { internalCode: 'BATCH001', stage: 'Inicial' },
+        { internalCode: 'BATCH002', stage: 'Medio' },
+        { internalCode: 'BATCH003', stage: 'Final' },
+      ];
+    },
+
+    onBatchChanged() {
+      const batch = this.availableBatches.find(
+          b => b.internalCode === this.taskObject.batchInternalCode
+      );
+      this.taskObject.currentStage = batch ? batch.stage : '';
+    },
+
+    onCancelTask() {
+      this.taskDialogIsVisible = false;
+    },
+
+    onSaveTask() {
+      console.log("Task to save", this.taskObject);
+      this.notifySuccessfulAction("Task saved successfully!");
+      this.taskDialogIsVisible = false;
+    },
+
 
     onEditItem(item) {
       this.itemObject = new Employee(item);
@@ -179,6 +230,7 @@ export default {
         :label-name="$t('employees.button-new-employee')"
         @new-item-requested-manager="onNewItem"
         @edit-item-requested-manager="onEditItem($event)"
+        @add-task-item-requested-manager="onAddTaskItem($event)"
         @delete-item-requested-manager="onDeleteItem($event)"
         @delete-selected-items-requested-manager="onDeleteSelectedItems($event)"
     >
@@ -220,6 +272,58 @@ export default {
         @cancel-requested="onCancelRequested"
         @save-requested="onSaveRequested($event)"
     />
+    <pv-dialog
+        :visible="taskDialogIsVisible"
+        modal
+        header="Asignar Tarea"
+        @hide="onCancelTask"
+        style="width: 500px"
+    >
+      <div class="field">
+        <label>Trabajador</label>
+        <pv-input-text
+            :value="selectedEmployeeForTask.firstName + ' ' + selectedEmployeeForTask.lastName"
+            disabled
+        />
+      </div>
+
+      <div class="field">
+        <label>ID del Lote</label>
+        <pv-select
+            v-model="taskObject.batchInternalCode"
+            :options="availableBatches"
+            optionLabel="internalCode"
+            optionValue="internalCode"
+            placeholder="Selecciona un lote"
+            @change="onBatchChanged"
+        />
+      </div>
+
+      <div class="field">
+        <label>Etapa actual</label>
+        <pv-input-text v-model="taskObject.currentStage" disabled />
+      </div>
+
+      <div class="field">
+        <label>Título de la tarea</label>
+        <pv-input-text v-model="taskObject.title" />
+      </div>
+
+      <div class="field">
+        <label>Fecha límite</label>
+        <pv-calendar v-model="taskObject.dueDate" show-icon />
+      </div>
+
+      <div class="field">
+        <label>Descripción</label>
+        <pv-textarea v-model="taskObject.description" rows="3" auto-resize />
+      </div>
+
+      <template #footer>
+        <pv-button label="Cancelar" icon="pi pi-times" @click="onCancelTask" class="p-button-text" />
+        <pv-button label="Guardar" icon="pi pi-check" @click="onSaveTask" autofocus />
+      </template>
+    </pv-dialog>
 
   </div>
 
