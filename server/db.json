@@ -435,5 +435,17 @@
       "phone": "",
       "user_type": ""
     }
+  ],
+  "tasks": [
+    {
+      "id": "a146",
+      "employeeId": "u001",
+      "batchInternalCode": "B2025-VINEYARD05",
+      "currentStage": "Pressing",
+      "status": "InProcess",
+      "title": "Irrigación",
+      "dueDate": "2025-06-09T05:00:00.000Z",
+      "description": "El trabajador tiene que irrigar el lote antes de la fecha indicada."
+    }
   ]
 }

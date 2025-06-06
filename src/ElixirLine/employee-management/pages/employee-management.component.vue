@@ -116,10 +116,26 @@ export default {
     },
 
     onSaveTask() {
-      console.log("Task to save", this.taskObject);
-      this.notifySuccessfulAction("Task saved successfully!");
-      this.taskDialogIsVisible = false;
+      const taskToSend = {
+        employeeId: this.selectedEmployeeForTask.id,
+        batchInternalCode: this.taskObject.batchInternalCode,
+        currentStage: this.taskObject.currentStage,
+        status: this.taskObject.status,
+        title: this.taskObject.title,
+        dueDate: this.taskObject.dueDate,
+        description: this.taskObject.description
+      };
+
+      this.batchApiService.createTask(taskToSend)
+          .then(() => {
+            this.notifySuccessfulAction("¡Tarea guardada exitosamente!");
+            this.taskDialogIsVisible = false;
+          })
+          .catch((error) => {
+            console.error("Error al guardar tarea:", error);
+          });
     },
+
 
 
     onEditItem(item) {

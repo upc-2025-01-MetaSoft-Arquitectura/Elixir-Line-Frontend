@@ -34,7 +34,9 @@ export class EmployeeApiService {
     getStatusByInternalCode(internalCode) {
         return http.get(`/wine-batches?internalCode=${internalCode}`);
     }
-
+    createTask(task) {
+        return http.post("/tasks", task);
+    }
 
 
 }
