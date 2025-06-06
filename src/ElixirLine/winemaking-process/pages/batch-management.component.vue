@@ -16,13 +16,6 @@ export default {
     BatchesCreateAndEdit
   },
 
-  props: {
-    campanaName: {
-      type: String,
-      required: true
-    }
-  },
-
   data() {
     return {
       title: { singular: 'Batch', plural: 'Batches' },

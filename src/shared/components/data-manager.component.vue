@@ -154,23 +154,27 @@ export default {
 
         <pv-column :exportable="false" style="min-width:8rem">
           <template #body="slotProps">
-            <pv-button
-                icon="pi pi-pencil"
-                outlined rounded class="mr-2"
-                @click="editItem(slotProps.data)" />
+            <div class="flex-1 flex-row">
+              <pv-button
+                  icon="pi pi-pencil"
+                  outlined rounded class="mr-2"
+                  @click="editItem(slotProps.data)" />
 
-            <pv-button
-                icon="pi pi-trash"
-                outlined rounded
-                class="mr-2"
-                severity="danger"
-                @click="confirmDeleteItem(slotProps.data)" />
+              <pv-button
+                  icon="pi pi-trash"
+                  outlined rounded
+                  class="mr-2"
+                  severity="danger"
+                  @click="confirmDeleteItem(slotProps.data)" />
 
-            <pv-button
-                icon="pi pi-eye"
-                outlined rounded
-                severity="info"
-                @click="viewItemDetails(slotProps.data)" />
+              <pv-button
+                  icon="pi pi-eye"
+                  outlined rounded
+                  severity="info"
+                  @click="viewItemDetails(slotProps.data)" />
+            </div>
+
+
           </template>
         </pv-column>
 

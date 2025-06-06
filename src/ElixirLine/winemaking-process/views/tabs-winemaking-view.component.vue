@@ -2,16 +2,13 @@
 
 import CampaignsManagement from "../pages/campaigns-management.component.vue";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
-import EmployeeManagement from "../../employee-management/pages/employee-management.component.vue";
-import SearchBatchesByCampaign from "./search-batches-by-campaigns.component.vue";
 import BatchManagement from "../pages/batch-management.component.vue";
 
 export default {
   name: 'winemaking-view',
   components: {
     BatchManagement,
-    SearchBatchesByCampaign,
-    EmployeeManagement, BasePageLayout,
+    BasePageLayout,
     CampaignsManagement,
   },
 
@@ -64,7 +61,7 @@ export default {
 
       <!-- Contenido que cambia por tab -->
       <div v-if="activeTab === '0'" class="flex-1 flex-column w-full  overflow-hidden">
-        <batch-management></batch-management>
+        <BatchManagement></BatchManagement>
       </div>
 
       <div v-if="activeTab === '1'" class="flex-1 flex-column w-full overflow-hidden">
