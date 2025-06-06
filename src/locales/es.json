@@ -23,7 +23,8 @@
     "title-wine-batch": "Proceso de vinificación de lotes",
     "title-campaign": "Gestion de campañas",
     "title-supply": "Gestión de suministros",
-    "title-employees": "Gestión de empleados"
+    "title-employees": "Gestión de empleados",
+    "title-search-batches-by-campaign": "Gestión de Lotes por Campaña"
   },
 
   "profile": {

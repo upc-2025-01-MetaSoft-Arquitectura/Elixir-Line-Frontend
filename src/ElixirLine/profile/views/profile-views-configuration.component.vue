@@ -1,7 +1,7 @@
 <script>
 
 import CampaignsManagement from "../../winemaking-process/pages/campaigns-management.component.vue";
-import AccordionBatchesByCampaignsComponent from "../../winemaking-process/views/accordion-batches-by-campaigns.component.vue";
+import SearchBatchesByCampaignsComponent from "../../winemaking-process/views/search-batches-by-campaigns.component.vue";
 import EmployeeManagement from "../../employee-management/pages/employee-management.component.vue";
 import ProfileManagement from "../pages/profile-management.component.vue";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
@@ -9,7 +9,7 @@ import BasePageLayout from "../../../shared/components/base-page-layout.componen
 
 export default {
   name: "profile-views-configuration",
-  components: {BasePageLayout, ProfileManagement, EmployeeManagement, WineBatchViews: AccordionBatchesByCampaignsComponent, CampaignsManagement},
+  components: {BasePageLayout, ProfileManagement, EmployeeManagement, WineBatchViews: SearchBatchesByCampaignsComponent, CampaignsManagement},
 
   data() {
     return {

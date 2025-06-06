@@ -1,16 +1,18 @@
 <script>
 
-import AccordionBatchesByCampaignsComponent from "./accordion-batches-by-campaigns.component.vue";
 import CampaignsManagement from "../pages/campaigns-management.component.vue";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
 import EmployeeManagement from "../../employee-management/pages/employee-management.component.vue";
+import SearchBatchesByCampaign from "./search-batches-by-campaigns.component.vue";
+import BatchManagement from "../pages/batch-management.component.vue";
 
 export default {
   name: 'winemaking-view',
   components: {
+    BatchManagement,
+    SearchBatchesByCampaign,
     EmployeeManagement, BasePageLayout,
     CampaignsManagement,
-    WineBatchViews: AccordionBatchesByCampaignsComponent
   },
 
   data() {
@@ -62,7 +64,7 @@ export default {
 
       <!-- Contenido que cambia por tab -->
       <div v-if="activeTab === '0'" class="flex-1 flex-column w-full  overflow-hidden">
-        <WineBatchViews></WineBatchViews>
+        <batch-management></batch-management>
       </div>
 
       <div v-if="activeTab === '1'" class="flex-1 flex-column w-full overflow-hidden">

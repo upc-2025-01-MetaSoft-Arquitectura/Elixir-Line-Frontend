@@ -48,7 +48,8 @@
     "title-wine-batch": "Batch Winemaking Process",
     "title-campaign": "Campaign Management",
     "title-supply": "Supply Management",
-    "title-employees": "Employee Management"
+    "title-employees": "Employee Management",
+    "title-search-batches-by-campaign": "Batch Management by Campaign"
   },
 
   "menu": {

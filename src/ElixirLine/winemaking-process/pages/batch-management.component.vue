@@ -5,10 +5,13 @@ import {WineBatch} from "../model/wine-batch.entity.js";
 import BatchesCreateAndEdit from "../components/batches-create-and-edit.component.vue";
 import DataManager from "../../../shared/components/data-manager.component.vue";
 import {batchAndCampaignApiService} from "../services/batch-and-campaign-api.service.js";
+import {Campaign} from "../model/campaign.entity.js";
+import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
 
 export default {
   name: "batch-management",
   components: {
+    BasePageLayout,
     DataManager,
     BatchesCreateAndEdit
   },
@@ -30,6 +33,14 @@ export default {
       createAndEditDialogIsVisible: false,
       isEdit: false,
       submitted: false,
+
+
+      //============ Datos de campañas y búsqueda ==============
+      campaignApiService: null,
+      // Datos de la vista
+      arrayItems: [], // campañas completas
+      selectedItem: null, // campaña seleccionada (objeto)
+      filteredItems: []   // campañas filtradas (objetos)
     }
   },
 
@@ -148,16 +159,64 @@ export default {
       }).catch(error => {
         console.error("Error getting batches",error);
       });
+    },
+
+
+
+    getAllCampaigns(){
+      this.campaignApiService.getAllResources()
+          .then(response => {
+
+            this.arrayItems = response.data.map(resource => new Campaign(resource));
+
+            console.log( 'Campañas recuperadas' ,this.arrayItems);
+          })
+          .catch(error => {
+            console.error("Error fetching data:", error);
+          });
+    },
+
+    searchCampaign(event) {
+
+      const query = event.query.toLowerCase();
+
+      this.filteredItems = this.arrayItems.filter(item =>
+          item.name.toLowerCase().includes(query)
+      );
+    },
+
+    onSelect(event) {
+      this.selectedItem = event.value;
+      console.log("🟢 Campaña seleccionada:", this.selectedItem);
+    },
+
+    onEnter() {
+      if (this.selectedItem && this.selectedItem.name) {
+        console.log("Enter presionado, campaña:", this.selectedItem);
+        // Aquí puedes llamar a la misma lógica que quieras ejecutar al seleccionar
+        this.onSelect({ value: this.selectedItem });
+      } else {
+        console.warn("No hay campaña válida seleccionada.");
+      }
     }
+
   },
 
-
+  computed: {
+    campaignQuantity() {
+      return this.arrayItems.length ? this.arrayItems.length : 0;
+    }
+  },
 
   //#region Lifecycle Hooks
   created() {
     this.batchAndCampaignApiService = new batchAndCampaignApiService('/wine-batches');
+    this.campaignApiService = new batchAndCampaignApiService('/campaigns');
 
     this.getAllBatches();
+    this.getAllCampaigns();
+
+
     console.log('Batch Management component created');
   }
   //#endregion
@@ -167,10 +226,43 @@ export default {
 
 <template>
 
-  <div class="page-container-batch-management flex w-full h-full">
+
+  <base-page-layout>
+
+    <template #header>
+
+      <div class="flex flex-column w-full gap-4 p-2">
+
+        <div class="flex flex-row justify-content-between align-items-center">
+          <h2 class="m-0">Gestión de Lotes por Campaña</h2>
+          <span class="font-bold">Total de campañas: {{ campaignQuantity }}</span>
+        </div>
+
+        <!-- Buscar y Filtrar Campaign -->
+        <div class="flex w-full align-items-start">
+
+          <pv-auto-complete
+              class="w-full"
+              v-model="selectedItem"
+              :suggestions="filteredItems"
+              option-label="name"
+              placeholder="Ingresa el nombre de la campaña"
+              @complete="searchCampaign"
+              @select="onSelect"
+              @keydown.enter="onEnter"
+              :dropdown="true"
+              :force-selection="true"
+              aria-label="Ingresa el nombre de la campaña"
+          />
+
+        </div>
+
+      </div>
+
+    </template>
 
 
-    <div class="data-table-container pt-2 h-full flex-1 overflow-hidden flex flex-column">
+    <div class="data-table-container p-2 h-full flex-1 overflow-hidden flex flex-column">
 
       <data-manager :title="title"
                     v-bind:items="batches"
@@ -254,7 +346,8 @@ export default {
       </batches-create-and-edit>
 
     </div>
-  </div>
+
+  </base-page-layout>
 
 </template>
 

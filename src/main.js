@@ -51,7 +51,16 @@ import router from "./router/index.js";
 import SelectButton from "primevue/selectbutton";
 import Tabs from "primevue/tabs";
 import DataView from "primevue/dataview";
-import {Accordion, AccordionContent, AccordionHeader, AccordionPanel, Badge, SplitButton, TabPanels} from "primevue";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionHeader,
+    AccordionPanel,
+    AutoComplete,
+    Badge, Dropdown,
+    SplitButton,
+    TabPanels
+} from "primevue";
 
 
 
@@ -112,7 +121,9 @@ app.component('pv-button', Button)
     .component('pv-accordion-header',AccordionHeader)
     .component('pv-accordion-content',AccordionContent)
     .component('pv-badge', Badge)
-    .component('pv-split-button', SplitButton);
+    .component('pv-split-button', SplitButton)
+    .component('pv-auto-complete', AutoComplete)
+    .component('pv-dropdown', Dropdown);
 
 
 app.mount('#app')
