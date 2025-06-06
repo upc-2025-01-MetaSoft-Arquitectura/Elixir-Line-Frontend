@@ -277,51 +277,57 @@ export default {
         modal
         header="Asignar Tarea"
         @hide="onCancelTask"
-        style="width: 500px"
+        class="task-dialog"
     >
-      <div class="field">
-        <label>Trabajador</label>
-        <pv-input-text
-            :value="selectedEmployeeForTask.firstName + ' ' + selectedEmployeeForTask.lastName"
-            disabled
-        />
-      </div>
+      <div class="task-form">
+        <div class="field">
+          <label class="field-label">Trabajador</label>
+          <pv-input-text
+              class="field-input"
+              :value="selectedEmployeeForTask.firstName + ' ' + selectedEmployeeForTask.lastName"
+              disabled
+          />
+        </div>
 
-      <div class="field">
-        <label>ID del Lote</label>
-        <pv-select
-            v-model="taskObject.batchInternalCode"
-            :options="availableBatches"
-            optionLabel="internalCode"
-            optionValue="internalCode"
-            placeholder="Selecciona un lote"
-            @change="onBatchChanged"
-        />
-      </div>
+        <div class="field">
+          <label class="field-label">ID del Lote</label>
+          <pv-select
+              class="field-input"
+              v-model="taskObject.batchInternalCode"
+              :options="availableBatches"
+              optionLabel="internalCode"
+              optionValue="internalCode"
+              placeholder="Selecciona un lote"
+              @change="onBatchChanged"
+          />
+        </div>
 
-      <div class="field">
-        <label>Etapa actual</label>
-        <pv-input-text v-model="taskObject.currentStage" disabled />
-      </div>
+        <div class="field">
+          <label class="field-label">Etapa actual</label>
+          <pv-input-text class="field-input" v-model="taskObject.currentStage" disabled />
+        </div>
 
-      <div class="field">
-        <label>Título de la tarea</label>
-        <pv-input-text v-model="taskObject.title" />
-      </div>
+        <div class="field">
+          <label class="field-label">Título de la tarea</label>
+          <pv-input-text class="field-input" v-model="taskObject.title" />
+        </div>
 
-      <div class="field">
-        <label>Fecha límite</label>
-        <pv-calendar v-model="taskObject.dueDate" show-icon />
-      </div>
+        <div class="field">
+          <label class="field-label">Fecha límite</label>
+          <pv-calendar class="field-input" v-model="taskObject.dueDate" show-icon />
+        </div>
 
-      <div class="field">
-        <label>Descripción</label>
-        <pv-textarea v-model="taskObject.description" rows="3" auto-resize />
+        <div class="field">
+          <label class="field-label">Descripción</label>
+          <pv-textarea class="field-input" v-model="taskObject.description" rows="3" auto-resize />
+        </div>
       </div>
 
       <template #footer>
-        <pv-button label="Cancelar" icon="pi pi-times" @click="onCancelTask" class="p-button-text" />
-        <pv-button label="Guardar" icon="pi pi-check" @click="onSaveTask" autofocus />
+        <div class="dialog-footer">
+          <pv-button label="Cancelar" icon="pi pi-times" @click="onCancelTask" class="p-button-text" />
+          <pv-button label="Guardar" icon="pi pi-check" @click="onSaveTask" autofocus />
+        </div>
       </template>
     </pv-dialog>
 
@@ -334,6 +340,33 @@ export default {
 
 
 <style>
+.task-dialog {
+  width: 100%;
+  max-width: 500px;
+}
 
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 0.5rem;
+}
+
+.field-label {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  display: block;
+  color: #333;
+}
+
+.field-input {
+  width: 100%;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
 
 </style>
