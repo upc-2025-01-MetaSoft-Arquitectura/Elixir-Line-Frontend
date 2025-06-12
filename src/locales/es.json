@@ -7,6 +7,7 @@
   "navbar": {
     "title-dashboard-option":   "Dashboard",
     "title-batch-option":       "Proceso de vinificación",
+    "title-task-option":        "Tareas",
     "title-map-option":         "Mapa",
     "title-supplies-option":    "Suministro",
     "title-calendar-option":    "Calendario",

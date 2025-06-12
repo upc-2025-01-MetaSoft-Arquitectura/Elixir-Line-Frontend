@@ -154,7 +154,7 @@ export default {
 
         <pv-column :exportable="false" style="min-width:8rem">
           <template #body="slotProps">
-            <div class="flex-1 flex-row">
+            <div class="flex flex-row">
               <pv-button
                   icon="pi pi-pencil"
                   outlined rounded class="mr-2"

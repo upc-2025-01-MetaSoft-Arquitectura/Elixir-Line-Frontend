@@ -7,10 +7,12 @@ import DataManager from "../../../shared/components/data-manager.component.vue";
 import {batchAndCampaignApiService} from "../services/batch-and-campaign-api.service.js";
 import {Campaign} from "../model/campaign.entity.js";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
+import BatchViewDetails from "../components/bacth-view-detail.component.vue";
 
 export default {
   name: "batch-management",
   components: {
+    BatchViewDetails,
     BasePageLayout,
     DataManager,
     BatchesCreateAndEdit
@@ -27,6 +29,9 @@ export default {
       isEdit: false,
       submitted: false,
 
+      // Para ver detalles de un lote
+      isViewItem: false, // Para ver detalles de un lote
+      viewDetailsDialogIsVisible: false,
 
       //============ Datos de campañas y búsqueda ==============
       campaignApiService: null,
@@ -66,6 +71,12 @@ export default {
       this.createAndEditDialogIsVisible = true;
     },
 
+    onViewItem(item) {
+      this.batch = new WineBatch(item);
+      this.isViewItem = true;
+      this.viewDetailsDialogIsVisible = true;
+    },
+
     onDeleteItem(item) {
       this.batch = new WineBatch(item);
       this.deleteBatch();
@@ -80,6 +91,11 @@ export default {
       this.createAndEditDialogIsVisible = false;
       this.submitted = false;
       this.isEdit = false;
+    },
+
+    onCloseDetails(){
+      this.viewDetailsDialogIsVisible = false;
+      this.isViewItem = false;
     },
 
     onSaveRequested(item) {
@@ -262,6 +278,7 @@ export default {
                     v-bind:label-name="$t('winemaking.button-new-batch')"
                     v-on:new-item-requested-manager="onNewItem"
                     v-on:edit-item-requested-manager="onEditItem($event)"
+                    v-on:view-item-details-requested-manager="onViewItem($event)"
                     v-on:delete-item-requested-manager="onDeleteItem($event)"
                     v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)" >
 
@@ -277,18 +294,6 @@ export default {
               :sortable="true"
               field="internalCode"
               header="Code"
-          />
-
-          <pv-column
-              :sortable="true"
-              field="receptionDate"
-              header="Reception"
-          />
-
-          <pv-column
-              :sortable="true"
-              field="harvestCampaign"
-              header="Campaign"
           />
 
           <pv-column
@@ -311,21 +316,51 @@ export default {
 
           <pv-column
               :sortable="true"
-              field="createdBy"
-              header="Created By"
-          />
-
-          <pv-column
-              :sortable="true"
-              field="status"
-              header="Status"
+              field="harvestCampaign"
+              header="Campaign"
           />
 
           <pv-column
               :sortable="true"
               field="currentStage"
               header="Stage"
+              class=""
           />
+
+          <!--Quiero que el color de fondo de texto sea diferente de acuerdo al Estado del lote-->
+          <pv-column :sortable="true"
+                     header="status">
+
+              <template #body="slotProps">
+                <span :style="{ backgroundColor: slotProps.data.status === 'No iniciado' ? '#708090' :
+                                slotProps.data.status === 'En proceso' ? '#3978DE' :
+                                slotProps.data.status === 'Finalizado' ? '#32CD32' :
+                                slotProps.data.status === 'Archivado' ? '#B47D6C' : '#9b9b9b',
+                padding: '0.2rem', borderRadius: '0.2rem', color: 'white', fontWeight: 'bold',
+              }"
+                >
+                  {{ slotProps.data.status }}
+                </span>
+              </template>
+
+
+          </pv-column>
+
+
+          <!-- La barra de progreso es color #e0e0e0 de fondo y el avance es color #2ecc71 -->
+          <pv-column :sortable="true"
+                     header="Progress">
+            <template #body="slotProps">
+              <pv-progress-bar
+                  :value="slotProps.data.progress"
+                  :showValue="true"
+                  :style="{ backgroundColor: '#D9D9D9' }"
+                  class="custom-progress-bar"
+              />
+            </template>
+          </pv-column>
+
+
 
         </template>
       </data-manager>
@@ -338,6 +373,12 @@ export default {
           v-on:save-requested="onSaveRequested($event)">
       </batches-create-and-edit>
 
+      <batch-view-details
+          :item-entity="batch"
+          :visible="viewDetailsDialogIsVisible"
+          v-on:close-view-details="onCloseDetails">
+      </batch-view-details>
+
     </div>
 
   </base-page-layout>
@@ -345,6 +386,16 @@ export default {
 </template>
 
 <style>
+
+.custom-progress-bar .p-progressbar-value {
+  background-color: #708090; /* color del avance */
+  border-radius: 0;
+}
+
+.custom-progress-bar .p-progressbar-label {
+  color: black;
+  font-weight: bold;
+}
 
 
 .p-datatable-column-header-content {

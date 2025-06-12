@@ -6,6 +6,7 @@
   "navbar": {
     "title-dashboard-option":   "Dashboard",
     "title-batch-option":       "Winemaking",
+    "title-task-option":        "Tasks",
     "title-map-option":         "Map",
     "title-supplies-option":    "Supplies",
     "title-calendar-option":    "Calendar",
