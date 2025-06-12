@@ -7,11 +7,13 @@ import DataManager from "../../../shared/components/data-manager.component.vue";
 import {batchAndCampaignApiService} from "../services/batch-and-campaign-api.service.js";
 import {Campaign} from "../model/campaign.entity.js";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
-import BatchViewDetails from "../components/bacth-view-detail.component.vue";
+import BatchViewDetails from "./bacth-view-detail.component.vue";
+import TabsViewDetails from "../views/tabs-view-details.component.vue";
 
 export default {
   name: "batch-management",
   components: {
+    TabsViewDetails,
     BatchViewDetails,
     BasePageLayout,
     DataManager,
@@ -243,8 +245,8 @@ export default {
       <div class="flex flex-column w-full gap-4 p-2">
 
         <div class="flex flex-row justify-content-between align-items-center">
-          <h2 class="m-0">Gestión de Lotes por Campaña</h2>
-          <span class="font-bold">Total de campañas: {{ campaignQuantity }}</span>
+          <h2 class="m-0">{{$t('batch-management.title')}}</h2>
+          <span class="font-bold">{{$t('batch-management.total-campaigns')}} {{ campaignQuantity }}</span>
         </div>
 
         <!-- Buscar y Filtrar Campaign -->
@@ -373,11 +375,12 @@ export default {
           v-on:save-requested="onSaveRequested($event)">
       </batches-create-and-edit>
 
-      <batch-view-details
+      <tabs-view-details
           :item-entity="batch"
+          :title="`${batch.internalCode} - ${batch.harvestCampaign}`"
           :visible="viewDetailsDialogIsVisible"
-          v-on:close-view-details="onCloseDetails">
-      </batch-view-details>
+          v-on:close-tabs-view-details="onCloseDetails">
+      </tabs-view-details>
 
     </div>
 

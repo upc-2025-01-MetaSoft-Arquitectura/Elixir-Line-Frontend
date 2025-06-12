@@ -52,6 +52,19 @@
   "menu": {
     "label-settings": "Configuración",
     "label-sign-out": "Cerrar sesión"
+  },
+
+  "details": {
+    "tab-1": "Detalles del lote",
+    "tab-2": "Etapas",
+    "tab-3": "Tareas",
+    "tab-4": "Insumos"
+  },
+
+  "batch-management": {
+    "title": "Gestión de Lotes por Campaña",
+    "total-campaigns": "Total de campañas",
+    "search-batch-by-campaign": "Ingresa la campaña"
   }
 
 }

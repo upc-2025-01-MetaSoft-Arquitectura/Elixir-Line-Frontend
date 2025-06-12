@@ -1,5 +1,5 @@
 <script>
-const defaultStyle = { width: '600px'};
+const defaultStyle = { width: '800px'};
 
 export default {
   name: "view-details",
@@ -46,10 +46,11 @@ export default {
       class="p-fluid"
       :header="entityName"
       :closable="false">
+
     <template #header>
-      <div class="flex justify-content-start">
-        <div>{{ getHeaderTitle() }}</div>
-      </div>
+
+      <slot name="header"></slot>
+
     </template>
 
     <!-- Quien use el componente establece el contenido -->

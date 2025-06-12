@@ -56,6 +56,19 @@
   "menu": {
     "label-settings": "Settings",
     "label-sign-out":   "Logout"
+  },
+
+  "details": {
+    "tab-1": "Details",
+    "tab-2": "Stages",
+    "tab-3": "Tasks",
+    "tab-4": "Supplies"
+  },
+
+  "batch-management": {
+    "title": "Batch Management by Campaign",
+    "total-campaigns": "Total Campaigns",
+    "search-batch-by-campaign": "Enter the name of the campaign."
   }
 
 }
