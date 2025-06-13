@@ -26,12 +26,22 @@ export default {
       submitted: false,
       taskDialogIsVisible: false,
       selectedEmployeeForTask: {},
+      typeOptions: [
+        { label: 'INDUSTRIAL', value: 'INDUSTRIAL' },
+        { label: 'CAMPO', value: 'CAMPO' }
+      ],
       taskObject: {
-        batchInternalCode: '',
-        currentStage: '',
+        id: '',
+        relatedId: '',
+        assignee: '',
         title: '',
         dueDate: null,
-        description: ''
+        startDate: null,
+        type: '',
+        status: '',
+        progress: 0,
+        description: '',
+        supplies: ''
       },
       availableBatches: [],
     }
@@ -61,16 +71,20 @@ export default {
     onAddTaskItem(employee) {
       this.selectedEmployeeForTask = employee;
       this.taskObject = {
-        employee: employee,
-        batchInternalCode: '',
-        currentStage: '',
+        id: '',
+        relatedId: '',
+        assignee: employee.firstName + ' ' + employee.lastName,
         title: '',
         dueDate: null,
-        description: ''
+        startDate: null, 
+        type: '',
+        status: '',
+        progress: 0,
+        description: '',
+        supplies: '' 
       };
       this.taskDialogIsVisible = true;
-
-      this.loadAvailableBatches(); // Cargar dropdown si no lo tienes aún
+      this.loadAvailableBatches();
     },
 
     loadAvailableBatches() {
@@ -85,26 +99,21 @@ export default {
 
 
     async onBatchChanged() {
-      if (!this.taskObject.batchInternalCode) {
-        this.taskObject.currentStage = '';
+      if (!this.taskObject.relatedId) {
         this.taskObject.status = '';
         return;
       }
 
       try {
-        const response = await this.batchApiService.getStatusByInternalCode(this.taskObject.batchInternalCode);
-        // response.data es el array que mostraste, buscar el objeto que coincide
+        const response = await this.batchApiService.getStatusByInternalCode(this.taskObject.relatedId);
         if (response.data && response.data.length > 0) {
-          const batchInfo = response.data[0]; // normalmente debería ser un solo objeto
-          this.taskObject.currentStage = batchInfo.currentStage || '';
+          const batchInfo = response.data[0];
           this.taskObject.status = batchInfo.status || '';
         } else {
-          this.taskObject.currentStage = '';
           this.taskObject.status = '';
         }
       } catch (error) {
         console.error("Error fetching batch status", error);
-        this.taskObject.currentStage = '';
         this.taskObject.status = '';
       }
     },
@@ -117,22 +126,24 @@ export default {
 
     onSaveTask() {
       const taskToSend = {
-        employeeId: this.selectedEmployeeForTask.id,
-        batchInternalCode: this.taskObject.batchInternalCode,
-        currentStage: this.taskObject.currentStage,
-        status: this.taskObject.status,
+        id: this.taskObject.id || undefined,
+        relatedId: this.taskObject.relatedId,
+        assignee: this.selectedEmployeeForTask.firstName + ' ' + this.selectedEmployeeForTask.lastName,
         title: this.taskObject.title,
         dueDate: this.taskObject.dueDate,
+        type: this.taskObject.type || '',
+        status: this.taskObject.status,
+        progress: 0,
         description: this.taskObject.description
       };
 
       this.batchApiService.createTask(taskToSend)
           .then(() => {
-            this.notifySuccessfulAction("¡Tarea guardada exitosamente!");
+            this.notifySuccessfulAction("Task saved successfully!");
             this.taskDialogIsVisible = false;
           })
           .catch((error) => {
-            console.error("Error al guardar tarea:", error);
+            console.error("Error saving task:", error);
           });
     },
 
@@ -302,7 +313,16 @@ export default {
             header="Password" />
 
       </template>
-
+      <template #actions="slotProps">
+        <pv-button
+            icon="pi pi-check-square"
+            outlined
+            rounded
+            severity="info"
+            class="mr-2"
+            @click="() => { console.log('slotProps', slotProps); onAddTaskItem(slotProps.data); }"
+        />
+      </template>
     </data-manager>
 
     <employee-create-and-edit
@@ -321,44 +341,59 @@ export default {
     >
       <div class="task-form">
         <div class="field">
-          <label class="field-label">Trabajador</label>
+          <label class="field-label">Assignee</label>
           <pv-input-text
               class="field-input"
-              :value="selectedEmployeeForTask.firstName + ' ' + selectedEmployeeForTask.lastName"
+              :value="taskObject.assignee"
               disabled
           />
         </div>
 
         <div class="field">
-          <label class="field-label">ID del Lote</label>
+          <label class="field-label">Related ID</label>
           <pv-select
               class="field-input"
-              v-model="taskObject.batchInternalCode"
+              v-model="taskObject.relatedId"
               :options="availableBatches"
               optionLabel="internalCode"
               optionValue="internalCode"
-              placeholder="Selecciona un lote"
+              placeholder="Select a batch"
               @change="onBatchChanged"
           />
         </div>
 
         <div class="field">
-          <label class="field-label">Estado</label>
+          <label class="field-label">Status</label>
           <pv-input-text class="field-input" v-model="taskObject.status" disabled />
         </div>
 
         <div class="field">
-          <label class="field-label">Título de la tarea</label>
+          <label class="field-label">Title</label>
           <pv-input-text class="field-input" v-model="taskObject.title" />
         </div>
-
         <div class="field">
-          <label class="field-label">Fecha límite</label>
+          <label class="field-label">Fecha de inicio</label>
+          <pv-calendar class="field-input" v-model="taskObject.startDate" show-icon />
+        </div>
+        <div class="field">
+          <label class="field-label">Due Date</label>
           <pv-calendar class="field-input" v-model="taskObject.dueDate" show-icon />
         </div>
 
         <div class="field">
-          <label class="field-label">Descripción</label>
+          <label class="field-label">Type</label>
+          <pv-select
+              class="field-input"
+              v-model="taskObject.type"
+              :options="typeOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select type"
+          />
+        </div>
+
+        <div class="field">
+          <label class="field-label">Description</label>
           <pv-textarea class="field-input" v-model="taskObject.description" rows="3" auto-resize />
         </div>
       </div>

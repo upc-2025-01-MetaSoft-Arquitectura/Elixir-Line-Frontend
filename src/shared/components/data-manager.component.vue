@@ -29,6 +29,7 @@ export default {
 
 
     newItem() {
+      console.log('Evento emitido: new-item-requested-manager');
       this.$emit('new-item-requested-manager');
     },
 
@@ -69,9 +70,7 @@ export default {
         }
       })
     },
-    onAddTask(item) {
-      this.$emit('add-task-item-requested-manager', item);
-    }
+    
   },
   
 
@@ -94,12 +93,12 @@ export default {
     <pv-toolbar class="w-full" style="height: 4rem;">
       <template #start>
         <pv-button
-            class="mr-2 w-8rem"
+            class="mr-2"
+            style="min-width: 11rem; background: #556B2F; color: white; border: none;"
             icon="pi pi-plus"
             :label="labelName"
             severity="success"
             @click="newItem"
-            style="background: #556B2F; color: white; border: none;"
         />
         <pv-button
             class="w-8rem"
@@ -171,15 +170,8 @@ export default {
                 class="mr-2"
                 @click="confirmDeleteItem(slotProps.data)"
             />
-
-            <pv-button
-                icon="pi pi-check-square"
-                outlined
-                rounded
-                severity="info"
-                class="mr-2"
-                @click="onAddTask(slotProps.data)"
-            />
+            <slot name="actions" :data="slotProps.data"></slot>
+            
           </template>
         </pv-column>
 

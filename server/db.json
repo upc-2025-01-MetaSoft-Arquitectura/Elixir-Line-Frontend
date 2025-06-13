@@ -438,14 +438,25 @@
   ],
   "tasks": [
     {
-      "id": "a146",
-      "employeeId": "u001",
-      "batchInternalCode": "B2025-VINEYARD05",
-      "currentStage": "Pressing",
+      "id": "e003",
+      "relatedId": "B2025-VINEYARD01",
+      "assignee": "Sofía Gómez",
+      "title": "Tarea Vineyard 1",
+      "startDate": "2025-06-10T05:00:00.000Z",
+      "dueDate": "2025-06-26T05:00:00.000Z",
+      "type": "CAMPO",
       "status": "InProcess",
-      "title": "Irrigación",
-      "dueDate": "2025-06-09T05:00:00.000Z",
-      "description": "El trabajador tiene que irrigar el lote antes de la fecha indicada."
+      "progress": 0,
+      "description": "Lorem ipsos",
+      "supplies": [
+        {
+          "id": "sup-002",
+          "name": "Ácido Tartárico",
+          "quantity": 2,
+          "unidad": "kg",
+          "image": "https://w7.pngwing.com/pngs/218/434/png-transparent-computer-icons-box-cargo-packaging-and-labeling-box-miscellaneous-service-logo.png"
+        }
+      ]
     }
   ]
 }
