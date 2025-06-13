@@ -435,5 +435,53 @@
       "phone": "",
       "user_type": ""
     }
+  ],
+  "evidenceIndustrial": [
+    {
+      "id": 1,
+      "title": "Control de temperatura en fermentación",
+      "image": "https://www.catadelvino.com/uploads/2511201411094446062a.JPG",
+      "code": "B2025-VINEYARD05",
+      "worker": "Luis Carlos Prada",
+      "type": "Ambiente Industrial",
+      "date": "2025-06-19",
+      "description": "Se ajustó la temperatura de fermentación y quedó en 26°C"
+    }
+  ],
+  "evidenceField": [
+    {
+      "id": 1,
+      "title": "Control de pH en correcion",
+      "image": "https://www.quimicabaza.com/wp-content/uploads/2018/08/analisis-vino.jpg",
+      "code": "B2025-VINEYARD05",
+      "worker": "Marco Hernandez",
+      "type": "Ambiente de Campo",
+      "date": "2025-06-19",
+      "description": "Se realizo en control correctamente"
+    }
+  ],
+  "incidenceIndustrial": [
+    {
+      "id": 1,
+      "title": "Control de temperatura en fermentación",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoAyIpXxrt4BxeKVrtNkWpmHPOxz7xJ1g7vQ&s",
+      "code": "B2025-VINEYARD05",
+      "worker": "Luis Carlos Prada",
+      "type": "Ambiente Industrial",
+      "date": "2025-06-19",
+      "description": "Ocurrió un fallo en el sistema de refrigeración, se ajustó la temperatura de fermentación y quedó en 26°C"
+    }
+  ],
+  "incidenceField": [
+    {
+      "id": 1,
+      "title": "Control de pH en correcion",
+      "image": "https://images.squarespace-cdn.com/content/v1/6375cb9a07c3be4b45ca91a0/1677720117435-1ED8ID4LDX99K2C0C6DI/unsplash-image-DSY0fSH97kk.jpg",
+      "code": "B2025-VINEYARD05",
+      "worker": "Marco Hernandez",
+      "type": "Ambiente de Campo",
+      "date": "2025-06-19",
+      "description": "Ocurrio un error al realizar el control de pH, se realizó nuevamente y quedó en 3.5"
+    }
   ]
 }
