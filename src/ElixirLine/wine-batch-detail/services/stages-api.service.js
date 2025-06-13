@@ -2,24 +2,17 @@ import axios from "axios";
 
 const http = axios.create({baseURL: "http://localhost:3000"});
 
-export class batchAndCampaignApiService {
-
+export class StagesApiService {
     constructor(_resourceEndpoint) {
         this.resourceEndpoint = _resourceEndpoint;
     }
 
-    getAllResources() {
+    getAll() {
         return http.get(this.resourceEndpoint);
     }
 
-    getResourceById(id) {
-        return http.get(`${this.resourceEndpoint}/${id}`);
-    }
-
-    getResourcesByCampaignId(campaignId) {
-        return http.get(`${this.resourceEndpoint}`, {
-            params: { campaignId }
-        });
+    findStagesByBatchId(batchId) {
+        return http.get(`${this.resourceEndpoint}?batchId=${batchId}`);
     }
 
     create(resource) {
@@ -37,5 +30,4 @@ export class batchAndCampaignApiService {
     findResourceById(id) {
         return http.get(`${this.resourceEndpoint}?id=${id}`);
     }
-
 }

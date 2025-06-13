@@ -42,7 +42,8 @@
     "button-new-batch": "New Batch",
     "button-delete": "Delete",
     "button-export": "Export",
-    "button-new-campaign": "Campaign"
+    "button-new-campaign": "Campaign",
+    "batches-not-found": "No batches registered for this campaign"
   },
 
   "components": {
@@ -60,8 +61,8 @@
 
   "details": {
     "tab-1": "Details",
-    "tab-2": "Stages",
-    "tab-3": "Tasks",
+    "tab-2": "Tasks",
+    "tab-3": "Stages",
     "tab-4": "Supplies"
   },
 

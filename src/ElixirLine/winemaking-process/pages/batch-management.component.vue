@@ -7,8 +7,8 @@ import DataManager from "../../../shared/components/data-manager.component.vue";
 import {batchAndCampaignApiService} from "../services/batch-and-campaign-api.service.js";
 import {Campaign} from "../model/campaign.entity.js";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
-import BatchViewDetails from "./bacth-view-detail.component.vue";
-import TabsViewDetails from "../views/tabs-view-details.component.vue";
+import BatchViewDetails from "../../wine-batch-detail/pages/bacth-view-detail.component.vue";
+import TabsViewDetails from "../../wine-batch-detail/views/tabs-view-details.component.vue";
 
 export default {
   name: "batch-management",
@@ -160,6 +160,7 @@ export default {
     },
     //#endregion
 
+    /*
     getAllBatches() {
 
       this.batchAndCampaignApiService.getAllResources().then(response => {
@@ -172,6 +173,7 @@ export default {
       });
     },
 
+    */
 
 
     getAllCampaigns(){
@@ -187,21 +189,46 @@ export default {
           });
     },
 
+    getBatchesByCampaign(campaignId) {
+      this.batchAndCampaignApiService.getResourcesByCampaignId(campaignId)
+          .then(response => {
+            this.batches = response.data.map(batch => new WineBatch(batch));
+            console.log("Batches for campaign", this.batches);
+          })
+          .catch(error => {
+            console.error("Error getting batches by campaign", error);
+          });
+    },
+
     searchCampaign(event) {
+
+      // Limpiar lotes y selección al buscar
+      this.batches = []; // Limpiar lotes al buscar
+      this.selectedItem = null; // Limpiar selección al buscar
 
       const query = event.query.toLowerCase();
 
       this.filteredItems = this.arrayItems.filter(item =>
           item.name.toLowerCase().includes(query)
       );
+
+
     },
 
     onSelect(event) {
+      this.batches = []; // Limpiar lotes antes de cargar los nuevos
+
       this.selectedItem = event.value;
       console.log("🟢 Campaña seleccionada:", this.selectedItem);
+
+      this.batches = []; // Limpiar lotes antes de cargar los nuevos
+      this.getBatchesByCampaign(this.selectedItem.id)
     },
 
     onEnter() {
+
+      this.batches = []; // Limpiar lotes antes de cargar los nuevos
+
       if (this.selectedItem && this.selectedItem.name) {
         console.log("Enter presionado, campaña:", this.selectedItem);
         // Aquí puedes llamar a la misma lógica que quieras ejecutar al seleccionar
@@ -209,6 +236,9 @@ export default {
       } else {
         console.warn("No hay campaña válida seleccionada.");
       }
+
+      this.batches = []; // Limpiar lotes antes de cargar los nuevos
+      this.getBatchesByCampaign(this.selectedItem.id)
     }
 
   },
@@ -224,7 +254,7 @@ export default {
     this.batchAndCampaignApiService = new batchAndCampaignApiService('/wine-batches');
     this.campaignApiService = new batchAndCampaignApiService('/campaigns');
 
-    this.getAllBatches();
+    //this.getAllBatches();
     this.getAllCampaigns();
 
 
@@ -273,7 +303,7 @@ export default {
     </template>
 
 
-    <div class="data-table-container p-2 h-full flex-1 overflow-hidden flex flex-column">
+    <div v-if="batches && batches.length > 0" class="data-table-container p-2 h-full flex-1 overflow-hidden flex flex-column">
 
       <data-manager :title="title"
                     v-bind:items="batches"
@@ -382,6 +412,12 @@ export default {
           v-on:close-tabs-view-details="onCloseDetails">
       </tabs-view-details>
 
+    </div>
+
+
+    <!-- Mostrar mensaje si batches está vacío o nulo -->
+    <div v-else class="p-4 text-center text-gray-600">
+      {{ $t('winemaking.batches-not-found') }}
     </div>
 
   </base-page-layout>

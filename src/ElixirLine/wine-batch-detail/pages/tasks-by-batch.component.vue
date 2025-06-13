@@ -3,7 +3,7 @@
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
 
 export default {
-  name: 'supplies-by-batch',
+  name: 'tasks-by-batch',
   components: {BasePageLayout},
 
   props: {
@@ -26,10 +26,12 @@ export default {
       <h4>{{title}}</h4>
     </template>
 
+    TASKS
+
   </base-page-layout>
 
 </template>
 
-<style >
+<style>
 
 </style>

@@ -3,6 +3,7 @@
     {
       "id": "b123e456-78d9-42a3-b456-426614174000",
       "internalCode": "B2025-VINEYARD01",
+      "campaignId": "cmp-2025-001",
       "receptionDate": "14/03/2025",
       "harvestCampaign": "2025",
       "vineyardOrigin": "Valle de Ica",
@@ -16,6 +17,7 @@
     {
       "id": "a223c789-11af-47c2-8bf7-227399911000",
       "internalCode": "B2025-VINEYARD02",
+      "campaignId": "cmp-2025-001",
       "receptionDate": "17/03/2025",
       "harvestCampaign": "2025",
       "vineyardOrigin": "Valle del Colca",
@@ -29,6 +31,7 @@
     {
       "id": "c323f111-9abf-4d21-91a1-132145889000",
       "internalCode": "B2024-VINEYARD03",
+      "campaignId": "cmp-2025-001",
       "receptionDate": "20/04/2024",
       "harvestCampaign": "2024",
       "vineyardOrigin": "Cañete",
@@ -42,6 +45,7 @@
     {
       "id": "d423e222-56cd-4d43-bb3e-556700008000",
       "internalCode": "B2023-VINEYARD04",
+      "campaignId": "cmp-2025-001",
       "receptionDate": "10/05/2023",
       "harvestCampaign": "2023",
       "vineyardOrigin": "Moquegua",
@@ -55,6 +59,7 @@
     {
       "id": "e523a333-8ef5-4012-9873-661211119000",
       "internalCode": "B2025-VINEYARD05",
+      "campaignId": "cmp-2025-001",
       "receptionDate": "20/03/2025",
       "harvestCampaign": "2025",
       "vineyardOrigin": "Arequipa",
@@ -429,6 +434,428 @@
       "country": "Peru",
       "phone": "+51 984 112 768",
       "user_type": "Winemaker"
+    }
+  ],
+  "tasks": [
+    {
+      "environment": "industrial",
+      "campaignId": "cmp-2025-001",
+      "batchInternalCode": "B2025-VINEYARD01",
+      "assignedEmployeeId": "emp-002",
+      "title": "Limpieza de tanques de fermentación",
+      "startDate": "2025-06-13",
+      "endDate": "2025-06-14",
+      "status": "Finalizado",
+      "progress": 100,
+      "supplies": [
+        {
+          "id": "supply-010",
+          "name": "Desinfectante enzimático",
+          "quantity": 2,
+          "unit": "litros"
+        },
+        {
+          "id": "supply-011",
+          "name": "Guantes de seguridad",
+          "quantity": 4,
+          "unit": "pares"
+        }
+      ],
+      "description": "Desinfectar tanques de acero inoxidable antes de iniciar nueva fermentación."
+    },
+    {
+      "environment": "industrial",
+      "campaignId": "cmp-2025-001",
+      "batchInternalCode": "B2025-VINEYARD02",
+      "assignedEmployeeId": "emp-003",
+      "title": "Trasiego a barricas",
+      "startDate": "2025-06-16",
+      "endDate": "2025-06-18",
+      "status": "En progreso",
+      "progress": 60,
+      "supplies": [
+        {
+          "id": "supply-020",
+          "name": "Bomba de trasiego",
+          "quantity": 1,
+          "unit": "unidad"
+        },
+        {
+          "id": "supply-021",
+          "name": "Barricas de roble",
+          "quantity": 5,
+          "unit": "unidades"
+        }
+      ],
+      "description": "Transferencia del vino desde tanques de acero a barricas de roble para crianza."
+    },
+    {
+      "environment": "industrial",
+      "campaignId": "cmp-2025-001",
+      "batchInternalCode": "B2024-VINEYARD03",
+      "assignedEmployeeId": "emp-004",
+      "title": "Control microbiológico",
+      "startDate": "2025-06-10",
+      "endDate": "2025-06-17",
+      "status": "No iniciado",
+      "progress": 0,
+      "supplies": [
+        {
+          "id": "supply-030",
+          "name": "Kit de análisis microbiológico",
+          "quantity": 2,
+          "unit": "sets"
+        },
+        {
+          "id": "supply-031",
+          "name": "Muestras de vino",
+          "quantity": 5,
+          "unit": "botellas"
+        }
+      ],
+      "description": "Realizar pruebas para detectar presencia de bacterias y levaduras contaminantes."
+    }
+  ],
+  "stages-reception": [
+    {
+      "id": "REC-001",
+      "batchId": "b123e456-78d9-42a3-b456-426614174000",
+      "stage": "Recepción",
+      "registeredBy": "Alonso Alvarez",
+      "startDate": "2025-05-10",
+      "endDate": "2025-05-10",
+      "sugarLevelBrix": 20.5,
+      "pH": 3.4,
+      "temperature": 18.2,
+      "quantityKg": 1250.2,
+      "comments": "Uvas en excelente estado, sin signos de podredumbre.",
+      "isCompleted": true
+    }
+  ],
+  "stages-correction": [
+    {
+      "id": "COR-001",
+      "batchId": "b123e456-78d9-42a3-b456-426614174000",
+      "stage": "Corrección",
+      "registeredBy": "Alonso Alvarez",
+      "startDate": "2025-05-10",
+      "endDate": "2025-05-10",
+      "initialBrix": 20.5,
+      "finalBrix": 23.5,
+      "addedSugarKg": 4.2,
+      "initialPH": 3.90,
+      "finalPH": 3.60,
+      "acidType": "Tartárico",
+      "acidAddedGL": 1.5,
+      "SO2AddedMgL": 60,
+      "nutrientsAdded": [
+        {
+          "name": "Nutriente de levadura",
+          "quantityMgL": 50.0
+        },
+        {
+          "name": "DAP",
+          "quantityMgL": 30.0
+        }
+      ],
+      "justification": "Mosto con bajo nivel de azúcar y acidez fuera del rango ideal",
+      "comments": "Uvas en excelente estado, sin signos de podredumbre.",
+      "isCompleted": true
+    }
+  ],
+  "stages-fermentation": [
+    {
+      "id": "FER-001",
+      "batchId": "b123e456-78d9-42a3-b456-426614174000",
+      "stage": "Fermentación",
+      "registeredBy": "Alonso Alvarez",
+      "startDate": "2025-05-10",
+      "endDate": "2025-05-10",
+      "yeastUsedMgL": 225.0,
+      "pH": 3.4,
+      "initialBrix": 23.5,
+      "finalBrix": 1.5,
+      "initialpH": 3.60,
+      "finalpH": 3.45,
+      "temperatureMax": 25.8,
+      "temperatureMin": 16.2,
+      "fermentationType": "alcohólica",
+      "tankCode": "TK-FRM-07",
+      "isFinalized": true,
+      "comments": "Fermentación controlada, sin desviaciones. Se mantuvo rango óptimo de temperatura.",
+      "isCompleted": true
+    }
+  ],
+  "stages-pressing": [
+    {
+      "id": "PRE-001",
+      "batchId": "b123e456-78d9-42a3-b456-426614174000",
+      "stage": "Prensado",
+      "registeredBy": "Alonso Alvarez",
+      "startDate": "2025-05-10",
+      "endDate": "2025-05-10",
+      "pressType": "Neumática",
+      "pressPressureBars": 1.8,
+      "durationMinutes": 75,
+      "pomaceKg": 350.0,
+      "yieldLiters": 1050.0,
+      "mustUsage": "Vino blanco joven",
+      "comments": "Mosto limpio, sin restos de pieles ni sedimentos evidentes.",
+      "isCompleted": true
+    }
+  ],
+  "stages-clarification": [
+    {
+      "id": "CLA-001",
+      "batchId": "b123e456-78d9-42a3-b456-426614174000",
+      "stage": "Clarificación",
+      "registeredBy": "Alonso Alvarez",
+      "startDate": "2025-05-10",
+      "endDate": "2025-05-10",
+      "method": "Bentonita",
+      "clarifyingAgents": [
+        {
+          "name": "Bentonita",
+          "dose": 5.0
+        },
+        {
+          "name": "Gelatina",
+          "dose": 2.0
+        }
+      ],
+      "turbidityBeforeNTU": 35.0,
+      "turbidityAfterNTU": 2.8,
+      "volumeLiters": 1200.0,
+      "temperature": 4.0,
+      "durationHours": 48,
+      "comments": "Clarificación efectiva, se observa brillo visual. Preparado para filtración.",
+      "isCompleted": true
+    }
+  ],
+  "stages-aging": [
+    {
+      "id": "ANE-001",
+      "batchId": "b123e456-78d9-42a3-b456-426614174000",
+      "stage": "Añejamiento",
+      "registeredBy": "Daniel Vargas",
+      "startDate": "2025-05-10",
+      "endDate": "2025-05-10",
+      "containerType": "Barrica",
+      "material": "Roble Francés",
+      "containerCode": "BARR-FR-12",
+      "avgTemperature": 16.5,
+      "volumeLiters": 225.0,
+      "durationMonths": 6,
+      "frequencyDays": null,
+      "refilled": 15,
+      "batonnage": 0,
+      "rackings": 2,
+      "purpose": "Crianza oxidativa para vino reserva",
+      "comments": "Buena integración madera-vino, sin desviaciones aromáticas.",
+      "isCompleted": true
+    }
+  ],
+  "stages-filtration": [
+    {
+      "id": "FIL-001",
+      "batchId": "b123e456-78d9-42a3-b456-426614174000",
+      "stage": "Filtración",
+      "registeredBy": "Alonso Alvarez",
+      "startDate": "2025-05-10",
+      "endDate": "2025-05-10",
+      "filtrationType": "Filtración estéril",
+      "filterMedia": "Membrana PES",
+      "poreMicrons": 0.45,
+      "turbidityBefore": 2.5,
+      "turbidityAfter": 0.4,
+      "temperature": 14.0,
+      "pressureBars": 1.0,
+      "filteredVolumeLiters": 1200.0,
+      "isSterile": true,
+      "filterChanged": false,
+      "changeReason": "Sin cambio",
+      "comments": "Filtración sin incidencias, vino limpio y brillante, listo para embotellado.",
+      "isCompleted": true
+    }
+  ],
+  "stages-bottling": [
+    {
+      "id": "EMB-001",
+      "batchId": "b123e456-78d9-42a3-b456-426614174000",
+      "stage": "Embotellado",
+      "registeredBy": "Camila Fuentes",
+      "startDate": "2025-05-10",
+      "endDate": "2025-05-10",
+      "bottlingLine": "LINEA-2",
+      "bottlesFilled": 1600,
+      "bottleVolumeMl": 750,
+      "totalVolumeLiters": 1200.0,
+      "sealType": "Corcho natural",
+      "code": "B2024-VINEYARD01",
+      "temperature": 15.0,
+      "wasFiltered": true,
+      "wereLabelsApplied": true,
+      "wereCapsulesApplied": true,
+      "comments": "Proceso fluido. Sin incidencias.",
+      "isCompleted": true
+    }
+  ],
+  "stages": [
+    {
+      "id": "STG-001",
+      "batchId": "b123e456-78d9-42a3-b456-426614174000",
+      "receptionStage": {
+        "stage": "Recepción",
+        "registeredBy": "Alonso Alvarez",
+        "startDate": "2025-05-10",
+        "endDate": "2025-05-10",
+        "sugarLevelBrix": 20.5,
+        "pH": 3.4,
+        "temperature": 18.2,
+        "quantityKg": 1250.2,
+        "comments": "Uvas en excelente estado, sin signos de podredumbre.",
+        "isCompleted": true
+      },
+      "correctionStage": {
+        "stage": "Corrección",
+        "registeredBy": "Alonso Alvarez",
+        "startDate": "2025-05-10",
+        "endDate": "2025-05-10",
+        "initialBrix": 20.5,
+        "finalBrix": 23.5,
+        "addedSugarKg": 4.2,
+        "initialPH": 3.9,
+        "finalPH": 3.6,
+        "acidType": "Tartárico",
+        "acidAddedGL": 1.5,
+        "SO2AddedMgL": 60,
+        "nutrientsAdded": [
+          {
+            "name": "Nutriente de levadura",
+            "quantityMgL": 50.0
+          },
+          {
+            "name": "DAP",
+            "quantityMgL": 30.0
+          }
+        ],
+        "justification": "Mosto con bajo nivel de azúcar y acidez fuera del rango ideal",
+        "comments": "Uvas en excelente estado, sin signos de podredumbre.",
+        "isCompleted": true
+      },
+      "fermentationStage": {
+        "stage": "Fermentación",
+        "registeredBy": "Alonso Alvarez",
+        "startDate": "2025-05-10",
+        "endDate": "2025-05-10",
+        "yeastUsedMgL": 225.0,
+        "pH": 3.4,
+        "initialBrix": 23.5,
+        "finalBrix": 1.5,
+        "initialpH": 3.6,
+        "finalpH": 3.45,
+        "temperatureMax": 25.8,
+        "temperatureMin": 16.2,
+        "fermentationType": "alcohólica",
+        "tankCode": "TK-FRM-07",
+        "isFinalized": true,
+        "comments": "Fermentación controlada, sin desviaciones. Se mantuvo rango óptimo de temperatura.",
+        "isCompleted": true
+      },
+      "pressingStage": {
+        "stage": "Prensado",
+        "registeredBy": "Alonso Alvarez",
+        "startDate": "2025-05-10",
+        "endDate": "2025-05-10",
+        "pressType": "Neumática",
+        "pressPressureBars": 1.8,
+        "durationMinutes": 75,
+        "pomaceKg": 350.0,
+        "yieldLiters": 1050.0,
+        "mustUsage": "Vino blanco joven",
+        "comments": "Mosto limpio, sin restos de pieles ni sedimentos evidentes.",
+        "isCompleted": true
+      },
+      "clarificationStage": {
+        "stage": "Clarificación",
+        "registeredBy": "Alonso Alvarez",
+        "startDate": "2025-05-10",
+        "endDate": "2025-05-10",
+        "method": "Bentonita",
+        "clarifyingAgents": [
+          {
+            "name": "Bentonita",
+            "dose": 5.0
+          },
+          {
+            "name": "Gelatina",
+            "dose": 2.0
+          }
+        ],
+        "turbidityBeforeNTU": 35.0,
+        "turbidityAfterNTU": 2.8,
+        "volumeLiters": 1200.0,
+        "temperature": 4.0,
+        "durationHours": 48,
+        "comments": "Clarificación efectiva, se observa brillo visual. Preparado para filtración.",
+        "isCompleted": true
+      },
+      "agingStage": {
+        "stage": "Añejamiento",
+        "registeredBy": "Daniel Vargas",
+        "startDate": "2025-05-10",
+        "endDate": "2025-05-10",
+        "containerType": "Barrica",
+        "material": "Roble Francés",
+        "containerCode": "BARR-FR-12",
+        "avgTemperature": 16.5,
+        "volumeLiters": 225.0,
+        "durationMonths": 6,
+        "frequencyDays": null,
+        "refilled": 15,
+        "batonnage": 0,
+        "rackings": 2,
+        "purpose": "Crianza oxidativa para vino reserva",
+        "comments": "Buena integración madera-vino, sin desviaciones aromáticas.",
+        "isCompleted": true
+      },
+      "filtrationStage": {
+        "stage": "Filtración",
+        "registeredBy": "Alonso Alvarez",
+        "startDate": "2025-05-10",
+        "endDate": "2025-05-10",
+        "filtrationType": "Filtración estéril",
+        "filterMedia": "Membrana PES",
+        "poreMicrons": 0.45,
+        "turbidityBefore": 2.5,
+        "turbidityAfter": 0.4,
+        "temperature": 14.0,
+        "pressureBars": 1.0,
+        "filteredVolumeLiters": 1200.0,
+        "isSterile": true,
+        "filterChanged": false,
+        "changeReason": "Sin cambio",
+        "comments": "Filtración sin incidencias, vino limpio y brillante, listo para embotellado.",
+        "isCompleted": true
+      },
+      "bottlingStage": {
+        "stage": "Embotellado",
+        "registeredBy": "Camila Fuentes",
+        "startDate": "2025-05-10",
+        "endDate": "2025-05-10",
+        "bottlingLine": "LINEA-2",
+        "bottlesFilled": 1600,
+        "bottleVolumeMl": 750,
+        "totalVolumeLiters": 1200.0,
+        "sealType": "Corcho natural",
+        "code": "B2024-VINEYARD01",
+        "temperature": 15.0,
+        "wasFiltered": true,
+        "wereLabelsApplied": true,
+        "wereCapsulesApplied": true,
+        "comments": "Proceso fluido. Sin incidencias.",
+        "isCompleted": true
+      }
     }
   ]
 }

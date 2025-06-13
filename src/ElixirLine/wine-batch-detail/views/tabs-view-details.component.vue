@@ -77,26 +77,24 @@ export default {
     <template #content>
 
       <!-- Contenido de los tabs -->
-      <div class="flex-1 h-full overflow-hidden flex flex-column">
+      <div class="flex-1 h-full flex flex-column overflow-hidden ">
 
         <!-- Contenido que cambia por tab -->
-        <div v-if="activeTab === '0'" class="flex-1 flex-column w-full h-full  overflow-hidden">
+        <div v-if="activeTab === '0'" class="flex-1 flex-column w-full h-full overflow-hidden">
           <batch-view-details :item-entity="itemEntity" :title="title" />
         </div>
 
         <div v-if="activeTab === '1'" class="flex-1 flex-column w-full h-full overflow-hidden">
-          <stages-by-batch :item-entity="itemEntity" :title="title"/>
+          <tasks-by-batch  :item-entity="itemEntity" :title="title" />
         </div>
 
         <div v-if="activeTab === '2'" class="flex-1 flex-column w-full h-full overflow-hidden">
-          <tasks-by-batch  :item-entity="itemEntity" :title="title" />
+          <stages-by-batch :item-entity="itemEntity" :title="title" :visible="visible" />
         </div>
 
         <div v-if="activeTab === '3'" class="flex-1 flex-column w-full h-full overflow-hidden">
           <supplies-by-batch :item-entity="itemEntity" :title="title" />
         </div>
-
-
 
       </div>
 

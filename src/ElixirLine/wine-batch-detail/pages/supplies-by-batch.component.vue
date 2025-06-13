@@ -1,10 +1,9 @@
 <script>
 
-
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
 
 export default {
-  name: 'stages-by-batch',
+  name: 'supplies-by-batch',
   components: {BasePageLayout},
 
   props: {
@@ -14,7 +13,7 @@ export default {
   },
 
   created() {
-    console.log('Stages By Batch component created');
+    console.log('Supplies By Batch component created');
   }
 }
 
@@ -27,10 +26,12 @@ export default {
       <h4>{{title}}</h4>
     </template>
 
+    Supplies
+
   </base-page-layout>
 
 </template>
 
-<style>
+<style >
 
 </style>

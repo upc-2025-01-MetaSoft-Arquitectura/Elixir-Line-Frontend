@@ -18,7 +18,6 @@ export default {
     }
   },
 
-
   created() {
     console.log("Winemaking view Component Created");
   }

@@ -6,6 +6,7 @@ export class WineBatch {
     constructor({
                     id,
                     internalCode,
+                    campaignId,
                     receptionDate,
                     harvestCampaign,
                     vineyardOrigin,
@@ -17,6 +18,7 @@ export class WineBatch {
                     status}) {
         this.id = id;
         this.internalCode = internalCode;
+        this.campaignId = campaignId;
         this.receptionDate = receptionDate;
         this.harvestCampaign = harvestCampaign;
         this.vineyardOrigin = vineyardOrigin;
