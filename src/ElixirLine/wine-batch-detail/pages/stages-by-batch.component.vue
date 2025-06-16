@@ -10,13 +10,23 @@ import {ClarificationStage} from "../model/clarificationStage.entity.js";
 import {AgingStage} from "../model/agingStage.entity.js";
 import {FiltrationStage} from "../model/filtrationStage.entity.js";
 import {BottlingStage} from "../model/bottlingStage.entity.js";
-import ReceptionStageDetail from "../components/reception-stage-detail .component.vue";
+import ReceptionStageDetail from "../components/reception-stage-detail.component.vue";
 import CorrectionStageDetail from "../components/correction-stage-detail.component.vue";
 import FermentationStageDetail from "../components/fermentation-stage-detail.component.vue";
+import PressingStageDetail from "../components/pressing-stage-detail.component.vue";
+import ClarificationStageDetail from "../components/clarification-stage-detail.component.vue";
+import AgingStageDetail from "../components/aging-stage-detail.component.vue";
+import BottlingStageDetail from "../components/bottling-stage-detail.component.vue";
+import FiltrationStageDetail from "../components/filtration-stage-detail.component.vue";
 
 export default {
   name: 'stages-by-batch',
-  components: {FermentationStageDetail, CorrectionStageDetail, ReceptionStageDetail, BasePageLayout},
+  components: {
+    FiltrationStageDetail,
+    BottlingStageDetail,
+    AgingStageDetail,
+    ClarificationStageDetail,
+    PressingStageDetail, FermentationStageDetail, CorrectionStageDetail, ReceptionStageDetail, BasePageLayout},
 
   props: {
     itemEntity: null,
@@ -193,13 +203,48 @@ export default {
       <reception-stage-detail :itemEntity="receptionStage" />
     </div>
 
-    <div v-if="selectedItem && selectedItem.name === 'Corrección'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden ">
+    <div v-else-if="selectedItem && selectedItem.name === 'Corrección'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden ">
       <correction-stage-detail :itemEntity="correctionStage" />
     </div>
 
-    <div v-if="selectedItem && selectedItem.name === 'Fermentación'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
+    <div v-else-if="selectedItem && selectedItem.name === 'Fermentación'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
      <fermentation-stage-detail :itemEntity="fermentationStage" />
     </div>
+
+    <div v-else-if="selectedItem && selectedItem.name === 'Prensado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
+      <pressing-stage-detail :itemEntity="pressingStage" />
+    </div>
+
+    <div v-else-if="selectedItem && selectedItem.name === 'Clarificación'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
+      <clarification-stage-detail :itemEntity="clarificationStage" />
+    </div>
+
+    <div v-else-if="selectedItem && selectedItem.name === 'Crianza'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
+      <aging-stage-detail :itemEntity="agingStage" />
+    </div>
+
+    <div v-else-if="selectedItem && selectedItem.name === 'Filtración'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
+      <filtration-stage-detail :itemEntity="filtrationStage" />
+    </div>
+
+    <div v-else-if="selectedItem && selectedItem.name === 'Embotellado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
+      <bottling-stage-detail :itemEntity="bottlingStage" />
+    </div>
+
+    <!-- Mensaje en caso de no haber etapas registradas -->
+    <div v-else-if="!stagesByBatch || Object.keys(stagesByBatch).length === 0" class="p-2 w-full h-full flex-1 flex
+    flex-column overflow-hidden">
+      <p class="text-center">No hay etapas registradas para este lote: {{itemEntity.internalCode}}.</p>
+    </div>
+
+    <!-- Mensaje si no hay etapa seleccionada -->
+    <div v-else-if="!selectedItem" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
+      <p class="text-center">Selecciona una etapa para ver los detalles.</p>
+    </div>
+
+
+
+
 
 
 

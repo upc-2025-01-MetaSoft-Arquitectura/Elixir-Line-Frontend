@@ -47,10 +47,11 @@ export default {
       :header="entityName"
       :closable="false">
 
+    <!-- Header fijo -->
     <template #header>
-
-      <slot name="header"></slot>
-
+      <div class="overflow-hidden">
+        <slot name="header" />
+      </div>
     </template>
 
     <!-- Quien use el componente establece el contenido -->

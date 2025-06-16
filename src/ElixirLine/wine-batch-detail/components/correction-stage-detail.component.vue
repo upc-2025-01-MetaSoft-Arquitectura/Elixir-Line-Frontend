@@ -61,6 +61,17 @@ export default {
   </div>
   <!-- Fin Etapa: Recepción -->
 
+  <div v-else class="flex flex-column h-full w-full overflow-hidden my-3 border-bottom-1 border-300">
+    <pv-card>
+      <template #header>
+        <h3 class="m-0">No hay datos de la etapa Corrección</h3>
+      </template>
+      <template #content>
+        <p>No se han registrado datos para esta etapa.</p>
+      </template>
+    </pv-card>
+  </div>
+
 </template>
 
 <style>
