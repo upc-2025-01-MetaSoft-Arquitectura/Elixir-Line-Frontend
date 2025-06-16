@@ -10,7 +10,7 @@
       "grapeVariety": "Malbec",
       "initialGrapeQuantityKg": 1500,
       "createdBy": "juan.perez@elixirline.com",
-      "progress": 45.0,
+      "progress": 45,
       "currentStage": "Fermentation",
       "status": "En proceso"
     },
@@ -24,7 +24,7 @@
       "grapeVariety": "Cabernet Sauvignon",
       "initialGrapeQuantityKg": 2000,
       "createdBy": "maria.lopez@elixirline.com",
-      "progress": 100.0,
+      "progress": 100,
       "currentStage": "Aging",
       "status": "Finalizado"
     },
@@ -38,7 +38,7 @@
       "grapeVariety": "Syrah",
       "initialGrapeQuantityKg": 1200,
       "createdBy": "carlos.fernandez@elixirline.com",
-      "progress": 45.0,
+      "progress": 45,
       "currentStage": "Clarification",
       "status": "En proceso"
     },
@@ -52,7 +52,7 @@
       "grapeVariety": "Tannat",
       "initialGrapeQuantityKg": 1800,
       "createdBy": "ana.silva@elixirline.com",
-      "progress": 100.0,
+      "progress": 100,
       "currentStage": "Completed",
       "status": "Archivado"
     },
@@ -66,7 +66,7 @@
       "grapeVariety": "Tempranillo",
       "initialGrapeQuantityKg": 1700,
       "createdBy": "luis.rios@elixirline.com",
-      "progress": 45.0,
+      "progress": 45,
       "currentStage": "Pressing",
       "status": "En proceso"
     }
@@ -461,7 +461,8 @@
           "unit": "pares"
         }
       ],
-      "description": "Desinfectar tanques de acero inoxidable antes de iniciar nueva fermentación."
+      "description": "Desinfectar tanques de acero inoxidable antes de iniciar nueva fermentación.",
+      "id": "8cd1"
     },
     {
       "environment": "industrial",
@@ -487,7 +488,8 @@
           "unit": "unidades"
         }
       ],
-      "description": "Transferencia del vino desde tanques de acero a barricas de roble para crianza."
+      "description": "Transferencia del vino desde tanques de acero a barricas de roble para crianza.",
+      "id": "8629"
     },
     {
       "environment": "industrial",
@@ -513,7 +515,8 @@
           "unit": "botellas"
         }
       ],
-      "description": "Realizar pruebas para detectar presencia de bacterias y levaduras contaminantes."
+      "description": "Realizar pruebas para detectar presencia de bacterias y levaduras contaminantes.",
+      "id": "0d3c"
     }
   ],
   "stages-reception": [
@@ -543,19 +546,19 @@
       "initialBrix": 20.5,
       "finalBrix": 23.5,
       "addedSugarKg": 4.2,
-      "initialPH": 3.90,
-      "finalPH": 3.60,
+      "initialPH": 3.9,
+      "finalPH": 3.6,
       "acidType": "Tartárico",
       "acidAddedGL": 1.5,
       "SO2AddedMgL": 60,
       "nutrientsAdded": [
         {
           "name": "Nutriente de levadura",
-          "quantityMgL": 50.0
+          "quantityMgL": 50
         },
         {
           "name": "DAP",
-          "quantityMgL": 30.0
+          "quantityMgL": 30
         }
       ],
       "justification": "Mosto con bajo nivel de azúcar y acidez fuera del rango ideal",
@@ -571,11 +574,11 @@
       "registeredBy": "Alonso Alvarez",
       "startDate": "2025-05-10",
       "endDate": "2025-05-10",
-      "yeastUsedMgL": 225.0,
+      "yeastUsedMgL": 225,
       "pH": 3.4,
       "initialBrix": 23.5,
       "finalBrix": 1.5,
-      "initialpH": 3.60,
+      "initialpH": 3.6,
       "finalpH": 3.45,
       "temperatureMax": 25.8,
       "temperatureMin": 16.2,
@@ -597,8 +600,8 @@
       "pressType": "Neumática",
       "pressPressureBars": 1.8,
       "durationMinutes": 75,
-      "pomaceKg": 350.0,
-      "yieldLiters": 1050.0,
+      "pomaceKg": 350,
+      "yieldLiters": 1050,
       "mustUsage": "Vino blanco joven",
       "comments": "Mosto limpio, sin restos de pieles ni sedimentos evidentes.",
       "isCompleted": true
@@ -616,17 +619,17 @@
       "clarifyingAgents": [
         {
           "name": "Bentonita",
-          "dose": 5.0
+          "dose": 5
         },
         {
           "name": "Gelatina",
-          "dose": 2.0
+          "dose": 2
         }
       ],
-      "turbidityBeforeNTU": 35.0,
+      "turbidityBeforeNTU": 35,
       "turbidityAfterNTU": 2.8,
-      "volumeLiters": 1200.0,
-      "temperature": 4.0,
+      "volumeLiters": 1200,
+      "temperature": 4,
       "durationHours": 48,
       "comments": "Clarificación efectiva, se observa brillo visual. Preparado para filtración.",
       "isCompleted": true
@@ -644,7 +647,7 @@
       "material": "Roble Francés",
       "containerCode": "BARR-FR-12",
       "avgTemperature": 16.5,
-      "volumeLiters": 225.0,
+      "volumeLiters": 225,
       "durationMonths": 6,
       "frequencyDays": null,
       "refilled": 15,
@@ -668,9 +671,9 @@
       "poreMicrons": 0.45,
       "turbidityBefore": 2.5,
       "turbidityAfter": 0.4,
-      "temperature": 14.0,
-      "pressureBars": 1.0,
-      "filteredVolumeLiters": 1200.0,
+      "temperature": 14,
+      "pressureBars": 1,
+      "filteredVolumeLiters": 1200,
       "isSterile": true,
       "filterChanged": false,
       "changeReason": "Sin cambio",
@@ -689,10 +692,10 @@
       "bottlingLine": "LINEA-2",
       "bottlesFilled": 1600,
       "bottleVolumeMl": 750,
-      "totalVolumeLiters": 1200.0,
+      "totalVolumeLiters": 1200,
       "sealType": "Corcho natural",
       "code": "B2024-VINEYARD01",
-      "temperature": 15.0,
+      "temperature": 15,
       "wasFiltered": true,
       "wereLabelsApplied": true,
       "wereCapsulesApplied": true,
@@ -732,11 +735,11 @@
         "nutrientsAdded": [
           {
             "name": "Nutriente de levadura",
-            "quantityMgL": 50.0
+            "quantityMgL": 50
           },
           {
             "name": "DAP",
-            "quantityMgL": 30.0
+            "quantityMgL": 30
           }
         ],
         "justification": "Mosto con bajo nivel de azúcar y acidez fuera del rango ideal",
@@ -748,7 +751,7 @@
         "registeredBy": "Alonso Alvarez",
         "startDate": "2025-05-10",
         "endDate": "2025-05-10",
-        "yeastUsedMgL": 225.0,
+        "yeastUsedMgL": 225,
         "pH": 3.4,
         "initialBrix": 23.5,
         "finalBrix": 1.5,
@@ -770,8 +773,8 @@
         "pressType": "Neumática",
         "pressPressureBars": 1.8,
         "durationMinutes": 75,
-        "pomaceKg": 350.0,
-        "yieldLiters": 1050.0,
+        "pomaceKg": 350,
+        "yieldLiters": 1050,
         "mustUsage": "Vino blanco joven",
         "comments": "Mosto limpio, sin restos de pieles ni sedimentos evidentes.",
         "isCompleted": true
@@ -785,17 +788,17 @@
         "clarifyingAgents": [
           {
             "name": "Bentonita",
-            "dose": 5.0
+            "dose": 5
           },
           {
             "name": "Gelatina",
-            "dose": 2.0
+            "dose": 2
           }
         ],
-        "turbidityBeforeNTU": 35.0,
+        "turbidityBeforeNTU": 35,
         "turbidityAfterNTU": 2.8,
-        "volumeLiters": 1200.0,
-        "temperature": 4.0,
+        "volumeLiters": 1200,
+        "temperature": 4,
         "durationHours": 48,
         "comments": "Clarificación efectiva, se observa brillo visual. Preparado para filtración.",
         "isCompleted": true
@@ -809,7 +812,7 @@
         "material": "Roble Francés",
         "containerCode": "BARR-FR-12",
         "avgTemperature": 16.5,
-        "volumeLiters": 225.0,
+        "volumeLiters": 225,
         "durationMonths": 6,
         "frequencyDays": null,
         "refilled": 15,
@@ -829,9 +832,9 @@
         "poreMicrons": 0.45,
         "turbidityBefore": 2.5,
         "turbidityAfter": 0.4,
-        "temperature": 14.0,
-        "pressureBars": 1.0,
-        "filteredVolumeLiters": 1200.0,
+        "temperature": 14,
+        "pressureBars": 1,
+        "filteredVolumeLiters": 1200,
         "isSterile": true,
         "filterChanged": false,
         "changeReason": "Sin cambio",
@@ -846,10 +849,10 @@
         "bottlingLine": "LINEA-2",
         "bottlesFilled": 1600,
         "bottleVolumeMl": 750,
-        "totalVolumeLiters": 1200.0,
+        "totalVolumeLiters": 1200,
         "sealType": "Corcho natural",
         "code": "B2024-VINEYARD01",
-        "temperature": 15.0,
+        "temperature": 15,
         "wasFiltered": true,
         "wereLabelsApplied": true,
         "wereCapsulesApplied": true,

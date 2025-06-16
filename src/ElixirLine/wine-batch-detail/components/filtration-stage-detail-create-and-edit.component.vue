@@ -20,11 +20,11 @@ export default {
 
   <!-- Etapa: Filtración -->
 
-  <div v-if="itemEntity" class="my-3 border-bottom-1 border-300">
-    <pv-card>
-      <template #header>
-        <h3 class="m-0">Etapa: Filtración</h3>
-      </template>
+  <<div v-if="itemEntity && itemEntity.stage" class="flex flex-column h-full w-full overflow-hidden my-3 border-bottom-1 border-300">
+  <pv-card>
+    <template #header>
+      <h3 class="m-0">Etapa: {{itemEntity.stage}}</h3>
+    </template>
 
       <!-- Contenido de la tarjeta -->
       <template #content>

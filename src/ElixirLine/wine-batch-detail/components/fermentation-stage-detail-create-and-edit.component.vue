@@ -21,10 +21,10 @@ export default {
 
 
   <!-- Etapa: Fermentación -->
-  <div v-if="itemEntity" class="my-3 border-bottom-1 border-300">
+  <div v-if="itemEntity && itemEntity.stage" class="flex flex-column h-full w-full overflow-hidden my-3 border-bottom-1 border-300">
     <pv-card>
       <template #header>
-        <h3 class="m-0">Etapa: Fermentación</h3>
+        <h3 class="m-0">Etapa: {{itemEntity.stage}}</h3>
       </template>
 
       <template #content>

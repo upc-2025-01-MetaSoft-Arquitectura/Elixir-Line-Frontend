@@ -18,10 +18,11 @@ export default {
 <template>
 
   <!-- Etapa: Añejamiento -->
-  <div v-if="itemEntity" class="my-3 border-bottom-1 border-300">
+  <!-- Si hay datos de la etapa Añejamiento -->
+  <div v-if="itemEntity && itemEntity.stage" class="flex flex-column h-full w-full overflow-hidden my-3 border-bottom-1 border-300">
     <pv-card>
       <template #header>
-        <h3 class="m-0">Etapa: Añejamiento</h3>
+        <h3 class="m-0">Etapa: {{itemEntity.stage}}</h3>
       </template>
 
       <template #content>

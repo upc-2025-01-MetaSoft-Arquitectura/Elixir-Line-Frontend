@@ -9,7 +9,7 @@ export default {
 
   props: {
     itemEntity: null,
-    visible: Boolean
+    visible: Boolean,
   },
 
   data() {

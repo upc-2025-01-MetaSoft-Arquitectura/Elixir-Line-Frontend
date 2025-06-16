@@ -10,41 +10,32 @@ import {ClarificationStage} from "../model/clarificationStage.entity.js";
 import {AgingStage} from "../model/agingStage.entity.js";
 import {FiltrationStage} from "../model/filtrationStage.entity.js";
 import {BottlingStage} from "../model/bottlingStage.entity.js";
-import ReceptionStageDetailCreateAndEditComponent from "../components/reception-stage-detail-create-and-edit.component.vue";
-import CorrectionStageDetailCreateAndEditComponent from "../components/correction-stage-detail-create-and-edit.component.vue";
-import FermentationStageDetailCreateAndEditComponent from "../components/fermentation-stage-detail-create-and-edit.component.vue";
-import PressingStageDetailCreateAndEditComponent from "../components/pressing-stage-detail-create-and-edit.component.vue";
-import ClarificationStageDetailCreateAndEditComponent from "../components/clarification-stage-detail-create-and-edit.component.vue";
-import AgingStageDetailCreateAndEditComponent from "../components/aging-stage-detail-create-and-edit.component.vue";
-import BottlingStageDetailCreateAndEditComponent from "../components/bottling-stage-detail-create-and-edit.component.vue";
-import FiltrationStageDetailCreateAndEditComponent from "../components/filtration-stage-detail-create-and-edit.component.vue";
-import ReceptionStageDetailCreateAndEdit from "../components/reception-stage-detail-create-and-edit.component.vue";
-import CorrectionStageDetailCreateAndEdit from "../components/correction-stage-detail-create-and-edit.component.vue";
+import ReceptionStageManagement from "../pages/reception-stage-management.component.vue";
+import CorrectionStageCreateAndEdit from "../components/correction-stage-create-and-edit.vue";
 import FermentationStageDetailCreateAndEdit
   from "../components/fermentation-stage-detail-create-and-edit.component.vue";
 import PressingStageDetailCreateAndEdit from "../components/pressing-stage-detail-create-and-edit.component.vue";
-import BottlingStageDetailCreateAndEdit from "../components/bottling-stage-detail-create-and-edit.component.vue";
-import FiltrationStageDetailCreateAndEdit from "../components/filtration-stage-detail-create-and-edit.component.vue";
-import AgingStageDetailCreateAndEdit from "../components/aging-stage-detail-create-and-edit.component.vue";
 import ClarificationStageDetailCreateAndEdit
   from "../components/clarification-stage-detail-create-and-edit.component.vue";
+import BottlingStageDetailCreateAndEdit from "../components/bottling-stage-detail-create-and-edit.component.vue";
+import AgingStageDetailCreateAndEdit from "../components/aging-stage-detail-create-and-edit.component.vue";
+import FiltrationStageDetailCreateAndEdit from "../components/filtration-stage-detail-create-and-edit.component.vue";
+import {Stages} from "../model/stages.entity.js";
+import CorrectionStageManagement from "../pages/correction-stage-management.component.vue";
+
 
 export default {
   name: 'stages-by-batch-management',
   components: {
-    ClarificationStageDetailCreateAndEdit,
-    AgingStageDetailCreateAndEdit,
+    CorrectionStageManagement,
     FiltrationStageDetailCreateAndEdit,
+    AgingStageDetailCreateAndEdit,
     BottlingStageDetailCreateAndEdit,
+    ClarificationStageDetailCreateAndEdit,
     PressingStageDetailCreateAndEdit,
     FermentationStageDetailCreateAndEdit,
-    CorrectionStageDetailCreateAndEdit,
-    ReceptionStageDetailCreateAndEdit,
-    FiltrationStageDetail: FiltrationStageDetailCreateAndEditComponent,
-    BottlingStageDetail: BottlingStageDetailCreateAndEditComponent,
-    AgingStageDetail: AgingStageDetailCreateAndEditComponent,
-    ClarificationStageDetail: ClarificationStageDetailCreateAndEditComponent,
-    PressingStageDetail: PressingStageDetailCreateAndEditComponent, FermentationStageDetail: FermentationStageDetailCreateAndEditComponent, CorrectionStageDetail: CorrectionStageDetailCreateAndEditComponent, ReceptionStageDetail: ReceptionStageDetailCreateAndEditComponent, BasePageLayout},
+    CorrectionStageDetailCreateAndEdit: CorrectionStageCreateAndEdit, ReceptionStageManagement, BasePageLayout},
+
 
   props: {
     itemEntity: null,
@@ -54,6 +45,17 @@ export default {
 
   data() {
     return {
+
+      itemObject: new Stages({}),
+      stagesApiService: null,
+      createAndEditDialogIsVisible: false,
+      isEdit: false,
+      submitted: false,
+
+
+
+      // Etapas obtenidas por batch (objeto completo)
+      stagesByBatch: new Stages({}),
 
       receptionStage : new ReceptionStage({}),
       correctionStage : new CorrectionStage({}),
@@ -65,28 +67,29 @@ export default {
       bottlingStage : new BottlingStage({}),
 
 
-      stagesApiService: null,
-
-
-
 
       //============ Datos de campañas y búsqueda ==============
 
       // Datos de la vista
-      stagesByBatch: [], // Etapas obtenidas por batch (array de objetos)
       selectedItem: null, // campaña seleccionada (objeto)
-      filteredItems: []   // campañas filtradas (objetos)
+
+      filteredItemsStages: [
+        { name: 'Recepción' },
+        { name: 'Corrección' },
+        { name: 'Fermentación' },
+        { name: 'Prensado' },
+        { name: 'Clarificación' },
+        { name: 'Crianza' },
+        { name: 'Filtración' },
+        { name: 'Embotellado' }
+      ],  // campañas filtradas (objetos)
+
+      filteredItems: [], // resultados filtrados para el autocomplete
+
     };
   },
 
   methods: {
-    onCancelRequested() {
-      this.$emit('canceled');
-    },
-
-    onSaveRequested() {
-      this.$emit('saved', this.itemEntity);
-    },
 
 
     getAllStagesByBatch(batchId) {
@@ -96,6 +99,7 @@ export default {
             const data = response.data[0];
 
             this.stagesByBatch = data; // guardas el objeto completo si quieres
+            this.itemObject = new Stages(data); // Actualiza el itemEntity con el objeto completo
 
             // Poblar etapas específicas
             this.receptionStage     = new ReceptionStage(data.receptionStage || {});
@@ -114,44 +118,14 @@ export default {
           });
     },
 
-
-    buildStageSearchItems(data) {
-      const stages = [];
-
-      if (data.receptionStage) {
-        stages.push({ name: 'Recepción', key: 'receptionStage' });
-      }
-      if (data.correctionStage) {
-        stages.push({ name: 'Corrección', key: 'correctionStage' });
-      }
-      if (data.fermentationStage) {
-        stages.push({ name: 'Fermentación', key: 'fermentationStage' });
-      }
-      if (data.pressingStage) {
-        stages.push({ name: 'Prensado', key: 'pressingStage' });
-      }
-      if (data.clarificationStage) {
-        stages.push({ name: 'Clarificación', key: 'clarificationStage' });
-      }
-      if (data.agingStage) {
-        stages.push({ name: 'Crianza', key: 'agingStage' });
-      }
-      if (data.filtrationStage) {
-        stages.push({ name: 'Filtración', key: 'filtrationStage' });
-      }
-      if (data.bottlingStage) {
-        stages.push({ name: 'Embotellado', key: 'bottlingStage' });
-      }
-
-      return stages;
-    },
+    // ===================================================================================================
 
 
     searchStages(event) {
 
       const query = event.query.toLowerCase();
 
-      this.filteredItems = this.buildStageSearchItems(this.stagesByBatch).filter(item =>
+      this.filteredItems = this.filteredItemsStages.filter(item =>
           item.name.toLowerCase().includes(query)
       );
 
@@ -187,6 +161,7 @@ export default {
 <template>
 
   <base-page-layout>
+
     <template #header>
       <div class="flex flex-column w-full gap-4 p-2 overflow-hidden" >
 
@@ -218,11 +193,11 @@ export default {
     </template>
 
     <div v-if="selectedItem && selectedItem.name === 'Recepción'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <reception-stage-detail-create-and-edit :itemEntity="receptionStage" />
+      <reception-stage-management :item="itemObject" ></reception-stage-management>
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Corrección'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden ">
-      <correction-stage-detail-create-and-edit :itemEntity="correctionStage" />
+      <correction-stage-management :item="itemObject" ></correction-stage-management>
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Fermentación'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
@@ -259,13 +234,6 @@ export default {
     <div v-else-if="!selectedItem" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
       <p class="text-center">Selecciona una etapa para ver los detalles.</p>
     </div>
-
-
-
-
-
-
-
 
 
   </base-page-layout>

@@ -7,12 +7,12 @@ import ProfileManagement from "../../profile/pages/profile-management.component.
 import BatchViewDetails from "../pages/bacth-view-detail.component.vue";
 import TasksByBatch from "../pages/tasks-by-batch.component.vue";
 import SuppliesByBatch from "../pages/supplies-by-batch.component.vue";
-import StagesByBatchManagement from "../pages/stages-by-batch.component-management.vue";
+import StagesByBatchManagementComponent from "./stages-by-batch-management.component.vue";
 
 export default {
   name: "tabs-view-details",
   components: {
-    StagesByBatchManagement,
+    StagesByBatchManagement: StagesByBatchManagementComponent,
     SuppliesByBatch,
     TasksByBatch, BatchViewDetails, ProfileManagement, EmployeeManagement, CreateAndEdit, ViewDetails},
 
