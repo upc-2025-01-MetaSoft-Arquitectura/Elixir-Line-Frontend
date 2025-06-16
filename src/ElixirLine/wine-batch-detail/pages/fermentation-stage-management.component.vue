@@ -5,11 +5,12 @@ import ReceptionStageCreateAndEdit from "../components/reception-stage-create-an
 import {Stages} from "../model/stages.entity.js";
 import {StagesApiService} from "../services/stages-api.service.js";
 import {FermentationStage} from "../model/fermentationStage.entity.js";
+import FermentationStageCreateAndEdit from "../components/fermentation-stage-create-and-edit.component.vue";
 
 export default {
   name: 'fermentation-stage-management',
 
-  components: {CorrectionStageCreateAndEdit, ReceptionStageCreateAndEdit},
+  components: {FermentationStageCreateAndEdit, CorrectionStageCreateAndEdit, ReceptionStageCreateAndEdit},
 
   props:{
     item: null
@@ -240,6 +241,15 @@ export default {
     </pv-card>
 
 
+
+    <!-- Diálogo para crear o editar etapa -->
+    <fermentation-stage-create-and-edit
+        :edit="isEdit"
+        :item-entity="itemObject"
+        :visible="createAndEditDialogIsVisible"
+        @cancel-requested="onCancelRequested"
+        @save-requested="onSaveRequested($event)"
+    />
 
 
 

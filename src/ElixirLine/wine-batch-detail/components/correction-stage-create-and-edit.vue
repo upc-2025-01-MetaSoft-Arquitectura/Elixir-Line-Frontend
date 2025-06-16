@@ -64,35 +64,7 @@ export default {
       @saved-shared="onSaveRequested($event)"
   >
 
-    <!-- Content slot for additional fields or information
-    "correctionStage": {
-        "stage": "Corrección",
-        "registeredBy": "Alonso Alvarez",
-        "startDate": "2025-05-10",
-        "endDate": "2025-05-10",
-        "initialBrix": 20.5,
-        "finalBrix": 23.5,
-        "addedSugarKg": 4.2,
-        "initialPH": 3.9,
-        "finalPH": 3.6,
-        "acidType": "Tartárico",
-        "acidAddedGL": 1.5,
-        "SO2AddedMgL": 60,
-        "nutrientsAdded": [
-          {
-            "name": "Nutriente de levadura",
-            "quantityMgL": 50
-          },
-          {
-            "name": "DAP",
-            "quantityMgL": 30
-          }
-        ],
-        "justification": "Mosto con bajo nivel de azúcar y acidez fuera del rango ideal",
-        "comments": "Uvas en excelente estado, sin signos de podredumbre.",
-        "isCompleted": true
-      },
-      -->
+    <!-- Content slot for additional fields or information -->
 
     <template #content>
       <div class="field">
