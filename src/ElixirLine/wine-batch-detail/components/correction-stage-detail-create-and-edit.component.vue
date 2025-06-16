@@ -1,7 +1,7 @@
 <script>
 
 export default {
-  name: 'correction-stage-detail',
+  name: 'correction-stage-detail-create-and-edit',
 
   props: {
     itemEntity: null,

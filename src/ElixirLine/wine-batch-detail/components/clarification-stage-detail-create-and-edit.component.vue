@@ -2,7 +2,7 @@
 
 export default {
 
-  name: 'clarification-stage-detail',
+  name: 'clarification-stage-detail-create-and-edit',
 
   props: {
     itemEntity: null,

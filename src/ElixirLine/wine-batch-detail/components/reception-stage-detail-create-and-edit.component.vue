@@ -3,7 +3,7 @@
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
 
 export default {
-  name: 'reception-stage-detail',
+  name: 'reception-stage-detail-create-and-edit',
   components: {BasePageLayout},
 
   props: {

@@ -1,7 +1,7 @@
 <script>
 
 export default {
-  name: 'aging-stage-detail',
+  name: 'aging-stage-detail-create-and-edit',
 
 
   props: {

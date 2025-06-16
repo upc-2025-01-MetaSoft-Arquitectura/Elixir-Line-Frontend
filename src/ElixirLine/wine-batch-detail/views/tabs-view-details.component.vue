@@ -5,16 +5,16 @@ import CreateAndEdit from "../../../shared/components/create-and-edit.component.
 import EmployeeManagement from "../../employee-management/pages/employee-management.component.vue";
 import ProfileManagement from "../../profile/pages/profile-management.component.vue";
 import BatchViewDetails from "../pages/bacth-view-detail.component.vue";
-import StagesByBatch from "../pages/stages-by-batch.component.vue";
 import TasksByBatch from "../pages/tasks-by-batch.component.vue";
 import SuppliesByBatch from "../pages/supplies-by-batch.component.vue";
+import StagesByBatchManagement from "../pages/stages-by-batch.component-management.vue";
 
 export default {
   name: "tabs-view-details",
   components: {
+    StagesByBatchManagement,
     SuppliesByBatch,
-    TasksByBatch,
-    StagesByBatch, BatchViewDetails, ProfileManagement, EmployeeManagement, CreateAndEdit, ViewDetails},
+    TasksByBatch, BatchViewDetails, ProfileManagement, EmployeeManagement, CreateAndEdit, ViewDetails},
 
   props: {
     itemEntity: null,
@@ -89,7 +89,7 @@ export default {
         </div>
 
         <div v-if="activeTab === '2'" class="flex-1 flex-column w-full h-full overflow-hidden">
-          <stages-by-batch :item-entity="itemEntity" :title="title" :visible="visible" />
+          <stages-by-batch-management :item-entity="itemEntity" :title="title" :visible="visible" />
         </div>
 
         <div v-if="activeTab === '3'" class="flex-1 flex-column w-full h-full overflow-hidden">

@@ -10,23 +10,41 @@ import {ClarificationStage} from "../model/clarificationStage.entity.js";
 import {AgingStage} from "../model/agingStage.entity.js";
 import {FiltrationStage} from "../model/filtrationStage.entity.js";
 import {BottlingStage} from "../model/bottlingStage.entity.js";
-import ReceptionStageDetail from "../components/reception-stage-detail.component.vue";
-import CorrectionStageDetail from "../components/correction-stage-detail.component.vue";
-import FermentationStageDetail from "../components/fermentation-stage-detail.component.vue";
-import PressingStageDetail from "../components/pressing-stage-detail.component.vue";
-import ClarificationStageDetail from "../components/clarification-stage-detail.component.vue";
-import AgingStageDetail from "../components/aging-stage-detail.component.vue";
-import BottlingStageDetail from "../components/bottling-stage-detail.component.vue";
-import FiltrationStageDetail from "../components/filtration-stage-detail.component.vue";
+import ReceptionStageDetailCreateAndEditComponent from "../components/reception-stage-detail-create-and-edit.component.vue";
+import CorrectionStageDetailCreateAndEditComponent from "../components/correction-stage-detail-create-and-edit.component.vue";
+import FermentationStageDetailCreateAndEditComponent from "../components/fermentation-stage-detail-create-and-edit.component.vue";
+import PressingStageDetailCreateAndEditComponent from "../components/pressing-stage-detail-create-and-edit.component.vue";
+import ClarificationStageDetailCreateAndEditComponent from "../components/clarification-stage-detail-create-and-edit.component.vue";
+import AgingStageDetailCreateAndEditComponent from "../components/aging-stage-detail-create-and-edit.component.vue";
+import BottlingStageDetailCreateAndEditComponent from "../components/bottling-stage-detail-create-and-edit.component.vue";
+import FiltrationStageDetailCreateAndEditComponent from "../components/filtration-stage-detail-create-and-edit.component.vue";
+import ReceptionStageDetailCreateAndEdit from "../components/reception-stage-detail-create-and-edit.component.vue";
+import CorrectionStageDetailCreateAndEdit from "../components/correction-stage-detail-create-and-edit.component.vue";
+import FermentationStageDetailCreateAndEdit
+  from "../components/fermentation-stage-detail-create-and-edit.component.vue";
+import PressingStageDetailCreateAndEdit from "../components/pressing-stage-detail-create-and-edit.component.vue";
+import BottlingStageDetailCreateAndEdit from "../components/bottling-stage-detail-create-and-edit.component.vue";
+import FiltrationStageDetailCreateAndEdit from "../components/filtration-stage-detail-create-and-edit.component.vue";
+import AgingStageDetailCreateAndEdit from "../components/aging-stage-detail-create-and-edit.component.vue";
+import ClarificationStageDetailCreateAndEdit
+  from "../components/clarification-stage-detail-create-and-edit.component.vue";
 
 export default {
-  name: 'stages-by-batch',
+  name: 'stages-by-batch-management',
   components: {
-    FiltrationStageDetail,
-    BottlingStageDetail,
-    AgingStageDetail,
-    ClarificationStageDetail,
-    PressingStageDetail, FermentationStageDetail, CorrectionStageDetail, ReceptionStageDetail, BasePageLayout},
+    ClarificationStageDetailCreateAndEdit,
+    AgingStageDetailCreateAndEdit,
+    FiltrationStageDetailCreateAndEdit,
+    BottlingStageDetailCreateAndEdit,
+    PressingStageDetailCreateAndEdit,
+    FermentationStageDetailCreateAndEdit,
+    CorrectionStageDetailCreateAndEdit,
+    ReceptionStageDetailCreateAndEdit,
+    FiltrationStageDetail: FiltrationStageDetailCreateAndEditComponent,
+    BottlingStageDetail: BottlingStageDetailCreateAndEditComponent,
+    AgingStageDetail: AgingStageDetailCreateAndEditComponent,
+    ClarificationStageDetail: ClarificationStageDetailCreateAndEditComponent,
+    PressingStageDetail: PressingStageDetailCreateAndEditComponent, FermentationStageDetail: FermentationStageDetailCreateAndEditComponent, CorrectionStageDetail: CorrectionStageDetailCreateAndEditComponent, ReceptionStageDetail: ReceptionStageDetailCreateAndEditComponent, BasePageLayout},
 
   props: {
     itemEntity: null,
@@ -200,35 +218,35 @@ export default {
     </template>
 
     <div v-if="selectedItem && selectedItem.name === 'Recepción'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <reception-stage-detail :itemEntity="receptionStage" />
+      <reception-stage-detail-create-and-edit :itemEntity="receptionStage" />
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Corrección'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden ">
-      <correction-stage-detail :itemEntity="correctionStage" />
+      <correction-stage-detail-create-and-edit :itemEntity="correctionStage" />
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Fermentación'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-     <fermentation-stage-detail :itemEntity="fermentationStage" />
+     <fermentation-stage-detail-create-and-edit :itemEntity="fermentationStage" />
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Prensado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <pressing-stage-detail :itemEntity="pressingStage" />
+      <pressing-stage-detail-create-and-edit :itemEntity="pressingStage" />
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Clarificación'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <clarification-stage-detail :itemEntity="clarificationStage" />
+      <clarification-stage-detail-create-and-edit :itemEntity="clarificationStage" />
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Crianza'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <aging-stage-detail :itemEntity="agingStage" />
+      <aging-stage-detail-create-and-edit :itemEntity="agingStage" />
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Filtración'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <filtration-stage-detail :itemEntity="filtrationStage" />
+      <filtration-stage-detail-create-and-edit :itemEntity="filtrationStage" />
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Embotellado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <bottling-stage-detail :itemEntity="bottlingStage" />
+      <bottling-stage-detail-create-and-edit :itemEntity="bottlingStage" />
     </div>
 
     <!-- Mensaje en caso de no haber etapas registradas -->
