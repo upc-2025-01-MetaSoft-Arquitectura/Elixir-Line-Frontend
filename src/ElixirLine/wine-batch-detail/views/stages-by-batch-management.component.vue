@@ -11,9 +11,6 @@ import {AgingStage} from "../model/agingStage.entity.js";
 import {FiltrationStage} from "../model/filtrationStage.entity.js";
 import {BottlingStage} from "../model/bottlingStage.entity.js";
 import ReceptionStageManagement from "../pages/reception-stage-management.component.vue";
-import CorrectionStageCreateAndEdit from "../components/correction-stage-create-and-edit.vue";
-import FermentationStageDetailCreateAndEdit
-  from "../components/fermentation-stage-detail-create-and-edit.component.vue";
 import PressingStageDetailCreateAndEdit from "../components/pressing-stage-detail-create-and-edit.component.vue";
 import ClarificationStageDetailCreateAndEdit
   from "../components/clarification-stage-detail-create-and-edit.component.vue";
@@ -22,19 +19,20 @@ import AgingStageDetailCreateAndEdit from "../components/aging-stage-detail-crea
 import FiltrationStageDetailCreateAndEdit from "../components/filtration-stage-detail-create-and-edit.component.vue";
 import {Stages} from "../model/stages.entity.js";
 import CorrectionStageManagement from "../pages/correction-stage-management.component.vue";
+import FermentationStageManagement from "../pages/fermentation-stage-management.component.vue";
 
 
 export default {
   name: 'stages-by-batch-management',
   components: {
+    FermentationStageManagement,
     CorrectionStageManagement,
     FiltrationStageDetailCreateAndEdit,
     AgingStageDetailCreateAndEdit,
     BottlingStageDetailCreateAndEdit,
     ClarificationStageDetailCreateAndEdit,
     PressingStageDetailCreateAndEdit,
-    FermentationStageDetailCreateAndEdit,
-    CorrectionStageDetailCreateAndEdit: CorrectionStageCreateAndEdit, ReceptionStageManagement, BasePageLayout},
+    ReceptionStageManagement, BasePageLayout},
 
 
   props: {
@@ -201,7 +199,7 @@ export default {
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Fermentación'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-     <fermentation-stage-detail-create-and-edit :itemEntity="fermentationStage" />
+     <fermentation-stage-management :item="itemObject" />
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Prensado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">

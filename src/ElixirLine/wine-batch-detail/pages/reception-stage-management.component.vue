@@ -185,9 +185,14 @@ export default {
       </template>
 
       <template #content>
+
+        <div class="flex align-items-center gap-2">
+          <i class="pi pi-user text-lg"></i>
+          <p><strong>Registrado por:</strong> {{ receptionStage.registeredBy }}</p>
+        </div>
+
         <div class="grid p-2">
           <div class="col-12 md:col-6">
-            <p><strong>Registrado por:</strong> {{ receptionStage.registeredBy }}</p>
             <p><strong>Fecha:</strong> {{ receptionStage.startDate }}</p>
             <p><strong>Temperatura:</strong> {{ receptionStage.temperature }} °C</p>
             <p><strong>pH:</strong> {{ receptionStage.pH }}</p>
@@ -196,9 +201,16 @@ export default {
             <p><strong>Brix:</strong> {{ receptionStage.sugarLevelBrix }}</p>
             <p><strong>Cantidad (kg):</strong> {{ receptionStage.quantityKg }}</p>
             <p><strong>Comentarios:</strong> {{ receptionStage.comments }}</p>
-            <p><strong>Completado:</strong> {{ receptionStage.isCompleted ? 'Sí' : 'No' }}</p>
           </div>
         </div>
+
+        <!-- Estado de finalización -->
+        <div class="flex align-items-center gap-2 mt-4">
+          <i class="pi text-xl" :class="receptionStage.isCompleted ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"></i>
+          <span class="text-lg font-medium">{{ receptionStage.isCompleted ? 'Etapa completada' : 'Etapa no completada' }} </span>
+        </div>
+
+
       </template>
     </pv-card>
 

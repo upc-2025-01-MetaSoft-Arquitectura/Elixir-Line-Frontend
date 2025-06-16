@@ -1,13 +1,14 @@
 <script>
 
+import CorrectionStageCreateAndEdit from "../components/correction-stage-create-and-edit.vue";
+import ReceptionStageCreateAndEdit from "../components/reception-stage-create-and-edit.component.vue";
 import {Stages} from "../model/stages.entity.js";
 import {StagesApiService} from "../services/stages-api.service.js";
-import {CorrectionStage} from "../model/correctionStage.entity.js";
-import ReceptionStageCreateAndEdit from "../components/reception-stage-create-and-edit.component.vue";
-import CorrectionStageCreateAndEdit from "../components/correction-stage-create-and-edit.vue";
+import {FermentationStage} from "../model/fermentationStage.entity.js";
 
 export default {
-  name: 'correction-stage-management',
+  name: 'fermentation-stage-management',
+
   components: {CorrectionStageCreateAndEdit, ReceptionStageCreateAndEdit},
 
   props:{
@@ -16,10 +17,10 @@ export default {
 
   data() {
     return {
-      title: { singular: 'Etapa de Corrección', plural: 'Etapa de Corrección' },
+      title: { singular: 'Etapa de Fermentación', plural: 'Etapa de Fermentación' },
       itemObject: new Stages({}),
-      correctionStage: new CorrectionStage({}),
-      correctionStageApiService: null,
+      fermentationStage: new FermentationStage({}),
+      fermentationStageApiService: null,
       createAndEditDialogIsVisible: false,
       isEdit: false,
       submitted: false,
@@ -83,9 +84,9 @@ export default {
 
     //#region CRUD Operations
     create() {
-      this.correctionStageApiService.create(this.itemObject).then(response => {
+      this.fermentationStageApiService.create(this.itemObject).then(response => {
 
-        this.correctionStage = new CorrectionStage(response.data.correctionStage);
+        this.fermentationStage = new FermentationStage(response.data.fermentationStage);
         this.itemObject = new Stages(response.data);
 
         this.notifySuccessfulAction('Stage created successfully');
@@ -95,9 +96,9 @@ export default {
     },
 
     update() {
-      this.correctionStageApiService.update(this.itemObject.id, this.itemObject).then(response => {
+      this.fermentationStageApiService.update(this.itemObject.id, this.itemObject).then(response => {
 
-        this.correctionStage = new CorrectionStage(response.data.correctionStage);
+        this.fermentationStage = new FermentationStage(response.data.fermentationStage);
         this.itemObject= new Stages(response.data);
 
         this.notifySuccessfulAction('Stage updated successfully');
@@ -113,33 +114,34 @@ export default {
 
   //#region Lifecycle Hooks
   created() {
-    this.correctionStageApiService = new StagesApiService ('/stages');
+    this.fermentationStageApiService = new StagesApiService ('/stages');
 
     this.itemObject = this.item;
-    this.correctionStage = this.item.correctionStage;
+    this.fermentationStage = this.item.fermentationStage;
 
-    console.log('RECEPTION STAGE ===================== ', this.correctionStage);
+    console.log('RECEPTION STAGE ===================== ', this.fermentationStage);
 
     console.log("🔍 Reception Stage Management created with item:", this.item);
   },
-  //#endregion
-
-
+  //#endregion  
+  
 }
 
 </script>
 
 <template>
 
-  <div class="reception-container flex flex-column flex-1 w-full h-full gap-3 p-3 surface-ground overflow-auto">
+  <div
+      class="fermentation-container flex flex-column flex-1 w-full h-full gap-3 p-3 surface-ground overflow-auto">
 
     <!-- Encabezado y botones de acción -->
-    <div class="flex flex-wrap justify-content-between align-items-center gap-4 border-bottom-1 surface-border pb-3">
+    <div
+        class="flex flex-wrap justify-content-between align-items-center gap-4 border-bottom-1 surface-border pb-3">
 
       <!-- Título de la etapa -->
       <div class="flex align-items-center gap-2">
         <i class="pi pi-cog text-xl"></i>
-        <h3 class="m-0 text-xl font-medium">Etapa: {{ correctionStage.stage || 'No registrada' }}</h3>
+        <h3 class="m-0 text-xl font-medium">Etapa: {{ fermentationStage.stage || 'No registrada' }}</h3>
       </div>
 
       <!-- Botones de acción -->
@@ -156,79 +158,93 @@ export default {
             icon="pi pi-pencil"
             @click="onEditItem(itemObject)"
             class="p-button-warning"
-            v-if="correctionStage.stage"
+            v-if="fermentationStage.stage"
         />
 
         <pv-button
             label="Eliminar"
             icon="pi pi-trash"
-            @click="onDeleteItem(correctionStage)"
+            @click="onDeleteItem(fermentationStage)"
             class="p-button-danger"
-            v-if="correctionStage.stage"
+            v-if="fermentationStage.stage"
         />
       </div>
     </div>
 
-    <!-- Detalles de la etapa de corrección -->
-    <pv-card v-if="correctionStage.stage">
+
+    <!-- Detalles de la etapa de fermentación -->
+
+    <pv-card v-if="fermentationStage.stage">
       <template #header>
-        <h4 class="m-0">Detalles de la etapa de corrección</h4>
+        <h4 class="m-0">Detalles de la etapa de fermentación</h4>
       </template>
 
+      <!-- contenido de la tarjeta
+      "fermentationStage": {
+        "stage": "Fermentación",
+        "registeredBy": "Alonso Alvarez",
+        "startDate": "2025-05-10",
+        "endDate": "2025-05-10",
+        "yeastUsedMgL": 225,
+        "pH": 3.4,
+        "initialBrix": 23.5,
+        "finalBrix": 1.5,
+        "initialpH": 3.6,
+        "finalpH": 3.45,
+        "temperatureMax": 25.8,
+        "temperatureMin": 16.2,
+        "fermentationType": "alcohólica",
+        "tankCode": "TK-FRM-07",
+        "isFinalized": true,
+        "comments": "Fermentación controlada, sin desviaciones. Se mantuvo rango óptimo de temperatura.",
+        "isCompleted": true
+      },
+      -->
       <template #content>
 
         <div class="flex align-items-center gap-2">
           <i class="pi pi-user text-lg"></i>
-          <p><strong>Registrado por:</strong> {{ correctionStage.registeredBy }}</p>
+          <p><strong>Registrado por:</strong> {{ fermentationStage.registeredBy }}</p>
         </div>
 
         <div class="grid p-2">
           <div class="col-12 md:col-6">
-            <p><strong>Registrado por:</strong> {{ correctionStage.registeredBy }}</p>
-            <p><strong>Fecha de inicio:</strong> {{ correctionStage.startDate }}</p>
-            <p><strong>Fecha de finalización:</strong> {{ correctionStage.endDate }}</p>
-            <p><strong>Brix inicial:</strong> {{ correctionStage.initialBrix }}</p>
+            <p><strong>Fecha de inicio:</strong> {{ fermentationStage.startDate }}</p>
+            <p><strong>Fecha de finalización:</strong> {{ fermentationStage.endDate }}</p>
+            <p><strong>Levadura utilizada (mg/L):</strong> {{ fermentationStage.yeastUsedMgL }}</p>
           </div>
           <div class="col-12 md:col-6">
-            <p><strong>Brix final:</strong> {{ correctionStage.finalBrix }}</p>
-            <p><strong>Azúcar añadido (kg):</strong> {{ correctionStage.addedSugarKg }}</p>
-            <p><strong>pH inicial:</strong> {{ correctionStage.initialPH }}</p>
-            <p><strong>pH final:</strong> {{ correctionStage.finalPH }}</p>
+            <p><strong>pH:</strong> {{ fermentationStage.pH }}</p>
+            <p><strong>Brix inicial:</strong> {{ fermentationStage.initialBrix }}</p>
+            <p><strong>Brix final:</strong> {{ fermentationStage.finalBrix }}</p>
           </div>
           <div class="col-12 md:col-6">
-            <p><strong>Tipo de ácido:</strong> {{ correctionStage.acidType }}</p>
-            <p><strong>Ácido añadido (g/L):</strong> {{ correctionStage.acidAddedGL }}</p>
-            <p><strong>Sulfitos añadidos (mg/L):</strong> {{ correctionStage.SO2AddedMgL }}</p>
+            <p><strong>Temperatura máxima (°C):</strong> {{ fermentationStage.temperatureMax }}</p>
+            <p><strong>Temperatura mínima (°C):</strong> {{ fermentationStage.temperatureMin }}</p>
+            <p><strong>Tipo de fermentación:</strong> {{ fermentationStage.fermentationType }}</p>
           </div>
           <div class="col-12 md:col-6">
-            <p v-for="(nutrient, index) in correctionStage.nutrientsAdded" :key="index">
-              <strong>Nutriente añadido:</strong> {{ nutrient.name }} ({{ nutrient.quantity }} mg/L)
-            </p>
-            <p><strong>Justificación:</strong> {{ correctionStage.justification }}</p>
-            <p><strong>Comentarios:</strong> {{ correctionStage.comments }}</p>
+            <p><strong>Código del tanque:</strong> {{ fermentationStage.tankCode }}</p>
+            <p><strong>Comentarios:</strong> {{ fermentationStage.comments }}</p>
           </div>
         </div>
 
         <!-- Estado de finalización -->
         <div class="flex align-items-center gap-2 mt-4">
-          <i class="pi text-xl" :class="correctionStage.isCompleted ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"></i>
-          <span class="text-lg font-medium">{{ correctionStage.isCompleted ? 'Etapa completada' : 'Etapa no completada' }} </span>
+          <i class="pi text-xl" :class="fermentationStage.isCompleted ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"></i>
+          <span class="text-lg font-medium">{{ fermentationStage.isCompleted ? 'Etapa completada' : 'Etapa no completada' }} </span>
         </div>
 
 
       </template>
     </pv-card>
 
-    <!-- Diálogo para crear o editar etapa -->
-    <correction-stage-create-and-edit
-        :edit="isEdit"
-        :item-entity="itemObject"
-        :visible="createAndEditDialogIsVisible"
-        @cancel-requested="onCancelRequested"
-        @save-requested="onSaveRequested($event)"
-    />
+
+
+
 
   </div>
+
 
 </template>
 
