@@ -4,13 +4,16 @@ import CorrectionStageCreateAndEdit from "../components/correction-stage-create-
 import ReceptionStageCreateAndEdit from "../components/reception-stage-create-and-edit.component.vue";
 import {Stages} from "../model/stages.entity.js";
 import {StagesApiService} from "../services/stages-api.service.js";
-import {FermentationStage} from "../model/fermentationStage.entity.js";
+import {PressingStage} from "../model/pressingStage.entity.js";
 import FermentationStageCreateAndEdit from "../components/fermentation-stage-create-and-edit.component.vue";
+import PressingStageCreateAndEdit from "../components/pressing-stage-create-and-edit.component.vue";
 
 export default {
-  name: 'fermentation-stage-management',
+  name: 'pressing-stage-management',
 
-  components: {FermentationStageCreateAndEdit, CorrectionStageCreateAndEdit, ReceptionStageCreateAndEdit},
+  components: {
+    PressingStageCreateAndEdit,
+    FermentationStageCreateAndEdit, CorrectionStageCreateAndEdit, ReceptionStageCreateAndEdit},
 
   props:{
     item: null
@@ -20,8 +23,8 @@ export default {
     return {
       title: { singular: 'Etapa de Fermentación', plural: 'Etapa de Fermentación' },
       itemObject: new Stages({}),
-      fermentationStage: new FermentationStage({}),
-      fermentationStageApiService: null,
+      pressingStage: new PressingStage({}),
+      pressingStageApiService: null,
       createAndEditDialogIsVisible: false,
       isEdit: false,
       submitted: false,
@@ -85,9 +88,9 @@ export default {
 
     //#region CRUD Operations
     create() {
-      this.fermentationStageApiService.create(this.itemObject).then(response => {
+      this.pressingStageApiService.create(this.itemObject).then(response => {
 
-        this.fermentationStage = new FermentationStage(response.data.fermentationStage);
+        this.pressingStage = new PressingStage(response.data.pressingStage);
         this.itemObject = new Stages(response.data);
 
         this.notifySuccessfulAction('Stage created successfully');
@@ -97,9 +100,9 @@ export default {
     },
 
     update() {
-      this.fermentationStageApiService.update(this.itemObject.id, this.itemObject).then(response => {
+      this.pressingStageApiService.update(this.itemObject.id, this.itemObject).then(response => {
 
-        this.fermentationStage = new FermentationStage(response.data.fermentationStage);
+        this.pressingStage = new PressingStage(response.data.pressingStage);
         this.itemObject= new Stages(response.data);
 
         this.notifySuccessfulAction('Stage updated successfully');
@@ -115,34 +118,32 @@ export default {
 
   //#region Lifecycle Hooks
   created() {
-    this.fermentationStageApiService = new StagesApiService ('/stages');
+    this.pressingStageApiService = new StagesApiService ('/stages');
 
     this.itemObject = this.item;
-    this.fermentationStage = this.item.fermentationStage;
+    this.pressingStage = this.item.pressingStage;
 
-    console.log('RECEPTION STAGE ===================== ', this.fermentationStage);
+    console.log('RECEPTION STAGE ===================== ', this.pressingStage);
 
     console.log("🔍 Reception Stage Management created with item:", this.item);
   },
-  //#endregion  
-  
+
+  //#endregion
 }
 
 </script>
 
 <template>
 
-  <div
-      class="fermentation-container flex flex-column flex-1 w-full h-full gap-3 p-3 surface-ground overflow-auto">
+  <div class="pressing-container flex flex-column flex-1 w-full h-full gap-3 p-3 surface-ground overflow-auto">
 
     <!-- Encabezado y botones de acción -->
-    <div
-        class="flex flex-wrap justify-content-between align-items-center gap-4 border-bottom-1 surface-border pb-3">
+    <div class="flex flex-wrap justify-content-between align-items-center gap-4 border-bottom-1 surface-border pb-3">
 
       <!-- Título de la etapa -->
       <div class="flex align-items-center gap-2">
         <i class="pi pi-cog text-xl"></i>
-        <h3 class="m-0 text-xl font-medium">Etapa: {{ fermentationStage.stage || 'No registrada' }}</h3>
+        <h3 class="m-0 text-xl font-medium">Etapa: {{ pressingStage.stage || 'No registrada' }}</h3>
       </div>
 
       <!-- Botones de acción -->
@@ -159,25 +160,23 @@ export default {
             icon="pi pi-pencil"
             @click="onEditItem(itemObject)"
             class="p-button-warning"
-            v-if="fermentationStage.stage"
+            v-if="pressingStage.stage"
         />
 
         <pv-button
             label="Eliminar"
             icon="pi pi-trash"
-            @click="onDeleteItem(fermentationStage)"
+            @click="onDeleteItem(pressingStage)"
             class="p-button-danger"
-            v-if="fermentationStage.stage"
+            v-if="pressingStage.stage"
         />
       </div>
     </div>
 
-
-    <!-- Detalles de la etapa de fermentación -->
-
-    <pv-card v-if="fermentationStage.stage">
+    <!-- Contenido de la etapa -->
+    <pv-card v-if="pressingStage.stage">
       <template #header>
-        <h4 class="m-0">Detalles de la etapa de fermentación</h4>
+        <h4 class="m-0">Detalles de la etapa de añejamiento</h4>
       </template>
 
       <!-- contenido de la tarjeta -->
@@ -185,45 +184,40 @@ export default {
 
         <div class="flex align-items-center gap-2">
           <i class="pi pi-user text-lg"></i>
-          <p><strong>Registrado por:</strong> {{ fermentationStage.registeredBy }}</p>
+          <p><strong>Registrado por:</strong> {{ pressingStage.registeredBy }}</p>
         </div>
 
         <div class="grid p-2">
           <div class="col-12 md:col-6">
-            <p><strong>Fecha de inicio:</strong> {{ fermentationStage.startDate }}</p>
-            <p><strong>Fecha de finalización:</strong> {{ fermentationStage.endDate }}</p>
-            <p><strong>Levadura utilizada (mg/L):</strong> {{ fermentationStage.yeastUsedMgL }}</p>
+            <p><strong>Fecha de inicio:</strong> {{ pressingStage.startDate }}</p>
+            <p><strong>Fecha de finalización:</strong> {{ pressingStage.endDate }}</p>
+            <p><strong>Tipo de prensa:</strong> {{ pressingStage.pressType }}</p>
           </div>
           <div class="col-12 md:col-6">
-            <p><strong>pH:</strong> {{ fermentationStage.pH }}</p>
-            <p><strong>Brix inicial:</strong> {{ fermentationStage.initialBrix }}</p>
-            <p><strong>Brix final:</strong> {{ fermentationStage.finalBrix }}</p>
+            <p><strong>Presión de la prensa (Bares):</strong> {{ pressingStage.pressPressureBars }}</p>
+            <p><strong>Duración (minutos):</strong> {{ pressingStage.durationMinutes }}</p>
+            <p><strong>Pomace (kg):</strong> {{ pressingStage.pomaceKg }}</p>
           </div>
           <div class="col-12 md:col-6">
-            <p><strong>Temperatura máxima (°C):</strong> {{ fermentationStage.temperatureMax }}</p>
-            <p><strong>Temperatura mínima (°C):</strong> {{ fermentationStage.temperatureMin }}</p>
-            <p><strong>Tipo de fermentación:</strong> {{ fermentationStage.fermentationType }}</p>
+            <p><strong>Rendimiento (litros):</strong> {{ pressingStage.yieldLiters }}</p>
+            <p><strong>Uso del mosto:</strong> {{ pressingStage.mustUsage }}</p>
+            <p><strong>Comentarios:</strong> {{ pressingStage.comments }}</p>
           </div>
-          <div class="col-12 md:col-6">
-            <p><strong>Código del tanque:</strong> {{ fermentationStage.tankCode }}</p>
-            <p><strong>Comentarios:</strong> {{ fermentationStage.comments }}</p>
-          </div>
+
         </div>
 
         <!-- Estado de finalización -->
         <div class="flex align-items-center gap-2 mt-4">
-          <i class="pi text-xl" :class="fermentationStage.isCompleted ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"></i>
-          <span class="text-lg font-medium">{{ fermentationStage.isCompleted ? 'Etapa completada' : 'Etapa no completada' }} </span>
+          <i class="pi text-xl" :class="pressingStage.isCompleted ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"></i>
+          <span class="text-lg font-medium">{{ pressingStage.isCompleted ? 'Etapa completada' : 'Etapa no completada' }} </span>
         </div>
 
-
       </template>
+
     </pv-card>
 
-
-
     <!-- Diálogo para crear o editar etapa -->
-    <fermentation-stage-create-and-edit
+    <pressing-stage-create-and-edit
         :edit="isEdit"
         :item-entity="itemObject"
         :visible="createAndEditDialogIsVisible"
@@ -231,9 +225,12 @@ export default {
         @save-requested="onSaveRequested($event)"
     />
 
-
-
   </div>
+
+
+
+
+
 
 
 </template>

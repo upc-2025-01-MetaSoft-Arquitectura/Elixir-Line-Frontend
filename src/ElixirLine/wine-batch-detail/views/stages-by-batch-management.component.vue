@@ -11,7 +11,7 @@ import {AgingStage} from "../model/agingStage.entity.js";
 import {FiltrationStage} from "../model/filtrationStage.entity.js";
 import {BottlingStage} from "../model/bottlingStage.entity.js";
 import ReceptionStageManagement from "../pages/reception-stage-management.component.vue";
-import PressingStageDetailCreateAndEdit from "../components/pressing-stage-detail-create-and-edit.component.vue";
+import PressingStageCreateAndEditComponent from "../components/pressing-stage-create-and-edit.component.vue";
 import ClarificationStageDetailCreateAndEdit
   from "../components/clarification-stage-detail-create-and-edit.component.vue";
 import BottlingStageDetailCreateAndEdit from "../components/bottling-stage-detail-create-and-edit.component.vue";
@@ -20,18 +20,20 @@ import FiltrationStageDetailCreateAndEdit from "../components/filtration-stage-d
 import {Stages} from "../model/stages.entity.js";
 import CorrectionStageManagement from "../pages/correction-stage-management.component.vue";
 import FermentationStageManagement from "../pages/fermentation-stage-management.component.vue";
+import PressingStageManagement from "../pages/pressing-stage-management.component.vue";
 
 
 export default {
   name: 'stages-by-batch-management',
   components: {
+    PressingStageManagement,
     FermentationStageManagement,
     CorrectionStageManagement,
     FiltrationStageDetailCreateAndEdit,
     AgingStageDetailCreateAndEdit,
     BottlingStageDetailCreateAndEdit,
     ClarificationStageDetailCreateAndEdit,
-    PressingStageDetailCreateAndEdit,
+    PressingStageDetailCreateAndEdit: PressingStageCreateAndEditComponent,
     ReceptionStageManagement, BasePageLayout},
 
 
@@ -203,7 +205,7 @@ export default {
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Prensado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <pressing-stage-detail-create-and-edit :itemEntity="pressingStage" />
+      <pressing-stage-management :item="itemObject" />
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Clarificación'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">

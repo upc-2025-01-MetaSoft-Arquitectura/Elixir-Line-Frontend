@@ -66,26 +66,6 @@ export default {
       @canceled-shared="onCancelRequested"
       @saved-shared="onSaveRequested($event)"
   >
-
-    <!-- "fermentationStage": {
-        "stage": "Fermentación",
-        "registeredBy": "Alonso Alvarez",
-        "startDate": "2025-05-10",
-        "endDate": "2025-05-10",
-        "yeastUsedMgL": 225,
-        "pH": 3.4,
-        "initialBrix": 23.5,
-        "finalBrix": 1.5,
-        "initialpH": 3.6,
-        "finalpH": 3.45,
-        "temperatureMax": 25.8,
-        "temperatureMin": 16.2,
-        "fermentationType": "alcohólica",
-        "tankCode": "TK-FRM-07",
-        "comments": "Fermentación controlada, sin desviaciones. Se mantuvo rango óptimo de temperatura.",
-        "isCompleted": true
-      },
-      -->
     <template #content>
       <div class="field">
 
@@ -266,7 +246,6 @@ export default {
           />
           <label for="isCompleted">Completado</label>
         </div>
-
 
       </div>
     </template>
