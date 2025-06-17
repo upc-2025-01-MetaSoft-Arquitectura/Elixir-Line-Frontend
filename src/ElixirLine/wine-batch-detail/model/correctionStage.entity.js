@@ -1,21 +1,21 @@
 export class CorrectionStage {
     constructor({
-                    stage,
-                    registeredBy,
-                    startDate,
-                    endDate,
-                    initialBrix,
-                    finalBrix,
-                    addedSugarKg,
-                    initialPH,
-                    finalPH,
-                    acidType,
-                    acidAddedGL,
-                    SO2AddedMgL,
-                    nutrientsAdded,
-                    justification,
-                    comments,
-                    isCompleted
+                    stage = null,
+                    registeredBy = null,
+                    startDate = null,
+                    endDate = null,
+                    initialBrix = null,
+                    finalBrix = null,
+                    addedSugarKg = null,
+                    initialPH = null,
+                    finalPH = null,
+                    acidType = null,
+                    acidAddedGL = null,
+                    SO2AddedMgL = null,
+                    nutrientsAdded = null,
+                    justification = null,
+                    comments = null,
+                    isCompleted = false
                 }) {
         this.stage = stage; // Siempre 'Corrección' para esta clase
         this.registeredBy = registeredBy;

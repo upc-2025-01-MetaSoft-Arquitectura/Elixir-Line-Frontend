@@ -42,7 +42,7 @@ export default {
 
   created() {
 
-    this.pressingStage = new PressingStage(this.itemEntity.pressingStage)
+    this.pressingStage =  this.itemEntity?.pressingStage || new PressingStage({})
 
     console.log('===============', this.pressingStage);
 

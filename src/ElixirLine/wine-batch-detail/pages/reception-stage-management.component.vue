@@ -13,7 +13,10 @@ export default {
   components: {ReceptionStageCreateAndEdit, DataManager, CampaignCreateAndEdit},
 
   props:{
-    item: null
+    item: {
+      type: Object,
+      default: () => ({})
+    }
   },
 
   data() {
@@ -25,6 +28,7 @@ export default {
       createAndEditDialogIsVisible: false,
       isEdit: false,
       submitted: false,
+      stageExist: false,
     }
   },
 
@@ -124,8 +128,18 @@ export default {
   created() {
     this.receptionStageApiService = new StagesApiService ('/stages');
 
-    this.itemObject = this.item;
-    this.receptionStage = this.item.receptionStage;
+
+    if (!this.item || !this.item.receptionStage) {
+
+      this.stageExist = false;
+
+    } else {
+
+      this.itemObject = this.item;
+      this.stageExist = true;
+      this.receptionStage = this.item.receptionStage;
+
+    }
 
     console.log('RECEPTION STAGE ===================== ', this.receptionStage);
 
@@ -139,7 +153,6 @@ export default {
 
 <template>
 
-
   <div class="reception-container flex flex-column flex-1 w-full h-full gap-3 p-3 surface-ground overflow-auto">
 
     <!-- Encabezado y botones de acción -->
@@ -148,7 +161,7 @@ export default {
       <!-- Título de la etapa -->
       <div class="flex align-items-center gap-2">
         <i class="pi pi-cog text-xl"></i>
-        <h3 class="m-0 text-xl font-medium">Etapa: {{ receptionStage.stage || 'No registrada' }}</h3>
+        <h3 class="m-0 text-xl font-medium"> Etapa: Recepción </h3>
       </div>
 
       <!-- Botones de acción -->
@@ -158,6 +171,7 @@ export default {
             icon="pi pi-plus"
             @click="onNewItem"
             class="p-button-success"
+            v-if="!stageExist"
         />
 
         <pv-button
@@ -165,7 +179,7 @@ export default {
             icon="pi pi-pencil"
             @click="onEditItem(itemObject)"
             class="p-button-warning"
-            v-if="receptionStage.stage"
+            v-if="stageExist"
         />
 
         <pv-button
@@ -173,7 +187,7 @@ export default {
             icon="pi pi-trash"
             @click="onDeleteItem(receptionStage)"
             class="p-button-danger"
-            v-if="receptionStage.stage"
+            v-if="stageExist"
         />
       </div>
     </div>

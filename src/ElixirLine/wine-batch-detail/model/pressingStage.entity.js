@@ -1,18 +1,18 @@
 
 export class PressingStage {
     constructor({
-                    stage,
-                    registeredBy,
-                    startDate,
-                    endDate,
-                    pressType,
-                    pressPressureBars,
-                    durationMinutes,
-                    pomaceKg,
-                    yieldLiters,
-                    mustUsage,
-                    comments,
-                    isCompleted
+                    stage = null, // Siempre 'Prensado'
+                    registeredBy = null,
+                    startDate = null,
+                    endDate = null,
+                    pressType = null, // Ej. 'Neumática', 'Horizontal', etc.
+                    pressPressureBars = 0, // Presión en bares
+                    durationMinutes = 0, // Duración en minutos
+                    pomaceKg = 0, // Peso de la orujo en kg
+                    yieldLiters = 0, // Rendimiento en litros
+                    mustUsage = null, // Ej. 'Vino blanco joven'
+                    comments = null, // Comentarios adicionales
+                    isCompleted = false // Indica si la etapa está completa
                 }) {
         this.stage = stage; // Siempre 'Prensado'
         this.registeredBy = registeredBy;

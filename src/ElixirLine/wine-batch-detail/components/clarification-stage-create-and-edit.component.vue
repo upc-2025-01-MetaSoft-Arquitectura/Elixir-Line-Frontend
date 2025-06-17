@@ -41,7 +41,7 @@ export default {
 
   created() {
 
-    this.clarificationStage = new ClarificationStage(this.itemEntity.clarificationStage)
+    this.clarificationStage =  this.itemEntity?.clarificationStage || new ClarificationStage({})
 
     console.log('===============', this.clarificationStage);
 

@@ -59,7 +59,7 @@
     "label-sign-out":   "Logout"
   },
 
-  "details": {
+  "details-tabs": {
     "tab-1": "Details",
     "tab-2": "Tasks",
     "tab-3": "Stages",

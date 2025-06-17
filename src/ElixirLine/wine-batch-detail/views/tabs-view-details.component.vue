@@ -28,10 +28,10 @@ export default {
       close: false,
       activeTab: '0', // Tab activa por defecto
       tabs: [
-        { label: this.$t('details.tab-1'), value: '0' },
-        { label: this.$t('details.tab-2'), value: '1' },
-        { label: this.$t('details.tab-3'), value: '2' },
-        { label: this.$t('details.tab-4'), value: '3' },
+        { label: this.$t('details-tabs.tab-1'), value: '0' },
+        { label: this.$t('details-tabs.tab-2'), value: '1' },
+        { label: this.$t('details-tabs.tab-3'), value: '2' },
+        { label: this.$t('details-tabs.tab-4'), value: '3' },
       ]
     }
   },

@@ -41,7 +41,7 @@ export default {
 
   created() {
 
-    this.filtrationStage = new FiltrationStage(this.itemEntity.filtrationStage)
+    this.filtrationStage =  this.itemEntity?.filtrationStage || new FiltrationStage({})
 
     console.log('===============', this.filtrationStage);
 

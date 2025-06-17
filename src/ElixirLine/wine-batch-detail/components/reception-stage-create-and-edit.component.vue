@@ -42,7 +42,7 @@ export default {
 
   created() {
 
-    this.receptionStage = new ReceptionStage(this.itemEntity.receptionStage)
+    this.receptionStage = this.itemEntity?.receptionStage || new ReceptionStage({});
 
     console.log('===============', this.receptionStage);
 

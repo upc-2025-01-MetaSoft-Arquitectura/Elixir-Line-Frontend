@@ -61,7 +61,6 @@ export default {
       submitted: false,
 
 
-
       // Etapas obtenidas por batch (objeto completo)
       stagesByBatch: new Stages({}),
 
@@ -107,7 +106,7 @@ export default {
             const data = response.data[0];
 
             this.stagesByBatch = data; // guardas el objeto completo si quieres
-            this.itemObject = new Stages(data); // Actualiza el itemEntity con el objeto completo
+            this.itemObject = data; // Actualiza el itemEntity con el objeto completo
 
             // Poblar etapas específicas
             this.receptionStage     = new ReceptionStage(data.receptionStage || {});
@@ -119,7 +118,7 @@ export default {
             this.filtrationStage    = new FiltrationStage(data.filtrationStage || {});
             this.bottlingStage      = new BottlingStage(data.bottlingStage || {});
 
-            console.log('✅ Etapas cargadas por batch:', this.stagesByBatch);
+            console.log('✅ Etapas cargadas por batch:', this.itemObject);
           })
           .catch(error => {
             console.error('❌ Error fetching stages by batch:', error);
@@ -200,36 +199,92 @@ export default {
 
     </template>
 
+    <!-- ETAPA DE RECEPCIÓN  ====================================================================== -->
     <div v-if="selectedItem && selectedItem.name === 'Recepción'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <reception-stage-management :item="itemObject" ></reception-stage-management>
+      <reception-stage-management :item="itemObject" />
     </div>
 
+    <!-- ETAPA DE CORRECCIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Corrección'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden ">
-      <correction-stage-management :item="itemObject" ></correction-stage-management>
+      <correction-stage-management :item="itemObject" />
     </div>
 
-    <div v-else-if="selectedItem && selectedItem.name === 'Fermentación'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-     <fermentation-stage-management :item="itemObject" />
+    <!-- ETAPA DE FERMENTACIÓN  ====================================================================== -->
+    <div v-else-if="selectedItem && selectedItem.name === 'Fermentación' " class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
+
+      <div v-if="itemObject.fermentationStage !== null" class="flex flex-column w-full h-full overflow-hidden">
+        <fermentation-stage-management :item="itemObject" />
+      </div>
+
+      <div v-else class="flex flex-column w-full h-full overflow-hidden">
+        <p class="text-center">No hay etapa de fermentación registrada para este lote: {{itemEntity.internalCode}}.</p>
+      </div>
+
     </div>
 
+    <!-- ETAPA DE PRENSADO  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Prensado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <pressing-stage-management :item="itemObject" />
+
+      <div v-if="itemObject.pressingStage !== null" class="flex flex-column w-full h-full overflow-hidden">
+        <pressing-stage-management :item="itemObject" />
+      </div>
+
+      <div v-else class="flex flex-column w-full h-full overflow-hidden">
+        <p class="text-center">No hay etapa de prensado registrada para este lote: {{itemEntity.internalCode}}.</p>
+      </div>
+
     </div>
 
+    <!-- ETAPA DE CLARIFICACIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Clarificación'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <clarification-stage-management :item="itemObject" />
+
+      <div v-if="itemObject.clarificationStage !== null" class="flex flex-column w-full h-full overflow-hidden">
+        <clarification-stage-management :item="itemObject" />
+      </div>
+
+      <div v-else class="flex flex-column w-full h-full overflow-hidden">
+        <p class="text-center">No hay etapa de clarificación registrada para este lote: {{itemEntity.internalCode}}.</p>
+      </div>
+
     </div>
 
+    <!-- ETAPA DE CRIANZA  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Crianza'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <aging-stage-management :item="itemObject" />
+
+      <div v-if="itemObject.agingStage !== null" class="flex flex-column w-full h-full overflow-hidden">
+        <aging-stage-management :item="itemObject" />
+      </div>
+      <!-- Si no hay etapa de crianza registrada -->
+      <div v-else class="flex flex-column w-full h-full overflow-hidden">
+        <p class="text-center">No hay etapa de crianza registrada para este lote: {{itemEntity.internalCode}}.</p>
+      </div>
+
     </div>
 
+    <!-- ETAPA DE FILTRACIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Filtración'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <filtration-stage-management  :item="itemObject" />
+
+      <div v-if="itemObject.filtrationStage !== null" class="flex flex-column w-full h-full overflow-hidden">
+        <filtration-stage-management :item="itemObject" />
+      </div>
+      <!-- Si no hay etapa de filtración registrada -->
+      <div v-else class="flex flex-column w-full h-full overflow-hidden">
+        <p class="text-center">No hay etapa de filtración registrada para este lote: {{itemEntity.internalCode}}.</p>
+      </div>
+
     </div>
 
+    <!-- ETAPA DE EMBOTELLADO  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Embotellado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <bottling-stage-management :item="itemObject"  />
+
+      <div v-if="itemObject.bottlingStage !== null" class="flex flex-column w-full h-full overflow-hidden">
+        <bottling-stage-management :item="itemObject" />
+      </div>
+      <!-- Si no hay etapa de embotellado registrada -->
+      <div v-else class="flex flex-column w-full h-full overflow-hidden">
+        <p class="text-center">No hay etapa de embotellado registrada para este lote: {{itemEntity.internalCode}}.</p>
+      </div>
+
     </div>
 
     <!-- Mensaje en caso de no haber etapas registradas -->
@@ -242,6 +297,8 @@ export default {
     <div v-else-if="!selectedItem" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
       <p class="text-center">Selecciona una etapa para ver los detalles.</p>
     </div>
+
+    <!-- Mensaje si no hay  -->
 
 
   </base-page-layout>

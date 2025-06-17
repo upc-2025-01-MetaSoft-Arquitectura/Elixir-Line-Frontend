@@ -42,7 +42,7 @@ export default {
 
   created() {
 
-    this.fermentationStage = new FermentationStage(this.itemEntity.fermentationStage)
+    this.fermentationStage =  this.itemEntity?.fermentationStage || new FermentationStage({})
 
     console.log('===============', this.fermentationStage);
 

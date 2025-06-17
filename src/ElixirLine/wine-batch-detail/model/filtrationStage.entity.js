@@ -2,23 +2,23 @@
 
 export class FiltrationStage {
     constructor({
-                    stage,
-                    registeredBy,
-                    startDate,
-                    endDate,
-                    filtrationType,
-                    filterMedia,
-                    poreMicrons,
-                    turbidityBefore,
-                    turbidityAfter,
-                    temperature,
-                    pressureBars,
-                    filteredVolumeLiters,
-                    isSterile,
-                    filterChanged,
-                    changeReason,
-                    comments,
-                    isCompleted
+                    stage = null, // Siempre 'Filtración'
+                    registeredBy = null,
+                    startDate = null,
+                    endDate = null,
+                    filtrationType = null, // Ej. 'Filtración estéril'
+                    filterMedia = null, // Ej. 'Membrana PES'
+                    poreMicrons = 0, // Tamaño de poro en micrones
+                    turbidityBefore = null, // NTU antes de la filtración
+                    turbidityAfter = null, // NTU después de la filtración
+                    temperature = null, // Temperatura durante la filtración
+                    pressureBars = null, // Presión en bares durante la filtración
+                    filteredVolumeLiters = 0, // Volumen filtrado en litros
+                    isSterile = false, // Indica si la filtración es estéril
+                    filterChanged = false, // Indica si se cambió el filtro
+                    changeReason = null, // Motivo del cambio de filtro
+                    comments = null, // Comentarios adicionales
+                    isCompleted = false // Indica si la etapa está completa
                 }) {
         this.stage = stage; // Siempre 'Filtración'
         this.registeredBy = registeredBy;

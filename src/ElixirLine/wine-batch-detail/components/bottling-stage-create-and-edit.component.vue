@@ -42,7 +42,7 @@ export default {
 
   created() {
 
-    this.bottlingStage = new BottlingStage(this.itemEntity.bottlingStage)
+    this.bottlingStage = this.itemEntity?.bottlingStage || new BottlingStage({})
 
     console.log('===============', this.bottlingStage);
 

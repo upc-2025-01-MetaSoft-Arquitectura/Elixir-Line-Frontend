@@ -33,7 +33,7 @@ export default {
 
       this.itemEntity.correctionStage = newItem;
 
-      console.log('batches-create-and-edit onSaveRequested',this.itemEntity);
+      console.log('AL GUARDAR ===============================',this.itemEntity);
 
       this.$emit('save-requested', this.itemEntity);
     }
@@ -42,7 +42,7 @@ export default {
 
   created() {
 
-    this.correctionStage = new CorrectionStage(this.itemEntity.correctionStage)
+    this.correctionStage = this.itemEntity?.correctionStage || new CorrectionStage({})
 
     console.log('===============', this.correctionStage);
 

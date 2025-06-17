@@ -23,6 +23,7 @@ export default {
       createAndEditDialogIsVisible: false,
       isEdit: false,
       submitted: false,
+      stageExist: false, // Assuming you want to check if a stage exists
     }
   },
 
@@ -38,7 +39,7 @@ export default {
 
     //#region Event Handlers
     onNewItem() {
-      this.itemObject = new Stages({});
+      this.itemObject = this.item;
       console.log('======================= NEW ITEM MANAGEMENT', this.itemObject);
       this.isEdit = false;
       this.submitted = false;
@@ -115,12 +116,21 @@ export default {
   created() {
     this.correctionStageApiService = new StagesApiService ('/stages');
 
-    this.itemObject = this.item;
-    this.correctionStage = this.item.correctionStage;
+    if (!this.item || !this.item.correctionStage) {
+
+      this.stageExist = false;
+
+    } else {
+
+      this.itemObject = this.item;
+      this.stageExist = true;
+      this.correctionStage = this.item.correctionStage;
+
+    }
 
     console.log('RECEPTION STAGE ===================== ', this.correctionStage);
 
-    console.log("🔍 Reception Stage Management created with item:", this.item);
+    console.log("Reception Stage Management component created");
   },
   //#endregion
 
@@ -139,7 +149,7 @@ export default {
       <!-- Título de la etapa -->
       <div class="flex align-items-center gap-2">
         <i class="pi pi-cog text-xl"></i>
-        <h3 class="m-0 text-xl font-medium">Etapa: {{ correctionStage.stage || 'No registrada' }}</h3>
+        <h3 class="m-0 text-xl font-medium"> Etapa: Corrección </h3>
       </div>
 
       <!-- Botones de acción -->
@@ -147,8 +157,9 @@ export default {
         <pv-button
             label="Nueva Etapa"
             icon="pi pi-plus"
-            @click="onNewItem"
+            @click="onNewItem()"
             class="p-button-success"
+            v-if="!stageExist"
         />
 
         <pv-button
@@ -156,7 +167,7 @@ export default {
             icon="pi pi-pencil"
             @click="onEditItem(itemObject)"
             class="p-button-warning"
-            v-if="correctionStage.stage"
+            v-if="stageExist"
         />
 
         <pv-button
@@ -164,7 +175,7 @@ export default {
             icon="pi pi-trash"
             @click="onDeleteItem(correctionStage)"
             class="p-button-danger"
-            v-if="correctionStage.stage"
+            v-if="stageExist"
         />
       </div>
     </div>

@@ -41,7 +41,7 @@ export default {
 
   created() {
 
-    this.agingStage = new AgingStage(this.itemEntity.agingStage)
+    this.agingStage = this.itemEntity?.agingStage ||  new AgingStage({})
 
     console.log('===============', this.agingStage);
 

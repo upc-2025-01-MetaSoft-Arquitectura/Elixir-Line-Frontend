@@ -1,22 +1,22 @@
 export class AgingStage {
     constructor({
-                    stage,
-                    registeredBy,
-                    startDate,
-                    endDate,
-                    containerType,
-                    material,
-                    containerCode,
-                    avgTemperature,
-                    volumeLiters,
-                    durationMonths,
-                    frequencyDays,
-                    refilled,
-                    batonnage,
-                    rackings,
-                    purpose,
-                    comments,
-                    isCompleted
+                    stage = null,
+                    registeredBy = null,
+                    startDate = null,
+                    endDate = null,
+                    containerType = null, // Ej. 'Barrica'
+                    material = null,           // Ej. 'Roble Francés'
+                    containerCode = null,
+                    avgTemperature = null,
+                    volumeLiters = null,
+                    durationMonths = null,
+                    frequencyDays = null, // Puede ser null
+                    refilled = false,
+                    batonnage = false,
+                    rackings = 0,
+                    purpose = null,
+                    comments = null,
+                    isCompleted = false
                 }) {
         this.stage = stage; // Siempre 'Añejamiento'
         this.registeredBy = registeredBy;

@@ -2,19 +2,19 @@
 
 export class ClarificationStage {
     constructor({
-                    stage,
-                    registeredBy,
-                    startDate,
-                    endDate,
-                    method,
-                    clarifyingAgents,
-                    turbidityBeforeNTU,
-                    turbidityAfterNTU,
-                    volumeLiters,
-                    temperature,
-                    durationHours,
-                    comments,
-                    isCompleted
+                    stage = null,
+                    registeredBy = null,
+                    startDate = null,
+                    endDate = null,
+                    method = null, // Ej. 'Bentonita'
+                    clarifyingAgents = [], // Array de { name, dose }
+                    turbidityBeforeNTU = null,
+                    turbidityAfterNTU = null,
+                    volumeLiters = null,
+                    temperature = null,
+                    durationHours = null,
+                    comments = null,
+                    isCompleted = false
                 }) {
         this.stage = stage; // Siempre 'Clarificación'
         this.registeredBy = registeredBy;

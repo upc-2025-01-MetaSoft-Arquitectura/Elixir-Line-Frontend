@@ -1,18 +1,18 @@
 
 export class ReceptionStage {
     constructor({
-                    stage,
-                    registeredBy,
-                    startDate,
-                    endDate,
-                    sugarLevelBrix,
-                    pH,
-                    temperature,
-                    quantityKg,
-                    comments,
-                    isCompleted
+                    stage = null,
+                    registeredBy = null,
+                    startDate = null,
+                    endDate = null,
+                    sugarLevelBrix = null,
+                    pH = null,
+                    temperature = null,
+                    quantityKg = null,
+                    comments = null,
+                    isCompleted = false
                 }) {
-        this.stage = stage; // Siempre 'Recepción' para esta clase
+        this.stage = stage;
         this.registeredBy = registeredBy;
         this.startDate = startDate;
         this.endDate = endDate;

@@ -3,22 +3,22 @@
 
 export class BottlingStage {
     constructor({
-                    stage,
-                    registeredBy,
-                    startDate,
-                    endDate,
-                    bottlingLine,
-                    bottlesFilled,
-                    bottleVolumeMl,
-                    totalVolumeLiters,
-                    sealType,
-                    code,
-                    temperature,
-                    wasFiltered,
-                    wereLabelsApplied,
-                    wereCapsulesApplied,
-                    comments,
-                    isCompleted
+                    stage = null,
+                    registeredBy = null,
+                    startDate = null,
+                    endDate = null,
+                    bottlingLine = null, // Línea de embotellado
+                    bottlesFilled = 0,               // Total de botellas llenadas
+                    bottleVolumeMl = 0,             // Volumen por botella
+                    totalVolumeLiters = 0,       // Volumen total embotellado
+                    sealType = null,                         // Tipo de sellado (ej. 'Corcho natural')
+                    code = null,                                 // Código identificador del lote embotellado
+                    temperature = null,                   // Temperatura durante embotellado
+                    wasFiltered = false,
+                    wereLabelsApplied = false,
+                    wereCapsulesApplied = false,
+                    comments = null,
+                    isCompleted = false
                 }) {
         this.stage = stage; // Siempre 'Embotellado'
         this.registeredBy = registeredBy;
