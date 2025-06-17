@@ -12,27 +12,31 @@ import {FiltrationStage} from "../model/filtrationStage.entity.js";
 import {BottlingStage} from "../model/bottlingStage.entity.js";
 import ReceptionStageManagement from "../pages/reception-stage-management.component.vue";
 import PressingStageCreateAndEditComponent from "../components/pressing-stage-create-and-edit.component.vue";
-import ClarificationStageDetailCreateAndEdit
-  from "../components/clarification-stage-detail-create-and-edit.component.vue";
+import ClarificationStageCreateAndEditComponent
+  from "../components/clarification-stage-create-and-edit.component.vue";
 import BottlingStageDetailCreateAndEdit from "../components/bottling-stage-detail-create-and-edit.component.vue";
-import AgingStageDetailCreateAndEdit from "../components/aging-stage-detail-create-and-edit.component.vue";
+import AgingStageCreateAndEditComponent from "../components/aging-stage-create-and-edit.component.vue";
 import FiltrationStageDetailCreateAndEdit from "../components/filtration-stage-detail-create-and-edit.component.vue";
 import {Stages} from "../model/stages.entity.js";
 import CorrectionStageManagement from "../pages/correction-stage-management.component.vue";
 import FermentationStageManagement from "../pages/fermentation-stage-management.component.vue";
 import PressingStageManagement from "../pages/pressing-stage-management.component.vue";
+import ClarificationStageManagement from "../pages/clarification-stage-management.vue";
+import AgingStageManagement from "../pages/aging-stage-management.vue";
 
 
 export default {
   name: 'stages-by-batch-management',
   components: {
+    AgingStageManagement,
+    ClarificationStageManagement,
     PressingStageManagement,
     FermentationStageManagement,
     CorrectionStageManagement,
     FiltrationStageDetailCreateAndEdit,
-    AgingStageDetailCreateAndEdit,
+    AgingStageDetailCreateAndEdit: AgingStageCreateAndEditComponent,
     BottlingStageDetailCreateAndEdit,
-    ClarificationStageDetailCreateAndEdit,
+    ClarificationStageDetailCreateAndEdit: ClarificationStageCreateAndEditComponent,
     PressingStageDetailCreateAndEdit: PressingStageCreateAndEditComponent,
     ReceptionStageManagement, BasePageLayout},
 
@@ -209,11 +213,11 @@ export default {
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Clarificación'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <clarification-stage-detail-create-and-edit :itemEntity="clarificationStage" />
+      <clarification-stage-management :item="itemObject" />
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Crianza'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <aging-stage-detail-create-and-edit :itemEntity="agingStage" />
+      <aging-stage-management :item="itemObject" />
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Filtración'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">

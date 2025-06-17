@@ -69,22 +69,6 @@ export default {
       @saved-shared="onSaveRequested($event)"
   >
 
-
-    <!--       "pressingStage": {
-        "stage": "Prensado",
-        "registeredBy": "Alonso Alvarez",
-        "startDate": "2025-05-10",
-        "endDate": "2025-05-10",
-        "pressType": "Neumática",
-        "pressPressureBars": 1.8,
-        "durationMinutes": 75,
-        "pomaceKg": 350,
-        "yieldLiters": 1050,
-        "mustUsage": "Vino blanco joven",
-        "comments": "Mosto limpio, sin restos de pieles ni sedimentos evidentes.",
-        "isCompleted": true
-      },
-      -->
     <template #content>
 
       <div class="field">
@@ -227,7 +211,6 @@ export default {
           />
           <label for="isCompleted">Completado</label>
         </div>
-
 
 
       </div>
