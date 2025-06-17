@@ -14,7 +14,7 @@ import ReceptionStageManagement from "../pages/reception-stage-management.compon
 import PressingStageCreateAndEditComponent from "../components/pressing-stage-create-and-edit.component.vue";
 import ClarificationStageCreateAndEditComponent
   from "../components/clarification-stage-create-and-edit.component.vue";
-import BottlingStageDetailCreateAndEdit from "../components/bottling-stage-detail-create-and-edit.component.vue";
+import BottlingStageCreateAndEditComponent from "../components/bottling-stage-create-and-edit.component.vue";
 import AgingStageCreateAndEditComponent from "../components/aging-stage-create-and-edit.component.vue";
 import FiltrationStageCreateAndEditComponent from "../components/filtration-stage-create-and-edit.component.vue";
 import {Stages} from "../model/stages.entity.js";
@@ -24,11 +24,13 @@ import PressingStageManagement from "../pages/pressing-stage-management.componen
 import ClarificationStageManagement from "../pages/clarification-stage-management.vue";
 import AgingStageManagement from "../pages/aging-stage-management.vue";
 import FiltrationStageManagement from "../pages/filtration-stage-management.component.vue";
+import BottlingStageManagement from "../pages/bottling-stage-management.vue";
 
 
 export default {
   name: 'stages-by-batch-management',
   components: {
+    BottlingStageManagement,
     FiltrationStageManagement,
     AgingStageManagement,
     ClarificationStageManagement,
@@ -37,7 +39,7 @@ export default {
     CorrectionStageManagement,
     FiltrationStageDetailCreateAndEdit: FiltrationStageCreateAndEditComponent,
     AgingStageDetailCreateAndEdit: AgingStageCreateAndEditComponent,
-    BottlingStageDetailCreateAndEdit,
+    BottlingStageDetailCreateAndEdit: BottlingStageCreateAndEditComponent,
     ClarificationStageDetailCreateAndEdit: ClarificationStageCreateAndEditComponent,
     PressingStageDetailCreateAndEdit: PressingStageCreateAndEditComponent,
     ReceptionStageManagement, BasePageLayout},
@@ -227,7 +229,7 @@ export default {
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Embotellado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <bottling-stage-detail-create-and-edit :itemEntity="bottlingStage" />
+      <bottling-stage-management :item="itemObject"  />
     </div>
 
     <!-- Mensaje en caso de no haber etapas registradas -->
