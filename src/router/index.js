@@ -7,7 +7,7 @@ import TabsWinemakingViewComponent
 import SupplyManagement from "../ElixirLine/supply-management/pages/supply-management.vue";
 import ProfileViewsConfigurationComponent from "../ElixirLine/profile/views/profile-views-configuration.component.vue";
 import TaskManagement from "../ElixirLine/task-management/pages/task-management.vue";
-
+import CalendarManagement from "../ElixirLine/calendar/pages/calendar-management.vue";
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -27,7 +27,8 @@ const router = createRouter({
                 {path: '/vinicultor/winemaking',      name: 'WinemakingProcess', component: TabsWinemakingViewComponent,     meta: { title: 'Winemaking'}},
                 {path:'/vinicultor/supplies', name: 'SuppliesManagement', component: SupplyManagement, meta: { title: 'Supplies'}},
                 {path: '/vinicultor/profile/settings', name: 'ProfileSettings', component: ProfileViewsConfigurationComponent, meta: { title: 'Profile Settings'}},
-                { path: '/vinicultor/tasks', name: 'Tasks', component: TaskManagement, meta: { title: 'Tasks' } } // Nueva ruta
+                { path: '/vinicultor/tasks', name: 'Tasks', component: TaskManagement, meta: { title: 'Tasks' } } ,
+                { path: '/vinicultor/Calendar', name: 'Calendar', component: CalendarManagement, meta: { title: 'Calendar' } }
 
 
             ], meta: { title: 'Wine Batches' },

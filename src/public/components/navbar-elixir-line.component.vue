@@ -15,7 +15,7 @@ export default {
         { label: 'navbar.title-tasks-option', icon: 'pi pi-fw pi-list-check', to: '/vinicultor/tasks' }, 
         { label: 'navbar.title-map-option', icon: 'pi pi-fw pi-map', to: '/map' },
         { label: 'navbar.title-supplies-option', icon: 'pi pi-fw pi-box', to: '/vinicultor/supplies' },
-        { label: 'navbar.title-calendar-option', icon: 'pi pi-fw pi-calendar', to: '/calendar' },
+        { label: 'navbar.title-calendar-option', icon: 'pi pi-fw pi-calendar', to: '/vinicultor/calendar' },
         { label: 'navbar.title-reports-option', icon: 'pi pi-fw pi-chart-bar', to: '/reports' }
       ]
     }
