@@ -1,14 +1,13 @@
 <script>
 
 import CreateAndEdit from "../../../shared/components/create-and-edit.component.vue";
-import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
 import {PressingStage} from "../model/pressingStage.entity.js";
 
 export default {
 
   name: 'pressing-stage-create-and-edit',
 
-  components: {CreateAndEdit, BasePageLayout},
+  components: {CreateAndEdit},
 
   props: {
     itemEntity: null,

@@ -57,7 +57,7 @@ import {
     AccordionHeader,
     AccordionPanel,
     AutoComplete,
-    Badge, Calendar, Dropdown, ProgressBar,
+    Badge, Calendar, Dropdown, InputSwitch, ProgressBar,
     SplitButton,
     TabPanels
 } from "primevue";
@@ -126,6 +126,7 @@ app.component('pv-button', Button)
     .component('pv-dropdown', Dropdown)
     .component('pv-progress-bar', ProgressBar)
     .component('pv-calendar', Calendar)
-    .component('pv-input-textarea', Textarea);
+    .component('pv-input-textarea', Textarea)
+    .component('pv-input-switch', InputSwitch);
 
 app.mount('#app')

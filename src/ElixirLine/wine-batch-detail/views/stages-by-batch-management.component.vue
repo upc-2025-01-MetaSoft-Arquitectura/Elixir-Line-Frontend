@@ -16,24 +16,26 @@ import ClarificationStageCreateAndEditComponent
   from "../components/clarification-stage-create-and-edit.component.vue";
 import BottlingStageDetailCreateAndEdit from "../components/bottling-stage-detail-create-and-edit.component.vue";
 import AgingStageCreateAndEditComponent from "../components/aging-stage-create-and-edit.component.vue";
-import FiltrationStageDetailCreateAndEdit from "../components/filtration-stage-detail-create-and-edit.component.vue";
+import FiltrationStageCreateAndEditComponent from "../components/filtration-stage-create-and-edit.component.vue";
 import {Stages} from "../model/stages.entity.js";
 import CorrectionStageManagement from "../pages/correction-stage-management.component.vue";
 import FermentationStageManagement from "../pages/fermentation-stage-management.component.vue";
 import PressingStageManagement from "../pages/pressing-stage-management.component.vue";
 import ClarificationStageManagement from "../pages/clarification-stage-management.vue";
 import AgingStageManagement from "../pages/aging-stage-management.vue";
+import FiltrationStageManagement from "../pages/filtration-stage-management.component.vue";
 
 
 export default {
   name: 'stages-by-batch-management',
   components: {
+    FiltrationStageManagement,
     AgingStageManagement,
     ClarificationStageManagement,
     PressingStageManagement,
     FermentationStageManagement,
     CorrectionStageManagement,
-    FiltrationStageDetailCreateAndEdit,
+    FiltrationStageDetailCreateAndEdit: FiltrationStageCreateAndEditComponent,
     AgingStageDetailCreateAndEdit: AgingStageCreateAndEditComponent,
     BottlingStageDetailCreateAndEdit,
     ClarificationStageDetailCreateAndEdit: ClarificationStageCreateAndEditComponent,
@@ -221,7 +223,7 @@ export default {
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Filtración'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <filtration-stage-detail-create-and-edit :itemEntity="filtrationStage" />
+      <filtration-stage-management  :item="itemObject" />
     </div>
 
     <div v-else-if="selectedItem && selectedItem.name === 'Embotellado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">

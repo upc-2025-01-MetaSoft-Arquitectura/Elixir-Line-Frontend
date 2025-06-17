@@ -836,7 +836,7 @@
         "pressureBars": 1,
         "filteredVolumeLiters": 1200,
         "isSterile": true,
-        "filterChanged": false,
+        "filterChanged": true,
         "changeReason": "Sin cambio",
         "comments": "Filtración sin incidencias, vino limpio y brillante, listo para embotellado.",
         "isCompleted": true
