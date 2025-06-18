@@ -4,14 +4,19 @@ import {batchAndCampaignApiService} from "../services/batch-and-campaign-api.ser
 import {Campaign} from "../model/campaign.entity.js";
 import CampaignCreateAndEdit from "../components/campaign-create-and-edit.vue";
 import DataManager from "../../../shared/components/data-manager.component.vue";
+import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
+import TabsViewDetails from "../../wine-batch-detail/views/tabs-view-details.component.vue";
 
 export default {
   name: "campaigns-management",
 
   components: {
+    TabsViewDetails,
+    BasePageLayout,
     DataManager,
     CampaignCreateAndEdit
   },
+
 
   data() {
     return {
@@ -23,6 +28,13 @@ export default {
       createAndEditDialogIsVisible: false,
       isEdit: false,
       submitted: false,
+
+
+
+      // Para ver detalles de una campaña
+      isViewItem: false, // Para ver detalles de una campaña
+      viewDetailsDialogIsVisible: false,
+
     }
   },
 
@@ -55,20 +67,10 @@ export default {
       this.createAndEditDialogIsVisible = true;
     },
 
-
-    onViewItemDetails(item) {
-
-      //dirigir a otro componente o vista para ver los detalles de la campaña
-      console.log('View item details', item);
-
-      // Aquí podrías redirigir a una vista de detalles o mostrar un modal con la información detallada
-      // Por ejemplo, podrías usar Vue Router para redirigir a una ruta de detalles:
-      // this.$router.push({ name: 'CampaignDetails', params: { id: item.id } });
-      // O si prefieres mostrar un modal, podrías establecer una propiedad para mostrar un modal con los detalles
-      // this.createAndEditDialogIsVisible = true; // Si decides mostrar un modal
-      // pasar los detalles del item a un componente de detalles
-
-
+    onViewItem(item) {
+      this.itemObject = new Campaign(item);
+      this.isViewItem = true;
+      this.viewDetailsDialogIsVisible = true;
     },
 
     onDeleteItem(item) {
@@ -85,6 +87,11 @@ export default {
       this.createAndEditDialogIsVisible = false;
       this.submitted = false;
       this.isEdit = false;
+    },
+
+    onCloseDetails(){
+      this.viewDetailsDialogIsVisible = false;
+      this.isViewItem = false;
     },
 
     onSaveRequested(item) {
@@ -151,11 +158,10 @@ export default {
     getAllCampaigns() {
 
       this.batchAndCampaignApiService.getAllResources().then(response => {
-        console.log("Campaigns response", response.data);
 
         this.arrayItems = response.data.map(resource => new Campaign(resource));
 
-        console.log("Campaigns resources", this.arrayItems);
+        console.log('Campañas recuperadas' , this.arrayItems);
       }).catch(error => {
         console.error("Error getting campaigns",error);
       });
@@ -181,24 +187,37 @@ export default {
 
 
 
-  <div class="campaigns-container flex flex-column flex-1 w-full h-full overflow-hidden">
+  <base-page-layout>
 
-    <div class="header-container w-full border-bottom-1 border-300">
-      <h2>{{$t('components.title-campaign')}}</h2>
-    </div>
+    <template #header>
+
+      <div class="flex flex-column w-full gap-4 p-2">
+
+        <div class="flex flex-row justify-content-between align-items-center">
+          <h2>{{$t('components.title-campaign')}}</h2>
+          <!--<span class="font-bold">{{$t('batch-management.total-campaigns')}} {{ campaignQuantity }}</span>
+          -->
+        </div>
+
+      </div>
 
 
-    <div class="data-table-container pt-2 h-full flex-1 overflow-hidden flex flex-column">
+    </template>
+
+
+    <div v-if="arrayItems && arrayItems.length > 0"
+         class="data-table-container p-2 h-full flex-1 overflow-hidden flex flex-column">
+
       <data-manager :title="title"
                     v-bind:items="arrayItems"
                     v-bind:label-name="$t('winemaking.button-new-campaign')"
                     v-on:new-item-requested-manager="onNewItem"
                     v-on:edit-item-requested-manager="onEditItem($event)"
-                    v-on:view-item-details-requested-manager="onViewItemDetails($event)"
+                    v-on:view-item-details-requested-manager="onViewItem($event)"
                     v-on:delete-item-requested-manager="onDeleteItem($event)"
-                    v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)">
+                    v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)" >
 
-        <template #custom-columns-manager >
+      <template #custom-columns-manager >
           <pv-column
               :sortable="true"
               field="name"
@@ -245,9 +264,18 @@ export default {
           v-on:cancel-requested="onCancelRequested"
           v-on:save-requested="onSaveRequested($event)">
       </campaign-create-and-edit>
+
+      <tabs-view-details
+          :item-entity="itemObject"
+          :title="itemObject.name"
+          :visible="viewDetailsDialogIsVisible"
+          v-on:close-tabs-view-details="onCloseDetails">
+      </tabs-view-details>
+
+
     </div>
 
-  </div>
+  </base-page-layout>
 
 </template>
 

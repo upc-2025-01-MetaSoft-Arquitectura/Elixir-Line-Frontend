@@ -30,6 +30,8 @@ export default {
     onSaveRequested(newItem) {
       this.submitted = true;
 
+      newItem.stage = "Filtración"; // Assuming the stage is always "Filtración" for this component
+
       this.itemEntity.filtrationStage = newItem;
 
       console.log('batches-create-and-edit onSaveRequested',this.itemEntity);
@@ -67,41 +69,11 @@ export default {
   >
 
 
-    <!-- Content of the create and edit dialog
-     "filtrationStage": {
-        "stage": "Filtración",
-        "registeredBy": "Alonso Alvarez",
-        "startDate": "2025-05-10",
-        "endDate": "2025-05-10",
-        "filtrationType": "Filtración estéril",
-        "filterMedia": "Membrana PES",
-        "poreMicrons": 0.45,
-        "turbidityBefore": 2.5,
-        "turbidityAfter": 0.4,
-        "temperature": 14,
-        "pressureBars": 1,
-        "filteredVolumeLiters": 1200,
-        "isSterile": true,
-        "filterChanged": false,
-        "changeReason": "Sin cambio",
-        "comments": "Filtración sin incidencias, vino limpio y brillante, listo para embotellado.",
-        "isCompleted": true
-      },
-      -->
+    <!-- Content of the create and edit dialog -->
 
     <template #content>
 
       <div class="field">
-
-        <pv-float-label class="field mt-4 w-full">
-          <label for="stage">Etapa</label>
-          <pv-input-text
-              class="w-full"
-              id="stage"
-              v-model="filtrationStage.stage"
-              :class="{ 'p-invalid': submitted && !filtrationStage.stage }"
-          />
-        </pv-float-label>
 
         <pv-float-label class="field mt-4 w-full">
           <label for="registeredBy">Registrado por</label>

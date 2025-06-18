@@ -30,6 +30,8 @@ export default {
     onSaveRequested(newItem) {
       this.submitted = true;
 
+      newItem.stage = "Añejamiento"; // Assuming the stage is always "Envejecimiento" for this component
+
       this.itemEntity.agingStage = newItem;
 
       console.log('batches-create-and-edit onSaveRequested',this.agingStage);
@@ -60,46 +62,16 @@ export default {
       :entity="agingStage"
       :edit="edit"
       :visible="visible"
-      :entity-name="agingStage.stage || 'Prensado'"
+      :entity-name="agingStage.stage || 'Añejamiento'"
       @canceled-shared="onCancelRequested"
       @saved-shared="onSaveRequested($event)"
   >
 
 
-    <!-- Content of the create and edit dialog
-    "agingStage": {
-        "stage": "Añejamiento",
-        "registeredBy": "Daniel Vargas",
-        "startDate": "2025-05-10",
-        "endDate": "2025-05-10",
-        "containerType": "Barrica",
-        "material": "Roble Francés",
-        "containerCode": "BARR-FR-12",
-        "avgTemperature": 16.5,
-        "volumeLiters": 225,
-        "durationMonths": 6,
-        "frequencyDays": null,
-        "refilled": 15,
-        "batonnage": 0,
-        "rackings": 2,
-        "purpose": "Crianza oxidativa para vino reserva",
-        "comments": "Buena integración madera-vino, sin desviaciones aromáticas.",
-        "isCompleted": true
-      },
-      -->
+    <!-- Content of the create and edit dialog -->
     <template #content>
 
       <div class="field">
-
-        <pv-float-label class="field mt-4 w-full">
-          <label for="stage">Etapa</label>
-          <pv-input-text
-              class="w-full"
-              id="stage"
-              v-model="agingStage.stage"
-              :class="{ 'p-invalid': submitted && !agingStage.stage }"
-          />
-        </pv-float-label>
 
         <pv-float-label class="field mt-4 w-full">
           <label for="registeredBy">Registrado por</label>

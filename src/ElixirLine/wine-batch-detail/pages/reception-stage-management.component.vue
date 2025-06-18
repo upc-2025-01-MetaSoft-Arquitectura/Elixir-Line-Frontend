@@ -16,7 +16,8 @@ export default {
     item: {
       type: Object,
       default: () => ({})
-    }
+    },
+    batchId: null,
   },
 
   data() {
@@ -88,9 +89,15 @@ export default {
 
     //#region CRUD Operations
     create() {
+
+      this.itemObject.batchId = this.batchId;
+
+      console.log('=========================================================', this.itemObject);
+
       this.receptionStageApiService.create(this.itemObject).then(response => {
 
         this.receptionStage = new ReceptionStage(response.data.receptionStage);
+
         this.itemObject = new Stages(response.data);
 
         this.notifySuccessfulAction('Stage created successfully');

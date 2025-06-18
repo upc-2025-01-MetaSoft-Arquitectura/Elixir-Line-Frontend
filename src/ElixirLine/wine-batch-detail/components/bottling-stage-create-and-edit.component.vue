@@ -31,6 +31,8 @@ export default {
     onSaveRequested(newItem) {
       this.submitted = true;
 
+      newItem.stage = "Embotellado"; // Assuming the stage is always "Embotellado" for this component
+
       this.itemEntity.bottlingStage = newItem;
 
       console.log('batches-create-and-edit onSaveRequested',this.bottlingStage);
@@ -67,40 +69,11 @@ export default {
       @saved-shared="onSaveRequested($event)"
   >
 
-    <!-- Content slot for the form fields
-    "bottlingStage": {
-        "stage": "Embotellado",
-        "registeredBy": "Camila Fuentes",
-        "startDate": "2025-05-10",
-        "endDate": "2025-05-10",
-        "bottlingLine": "LINEA-2",
-        "bottlesFilled": 1600,
-        "bottleVolumeMl": 750,
-        "totalVolumeLiters": 1200,
-        "sealType": "Corcho natural",
-        "code": "B2024-VINEYARD01",
-        "temperature": 15,
-        "wasFiltered": true,
-        "wereLabelsApplied": true,
-        "wereCapsulesApplied": true,
-        "comments": "Proceso fluido. Sin incidencias.",
-        "isCompleted": true
-      }
-      -->
+    <!-- Content slot for the form fields -->
 
     <template #content>
 
       <div class="field">
-
-        <pv-float-label class="field mt-4 w-full">
-          <label for="stage">Etapa</label>
-          <pv-input-text
-              class="w-full"
-              id="stage"
-              v-model="bottlingStage.stage"
-              :class="{ 'p-invalid': submitted && !bottlingStage.stage }"
-          />
-        </pv-float-label>
 
         <pv-float-label class="field mt-4 w-full">
           <label for="registeredBy">Registrado por</label>

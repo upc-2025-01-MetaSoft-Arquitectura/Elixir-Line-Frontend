@@ -31,6 +31,8 @@ export default {
     onSaveRequested(newItem) {
       this.submitted = true;
 
+      newItem.stage = "Prensado"; // Assuming the stage is always "Prensado" for this component
+
       this.itemEntity.pressingStage = newItem;
 
       console.log('batches-create-and-edit onSaveRequested',this.itemEntity);
@@ -71,16 +73,6 @@ export default {
     <template #content>
 
       <div class="field">
-
-        <pv-float-label class="field mt-4 w-full">
-          <label for="stage">Etapa</label>
-          <pv-input-text
-              class="w-full"
-              id="stage"
-              v-model="pressingStage.stage"
-              :class="{ 'p-invalid': submitted && !pressingStage.stage }"
-          />
-        </pv-float-label>
 
         <pv-float-label class="field mt-4 w-full">
           <label for="registeredBy">Registrado por</label>

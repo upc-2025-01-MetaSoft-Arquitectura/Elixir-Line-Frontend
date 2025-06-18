@@ -31,6 +31,8 @@ export default {
     onSaveRequested(newItem) {
       this.submitted = true;
 
+      newItem.stage = "Recepción"; // Assuming the stage is always "Recepción" for this component
+
       this.itemEntity.receptionStage = newItem;
 
       console.log('batches-create-and-edit onSaveRequested',this.itemEntity);

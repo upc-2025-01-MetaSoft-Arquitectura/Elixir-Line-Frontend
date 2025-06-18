@@ -201,7 +201,7 @@ export default {
 
     <!-- ETAPA DE RECEPCIÓN  ====================================================================== -->
     <div v-if="selectedItem && selectedItem.name === 'Recepción'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <reception-stage-management :item="itemObject" />
+      <reception-stage-management :item="itemObject" :batch-id = "this.itemEntity.id"/>
     </div>
 
     <!-- ETAPA DE CORRECCIÓN  ====================================================================== -->

@@ -32,6 +32,8 @@ export default {
     onSaveRequested(newItem) {
       this.submitted = true;
 
+      newItem.stage = "Clarificación"; // Assuming the stage is always "Clarificación" for this component
+
       this.itemEntity.clarificationStage = newItem;
 
       this.$emit('save-requested', this.itemEntity);
@@ -64,46 +66,9 @@ export default {
       @saved-shared="onSaveRequested($event)"
   >
 
-    <!--
-     "clarificationStage": {
-        "stage": "Clarificación",
-        "registeredBy": "Alonso Alvarez",
-        "startDate": "2025-05-10",
-        "endDate": "2025-05-10",
-        "method": "Bentonita",
-        "clarifyingAgents": [
-          {
-            "name": "Bentonita",
-            "dose": 5
-          },
-          {
-            "name": "Gelatina",
-            "dose": 2
-          }
-        ],
-        "turbidityBeforeNTU": 35,
-        "turbidityAfterNTU": 2.8,
-        "volumeLiters": 1200,
-        "temperature": 4,
-        "durationHours": 48,
-        "comments": "Clarificación efectiva, se observa brillo visual. Preparado para filtración.",
-        "isCompleted": true
-      },
-      -->
-
     <template #content>
 
       <div class="field">
-
-        <pv-float-label class="field mt-4 w-full">
-          <label for="stage">Etapa</label>
-          <pv-input-text
-              class="w-full"
-              id="stage"
-              v-model="clarificationStage.stage"
-              :class="{ 'p-invalid': submitted && !clarificationStage.stage }"
-          />
-        </pv-float-label>
 
         <pv-float-label class="field mt-4 w-full">
           <label for="registeredBy">Registrado por</label>

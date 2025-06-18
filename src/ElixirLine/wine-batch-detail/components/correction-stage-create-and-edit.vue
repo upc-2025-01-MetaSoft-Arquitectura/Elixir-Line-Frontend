@@ -31,6 +31,8 @@ export default {
     onSaveRequested(newItem) {
       this.submitted = true;
 
+      newItem.stage = "Corrección"; // Assuming the stage is always "Corrección" for this component
+
       this.itemEntity.correctionStage = newItem;
 
       console.log('AL GUARDAR ===============================',this.itemEntity);
@@ -68,26 +70,6 @@ export default {
 
     <template #content>
       <div class="field">
-
-        <pv-float-label class="field mt-4 w-full">
-          <label for="stage">Etapa</label>
-          <pv-input-text
-            class="w-full"
-            id="stage"
-            v-model="correctionStage.stage"
-            :class="{ 'p-invalid': submitted && !correctionStage.stage }"
-          />
-        </pv-float-label>
-
-        <pv-float-label class="field mt-4 w-full">
-          <label for="registeredBy">Registrado por</label>
-          <pv-input-text
-            class="w-full"
-            id="registeredBy"
-            v-model="correctionStage.registeredBy"
-            :class="{ 'p-invalid': submitted && !correctionStage.registeredBy }"
-          />
-        </pv-float-label>
 
         <pv-float-label class="field mt-4 w-full">
           <label for="startDate">Fecha de inicio</label>
