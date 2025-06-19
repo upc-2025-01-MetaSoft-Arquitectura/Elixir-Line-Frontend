@@ -14,6 +14,7 @@ export default {
       showEvidenceDialog: false,
       evidencesByTask: [],
       selectedTask: null,
+      currentEvidenceIndex: 0,
       newEvidence: {
         taskId: '',
         title: '',
@@ -29,13 +30,63 @@ export default {
       if (!newVal) this.closeEvidenceDialog();
     }
   },
-
+  computed: {
+    filteredEvidences() {
+      return this.evidences.filter(item => item.type === 'Ambiente Industrial');
+    }
+  },
   methods: {
     async fetchEvidences() {
       const response = await fetch("http://localhost:3000/tasks");
       const data = await response.json();
       this.evidences = data;
     },
+
+    async onImageChange(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const img = new Image();
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        img.onload = () => {
+          // Redimensiona la imagen (por ejemplo, ancho máximo 600px)
+          const canvas = document.createElement('canvas');
+          const maxWidth = 100;
+          const scale = Math.min(1, maxWidth / img.width);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          // Reduce la calidad (por ejemplo, 0.6)
+          this.newEvidence.image = canvas.toDataURL('image/jpeg', 0.6);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    },
+
+    prevEvidence() {
+      if (this.currentEvidenceIndex > 0) {
+        this.currentEvidenceIndex--;
+      } else {
+        this.currentEvidenceIndex = this.evidencesByTask.length - 1;
+      }
+    },
+    nextEvidence() {
+      if (this.currentEvidenceIndex < this.evidencesByTask.length - 1) {
+        this.currentEvidenceIndex++;
+      } else {
+        this.currentEvidenceIndex = 0;
+      }
+    },
+
+    //async showEvidencesForTask(task) {
+      // ...tu código actual
+      // this.currentEvidenceIndex = 0; // Reinicia el índice al abrir el diálogo
+    //},
 
     formatDate(isoString) {
       if (!isoString) return '';
@@ -130,32 +181,41 @@ export default {
       size="standard"
       @canceled-shared="cancelDialog"
       @saved-shared="saveDialog"
+      header="Añadir evidencia | Tarea Industrial"
   >
     <template #content>
-      <pv-input-text v-model="newEvidence.taskId" placeholder="ID de la tarea" class="mb-3" />
+      <div class="form-grid">
+        <pv-input-text v-model="newEvidence.taskId" placeholder="ID de la tarea" class="mb-3" />
 
-      <input
-          type="file"
-          accept="image/*"
-          class="mb-3"
-          @change="onImageChange"
-      />
+        <input
+            type="file"
+            accept="image/*"
+            class="mb-3"
+            @change="onImageChange"
+        />
 
-      <pv-select
-          v-model="newEvidence.percentage"
-          :options="[10,20,30,40,50,60,70,80,90,100]"
-          placeholder="Porcentaje"
-          class="mb-3"
-      />
+        <pv-select
+            v-model="newEvidence.percentage"
+            :options="[10,20,30,40,50,60,70,80,90,100]"
+            placeholder="Porcentaje"
+            class="mb-3"
+        />
 
-      <pv-input-text v-model="newEvidence.description" placeholder="Descripción" class="mb-3" />
+        <pv-textarea
+            v-model="newEvidence.description"
+            placeholder="Descripción"
+            auto-resize
+            rows="5"
+            class="mb-3 descripcion-grande"
+        />
+      </div>
     </template>
   </create-and-edit-component>
 
 
     <div class="evidencias-container">
       <div class="evidencias">
-        <div v-for="item in evidences" :key="item.id" class="card">
+        <div v-for="item in filteredEvidences" :key="item.id" class="card">
           <img :src="item.image" class="imagen" />
           <div class="contenido">
             <h3>{{ item.taskId }}</h3>
@@ -184,13 +244,28 @@ export default {
         <div v-if="selectedTask">
           <h4>{{ selectedTask.title }}</h4>
           <div v-if="evidencesByTask.length">
-            <div v-for="ev in evidencesByTask" :key="ev.id" class="evidence-detail">
-              <p><strong>Descripción:</strong> {{ ev.description }}</p>
-              <p v-if="ev.createdAt">
-                <strong>Fecha de creación:</strong> {{ formatDate(ev.createdAt) }}
-              </p>
-              <p><strong>Porcentaje:</strong> {{ ev.percentage }}%</p>
-              <img v-if="ev.image" :src="ev.image" class="imagen" />
+            <div class="carousel-container">
+              <button
+                  v-if="evidencesByTask.length > 1"
+                  @click="prevEvidence"
+                  class="carousel-btn"
+              >&lt;</button>
+              <div class="evidence-detail">
+                <img v-if="evidencesByTask[currentEvidenceIndex].image" :src="evidencesByTask[currentEvidenceIndex].image" class="imagenevidence" />
+                <p><strong>Descripción:</strong> {{ evidencesByTask[currentEvidenceIndex].description }}</p>
+                <p v-if="evidencesByTask[currentEvidenceIndex].createdAt">
+                  <strong>Fecha de creación:</strong> {{ formatDate(evidencesByTask[currentEvidenceIndex].createdAt) }}
+                </p>
+                <p><strong>Porcentaje:</strong> {{ evidencesByTask[currentEvidenceIndex].percentage }}%</p>
+              </div>
+              <button
+                  v-if="evidencesByTask.length > 1"
+                  @click="nextEvidence"
+                  class="carousel-btn"
+              >&gt;</button>
+            </div>
+            <div v-if="evidencesByTask.length > 1" class="carousel-indicator">
+              {{ currentEvidenceIndex + 1 }} / {{ evidencesByTask.length }}
             </div>
           </div>
           <div v-else>
@@ -203,6 +278,36 @@ export default {
 </template>
 
 <style scoped>
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.descripcion-grande {
+  min-height: 120px;
+  width: 100%;
+  resize: vertical;
+}
+
+.carousel-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.carousel-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0 10px;
+}
+.carousel-indicator {
+  text-align: center;
+  margin-top: 8px;
+  color: #888;
+}
 
 .mb-3 {
   margin-bottom: 1rem;
@@ -246,6 +351,13 @@ export default {
 .imagen {
   width: 100%;
   height: 150px;
+  object-fit: cover;
+}
+
+
+.imagenevidence {
+  width: 100%;
+  height: 250px;
   object-fit: cover;
 }
 
