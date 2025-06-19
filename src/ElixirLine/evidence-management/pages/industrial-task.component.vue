@@ -11,22 +11,39 @@ export default {
     return {
       evidences: [],
       showDialog: false,
+      showEvidenceDialog: false,
+      evidencesByTask: [],
+      selectedTask: null,
       newEvidence: {
+        taskId: '',
         title: '',
         image: '',
         code: '',
         worker: '',
         type: 'Ambiente Industrial',
-        date: '',
-        description: ''
       }
     };
   },
+  watch: {
+    showEvidenceDialog(newVal) {
+      if (!newVal) this.closeEvidenceDialog();
+    }
+  },
+
   methods: {
     async fetchEvidences() {
-      const response = await fetch("http://localhost:3000/evidenceIndustrial");
+      const response = await fetch("http://localhost:3000/tasks");
       const data = await response.json();
       this.evidences = data;
+    },
+
+    formatDate(isoString) {
+      if (!isoString) return '';
+      const date = new Date(isoString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
     },
 
     openDialog() {
@@ -38,7 +55,33 @@ export default {
       this.showDialog = false;
     },
 
+    closeEvidenceDialog() {
+      this.showEvidenceDialog = false;
+      this.evidencesByTask = [];
+      this.selectedTask = null;
+    },
+
+    async showEvidencesForTask(task) {
+      try {
+        const response = await fetch("http://localhost:3000/evidenceIndustrial?taskId=" + task.taskId);
+        if (!response.ok) {
+          console.error('Error en la petición:', response.status);
+          this.evidencesByTask = [];
+          return;
+        }
+        const data = await response.json();
+        console.log('Evidencias recibidas:', data);
+        this.evidencesByTask = Array.isArray(data) ? data : [];
+        this.selectedTask = task;
+        this.showEvidenceDialog = true;
+      } catch (error) {
+        console.error('Error al obtener evidencias:', error);
+        this.evidencesByTask = [];
+      }
+    },
+
     async saveDialog(evidence) {
+      evidence.createdAt = new Date().toISOString();
       await fetch("http://localhost:3000/evidenceIndustrial", {
         method: "POST",
         headers: {
@@ -52,15 +95,13 @@ export default {
 
     resetForm() {
       this.newEvidence = {
-        title: '',
-        image: '',
-        code: '',
-        worker: '',
-        type: 'Ambiente Industrial',
-        date: new Date().toISOString().split("T")[0],
-        description: ''
+        taskId: '',
+        percentage: null,
+        description: '',
+        image: ''
       };
     }
+
   },
   mounted() {
     this.fetchEvidences();
@@ -91,13 +132,23 @@ export default {
       @saved-shared="saveDialog"
   >
     <template #content>
-      <pv-input-text v-model="newEvidence.title" placeholder="Título" class="mb-3" />
-      <pv-input-text v-model="newEvidence.image" placeholder="URL de la imagen" class="mb-3" />
-      <pv-input-text v-model="newEvidence.code" placeholder="Código relacionado" class="mb-3" />
-      <pv-input-text v-model="newEvidence.worker" placeholder="Encargado" class="mb-3" />
-      <pv-input-text v-model="newEvidence.type" placeholder="Tipo" class="mb-3" />
-      <pv-calendar v-model="newEvidence.date" placeholder="Fecha" class="mb-3" dateFormat="yy-mm-dd" />
-      <pv-textarea v-model="newEvidence.description" placeholder="Descripción" autoResize class="mb-3" />
+      <pv-input-text v-model="newEvidence.taskId" placeholder="ID de la tarea" class="mb-3" />
+
+      <input
+          type="file"
+          accept="image/*"
+          class="mb-3"
+          @change="onImageChange"
+      />
+
+      <pv-select
+          v-model="newEvidence.percentage"
+          :options="[10,20,30,40,50,60,70,80,90,100]"
+          placeholder="Porcentaje"
+          class="mb-3"
+      />
+
+      <pv-input-text v-model="newEvidence.description" placeholder="Descripción" class="mb-3" />
     </template>
   </create-and-edit-component>
 
@@ -107,16 +158,47 @@ export default {
         <div v-for="item in evidences" :key="item.id" class="card">
           <img :src="item.image" class="imagen" />
           <div class="contenido">
-            <h3>{{ item.title }}</h3>
+            <h3>{{ item.taskId }}</h3>
+            <p><strong>Nombre:</strong> {{ item.title }}</p>
             <p><strong>Código Relacionado:</strong> {{ item.code }}</p>
             <p><strong>Encargado:</strong> {{ item.worker }}</p>
             <p><strong>Tipo:</strong> <span class="tipo">{{ item.type }}</span></p>
-            <p><strong>Fecha:</strong> {{ item.date }}</p>
-            <p><strong>Descripción:</strong> {{ item.description }}</p>
+            <pv-button
+                label="Ver avances"
+                @click="showEvidencesForTask(item)"
+                class="mb-2"
+            />
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Diálogo para mostrar evidencias de la tarea -->
+    <pv-dialog
+        :visible="showEvidenceDialog"
+        modal
+        header="Evidencias de la tarea"
+        @update:visible="showEvidenceDialog = $event"
+    >
+      <template #default>
+        <div v-if="selectedTask">
+          <h4>{{ selectedTask.title }}</h4>
+          <div v-if="evidencesByTask.length">
+            <div v-for="ev in evidencesByTask" :key="ev.id" class="evidence-detail">
+              <p><strong>Descripción:</strong> {{ ev.description }}</p>
+              <p v-if="ev.createdAt">
+                <strong>Fecha de creación:</strong> {{ formatDate(ev.createdAt) }}
+              </p>
+              <p><strong>Porcentaje:</strong> {{ ev.percentage }}%</p>
+              <img v-if="ev.image" :src="ev.image" class="imagen" />
+            </div>
+          </div>
+          <div v-else>
+            <p>No hay evidencias para esta tarea.</p>
+          </div>
+        </div>
+      </template>
+    </pv-dialog>
   </div>
 </template>
 

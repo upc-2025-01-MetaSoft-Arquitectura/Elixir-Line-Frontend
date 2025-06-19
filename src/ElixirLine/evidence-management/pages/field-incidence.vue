@@ -71,6 +71,17 @@ export default {
 <template>
 
   <div class="scroll-container">
+
+
+    <div class="button">
+      <pv-button
+          class="mb-2"
+          label="Agregar Incidencia a Tarea de campo"
+          icon="pi pi-plus"
+          @click="openDialog"
+      />
+    </div>
+
     <!-- Dialogo para agregar evidencia -->
     <create-and-edit-component
         :visible="showDialog"

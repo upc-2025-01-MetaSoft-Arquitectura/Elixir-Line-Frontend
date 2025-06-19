@@ -436,21 +436,55 @@
       "user_type": ""
     }
   ],
-  "evidenceIndustrial": [
+  "tasks": [
     {
-      "id": 1,
+      "taskId": "TP001",
       "title": "Control de temperatura en fermentación",
-      "image": "https://www.catadelvino.com/uploads/2511201411094446062a.JPG",
       "code": "B2025-VINEYARD05",
+      "image": "https://www.catadelvino.com/uploads/2511201411094446062a.JPG",
       "worker": "Luis Carlos Prada",
       "type": "Ambiente Industrial",
-      "date": "2025-06-19",
-      "description": "Se ajustó la temperatura de fermentación y quedó en 26°C"
+      "id": "bc9f"
+    },
+    {
+      "taskId": "TP002",
+      "title": "Control de pH en corrección",
+      "code": "B2025-VINEYARD05",
+      "image": "https://storage.googleapis.com/liquidos-public/vino-pinot-noir.jpg",
+      "worker": "Manuel Montenegro",
+      "type": "Ambiente Industrial",
+      "id": "b12e"
+    },
+    {
+      "taskId": "TP003",
+      "title": "Control temperatura en barrilles",
+      "code": "B2025-VINEYARD09",
+      "image": "https://chateauberne-vin.com/cdn/shop/articles/shutterstock_1720905787_1.jpg?v=1654781803",
+      "worker": "Ximena Canchaya",
+      "type": "Ambiente Industrial",
+      "id": "b12e"
+    }
+  ],
+  "evidenceIndustrial": [
+    {
+      "id": "1",
+      "taskId": "TP000",
+      "description": "Se ajustó la ASDASDAStemperatura de fermentación y quedó en 26°C",
+      "percentage": 30,
+      "image": ""
+    },
+    {
+      "id": "cc50",
+      "taskId": "TP001",
+      "percentage": 30,
+      "description": "Luis hola si",
+      "image": "",
+      "createdAt": "2025-06-19T03:42:20.670Z"
     }
   ],
   "evidenceField": [
     {
-      "id": 1,
+      "id": "1",
       "title": "Control de pH en correcion",
       "image": "https://www.quimicabaza.com/wp-content/uploads/2018/08/analisis-vino.jpg",
       "code": "B2025-VINEYARD05",
@@ -462,7 +496,7 @@
   ],
   "incidenceIndustrial": [
     {
-      "id": 1,
+      "id": "1",
       "title": "Control de temperatura en fermentación",
       "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoAyIpXxrt4BxeKVrtNkWpmHPOxz7xJ1g7vQ&s",
       "code": "B2025-VINEYARD05",
@@ -474,7 +508,7 @@
   ],
   "incidenceField": [
     {
-      "id": 1,
+      "id": "1",
       "title": "Control de pH en correcion",
       "image": "https://images.squarespace-cdn.com/content/v1/6375cb9a07c3be4b45ca91a0/1677720117435-1ED8ID4LDX99K2C0C6DI/unsplash-image-DSY0fSH97kk.jpg",
       "code": "B2025-VINEYARD05",

@@ -72,6 +72,16 @@ export default {
 
   <div class="scroll-container">
     <!-- Dialogo para agregar evidencia -->
+
+    <div class="button">
+      <pv-button
+          class="mb-2"
+          label="Agregar Evidencia a Tarea de campo"
+          icon="pi pi-plus"
+          @click="openDialog"
+      />
+    </div>
+
     <create-and-edit-component
         :visible="showDialog"
         :entity="newEvidence"
