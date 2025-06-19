@@ -252,7 +252,6 @@ export default {
 
     <!-- Mensaje si no hay  -->
 
-
   </base-page-layout>
 
 </template>
