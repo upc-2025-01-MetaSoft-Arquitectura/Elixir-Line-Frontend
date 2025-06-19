@@ -25,6 +25,7 @@ export default {
       isEdit: false,
       submitted: false,
       stageExist: false, // Assuming you want to check if a stage exists
+      canAddStage: false
     }
   },
 
@@ -114,18 +115,22 @@ export default {
   created() {
     this.agingStageApiService = new StagesApiService ('/stages');
 
-
-
     if (!this.item || !this.item.agingStage) {
-
+      // Etapa actual (agingStage) NO existe
       this.stageExist = false;
 
-    } else {
+      // Validar si la etapa anterior (clarificationStage) existe
+      if (this.item?.clarificationStage) {
+        this.canAddStage = true; // Se puede agregar agingStage
+      } else {
+        this.canAddStage = false; // NO se puede agregar aún
+      }
 
-      this.itemObject = this.item;
+    } else {
+      // Etapa actual (agingStage) YA existe
       this.stageExist = true;
       this.agingStage = this.item.agingStage;
-
+      this.canAddStage = false; // Ya no se puede agregar, solo editar o ver
     }
 
     console.log('RECEPTION STAGE ===================== ', this.agingStage);
@@ -159,7 +164,7 @@ export default {
             icon="pi pi-plus"
             @click="onNewItem()"
             class="p-button-success"
-            v-if="!stageExist"
+            v-if="!stageExist && canAddStage"
         />
 
         <pv-button
@@ -178,6 +183,12 @@ export default {
             v-if="stageExist"
         />
       </div>
+    </div>
+
+    <!-- Mensaje de aviso si no se puede agregar una nueva etapa -->
+    <div v-if="!canAddStage" class="p-3 bg-yellow-100 text-yellow-800 border-round">
+      <i class="pi pi-exclamation-triangle"></i>
+      <span> No se puede agregar una nueva etapa de añejamiento hasta que se complete la etapa de clarificación. </span>
     </div>
 
     <!-- Contenido de la etapa -->
