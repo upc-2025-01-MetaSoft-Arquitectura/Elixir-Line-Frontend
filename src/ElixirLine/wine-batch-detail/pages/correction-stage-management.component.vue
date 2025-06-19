@@ -11,7 +11,8 @@ export default {
   components: {CorrectionStageCreateAndEdit, ReceptionStageCreateAndEdit},
 
   props:{
-    item: null
+    item: null,
+    canAddStage: false
   },
 
   data() {
@@ -117,18 +118,17 @@ export default {
     this.correctionStageApiService = new StagesApiService ('/stages');
 
     if (!this.item || !this.item.correctionStage) {
-
       this.stageExist = false;
-
     } else {
-
       this.itemObject = this.item;
       this.stageExist = true;
       this.correctionStage = this.item.correctionStage;
-
     }
 
     console.log('RECEPTION STAGE ===================== ', this.correctionStage);
+
+    console.log('CAN STAGE ===================== ', this.canAddStage);
+
 
     console.log("Reception Stage Management component created");
   },
@@ -159,7 +159,7 @@ export default {
             icon="pi pi-plus"
             @click="onNewItem()"
             class="p-button-success"
-            v-if="!stageExist"
+            v-if="!stageExist && canAddStage"
         />
 
         <pv-button
@@ -167,7 +167,7 @@ export default {
             icon="pi pi-pencil"
             @click="onEditItem(itemObject)"
             class="p-button-warning"
-            v-if="stageExist"
+            v-if="stageExist  && canAddStage"
         />
 
         <pv-button
@@ -175,13 +175,19 @@ export default {
             icon="pi pi-trash"
             @click="onDeleteItem(correctionStage)"
             class="p-button-danger"
-            v-if="stageExist"
+            v-if="stageExist  && canAddStage"
         />
       </div>
     </div>
 
+    <!-- Mensaje de aviso si no se puede agregar una nueva etapa -->
+    <div v-if="!canAddStage" class="p-3 bg-yellow-100 text-yellow-800 border-round">
+      <i class="pi pi-exclamation-triangle"></i>
+      <span> No se puede agregar una nueva etapa de CORRECCIÓN hasta que se complete la etapa de RECEPCIÓN. </span>
+    </div>
+
     <!-- Detalles de la etapa de corrección -->
-    <pv-card v-if="correctionStage.stage">
+    <pv-card v-if="correctionStage.stage && canAddStage === true">
       <template #header>
         <h4 class="m-0">Detalles de la etapa de corrección</h4>
       </template>

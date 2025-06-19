@@ -12,7 +12,11 @@ export default {
   components: {AgingStageDetailCreateAndEdit, ClarificationStageCreateAndEdit},
 
   props:{
-    item: null
+    item: null,
+    canAddStage: {
+      type: Boolean,
+      default: false // Default value for canAddStage
+    }
   },
 
   data() {
@@ -25,10 +29,8 @@ export default {
       isEdit: false,
       submitted: false,
       stageExist: false, // Assuming you want to check if a stage exists
-      canAddStage: false
     }
   },
-
 
 
   methods: {
@@ -119,21 +121,16 @@ export default {
       // Etapa actual (agingStage) NO existe
       this.stageExist = false;
 
-      // Validar si la etapa anterior (clarificationStage) existe
-      if (this.item?.clarificationStage) {
-        this.canAddStage = true; // Se puede agregar agingStage
-      } else {
-        this.canAddStage = false; // NO se puede agregar aún
-      }
-
     } else {
       // Etapa actual (agingStage) YA existe
+      this.itemObject = this.item;
       this.stageExist = true;
       this.agingStage = this.item.agingStage;
-      this.canAddStage = false; // Ya no se puede agregar, solo editar o ver
     }
 
     console.log('RECEPTION STAGE ===================== ', this.agingStage);
+
+    console.log('CAN STAGE ===================== ', this.canAddStage);
 
     console.log("🔍 Reception Stage Management created with item:", this.item);
   },
@@ -172,7 +169,7 @@ export default {
             icon="pi pi-pencil"
             @click="onEditItem(itemObject)"
             class="p-button-warning"
-            v-if="stageExist"
+            v-if="stageExist  && canAddStage"
         />
 
         <pv-button
@@ -180,7 +177,7 @@ export default {
             icon="pi pi-trash"
             @click="onDeleteItem(agingStage)"
             class="p-button-danger"
-            v-if="stageExist"
+            v-if="stageExist  && canAddStage"
         />
       </div>
     </div>
@@ -188,11 +185,11 @@ export default {
     <!-- Mensaje de aviso si no se puede agregar una nueva etapa -->
     <div v-if="!canAddStage" class="p-3 bg-yellow-100 text-yellow-800 border-round">
       <i class="pi pi-exclamation-triangle"></i>
-      <span> No se puede agregar una nueva etapa de añejamiento hasta que se complete la etapa de clarificación. </span>
+      <span> No se puede agregar una nueva etapa de AÑEJAMIENTO hasta que se complete la etapa de CLARIFICACIÓN. </span>
     </div>
 
     <!-- Contenido de la etapa -->
-    <pv-card v-if="agingStage.stage">
+    <pv-card v-if="agingStage.stage && canAddStage">
       <template #header>
         <h4 class="m-0">Detalles de la etapa de clarificación</h4>
       </template>

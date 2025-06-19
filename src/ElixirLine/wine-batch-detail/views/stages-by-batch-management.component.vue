@@ -206,37 +206,37 @@ export default {
 
     <!-- ETAPA DE CORRECCIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Corrección'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden ">
-      <correction-stage-management :item="itemObject" />
+      <correction-stage-management :item="itemObject" :can-add-stage="itemObject.receptionStage?.isCompleted" />
     </div>
 
     <!-- ETAPA DE FERMENTACIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Fermentación' " class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <fermentation-stage-management :item="itemObject" />
+      <fermentation-stage-management :item="itemObject" :can-add-stage="itemObject.correctionStage?.isCompleted" />
     </div>
 
     <!-- ETAPA DE PRENSADO  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Prensado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <pressing-stage-management :item="itemObject" />
+      <pressing-stage-management :item="itemObject" :can-add-stage="itemObject.fermentationStage?.isCompleted"/>
     </div>
 
     <!-- ETAPA DE CLARIFICACIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Clarificación'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <clarification-stage-management :item="itemObject" />
+      <clarification-stage-management :item="itemObject" :can-add-stage="itemObject.pressingStage?.isCompleted"/>
     </div>
 
     <!-- ETAPA DE CRIANZA  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Crianza'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-        <aging-stage-management :item="itemObject" />
+        <aging-stage-management :item="itemObject" :can-add-stage="itemObject.clarificationStage?.isCompleted" />
     </div>
 
     <!-- ETAPA DE FILTRACIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Filtración'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <filtration-stage-management :item="itemObject" />
+      <filtration-stage-management :item="itemObject" :can-add-stage="itemObject.agingStage?.isCompleted" />
     </div>
 
     <!-- ETAPA DE EMBOTELLADO  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Embotellado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <bottling-stage-management :item="itemObject" />
+      <bottling-stage-management :item="itemObject" :can-add-stage="itemObject.filtrationStage?.isCompleted"/>
     </div>
 
     <!-- Mensaje en caso de no haber etapas registradas -->

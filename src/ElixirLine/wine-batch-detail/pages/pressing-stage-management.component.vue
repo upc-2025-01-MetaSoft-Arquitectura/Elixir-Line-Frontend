@@ -16,7 +16,8 @@ export default {
     FermentationStageCreateAndEdit, CorrectionStageCreateAndEdit, ReceptionStageCreateAndEdit},
 
   props:{
-    item: null
+    item: null,
+    canAddStage: false
   },
 
   data() {
@@ -163,7 +164,7 @@ export default {
             icon="pi pi-plus"
             @click="onNewItem()"
             class="p-button-success"
-            v-if="!stageExist"
+            v-if="!stageExist && canAddStage"
         />
 
         <pv-button
@@ -171,7 +172,7 @@ export default {
             icon="pi pi-pencil"
             @click="onEditItem(itemObject)"
             class="p-button-warning"
-            v-if="stageExist"
+            v-if="stageExist  && canAddStage"
         />
 
         <pv-button
@@ -179,13 +180,20 @@ export default {
             icon="pi pi-trash"
             @click="onDeleteItem(pressingStage)"
             class="p-button-danger"
-            v-if="stageExist"
+            v-if="stageExist  && canAddStage"
         />
       </div>
     </div>
 
+    <!-- Mensaje de aviso si no se puede agregar una nueva etapa -->
+    <div v-if="!canAddStage" class="p-3 bg-yellow-100 text-yellow-800 border-round">
+      <i class="pi pi-exclamation-triangle"></i>
+      <span> No se puede agregar una nueva etapa de PRENSADO hasta que se complete la etapa de FERMENTACIÓN. </span>
+    </div>
+
+
     <!-- Contenido de la etapa -->
-    <pv-card v-if="pressingStage.stage">
+    <pv-card v-if="pressingStage.stage && canAddStage">
       <template #header>
         <h4 class="m-0">Detalles de la etapa de añejamiento</h4>
       </template>
