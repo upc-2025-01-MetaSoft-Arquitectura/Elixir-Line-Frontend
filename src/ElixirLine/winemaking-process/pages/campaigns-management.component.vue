@@ -6,11 +6,13 @@ import CampaignCreateAndEdit from "../components/campaign-create-and-edit.vue";
 import DataManager from "../../../shared/components/data-manager.component.vue";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
 import TabsViewDetails from "../../wine-batch-detail/views/tabs-view-details.component.vue";
+import CampaignViewDetails from "../components/campaign-view-details.component.vue";
 
 export default {
   name: "campaigns-management",
 
   components: {
+    CampaignViewDetails,
     TabsViewDetails,
     BasePageLayout,
     DataManager,
@@ -265,12 +267,12 @@ export default {
           v-on:save-requested="onSaveRequested($event)">
       </campaign-create-and-edit>
 
-      <tabs-view-details
+      <campaign-view-details
           :item-entity="itemObject"
           :title="itemObject.name"
           :visible="viewDetailsDialogIsVisible"
-          v-on:close-tabs-view-details="onCloseDetails">
-      </tabs-view-details>
+          v-on:close-view-details="onCloseDetails">
+      </campaign-view-details>
 
 
     </div>

@@ -211,80 +211,32 @@ export default {
 
     <!-- ETAPA DE FERMENTACIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Fermentación' " class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-
-      <div v-if="itemObject.fermentationStage !== null" class="flex flex-column w-full h-full overflow-hidden">
-        <fermentation-stage-management :item="itemObject" />
-      </div>
-
-      <div v-else class="flex flex-column w-full h-full overflow-hidden">
-        <p class="text-center">No hay etapa de fermentación registrada para este lote: {{itemEntity.internalCode}}.</p>
-      </div>
-
+      <fermentation-stage-management :item="itemObject" />
     </div>
 
     <!-- ETAPA DE PRENSADO  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Prensado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-
-      <div v-if="itemObject.pressingStage !== null" class="flex flex-column w-full h-full overflow-hidden">
-        <pressing-stage-management :item="itemObject" />
-      </div>
-
-      <div v-else class="flex flex-column w-full h-full overflow-hidden">
-        <p class="text-center">No hay etapa de prensado registrada para este lote: {{itemEntity.internalCode}}.</p>
-      </div>
-
+      <pressing-stage-management :item="itemObject" />
     </div>
 
     <!-- ETAPA DE CLARIFICACIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Clarificación'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-
-      <div v-if="itemObject.clarificationStage !== null" class="flex flex-column w-full h-full overflow-hidden">
-        <clarification-stage-management :item="itemObject" />
-      </div>
-
-      <div v-else class="flex flex-column w-full h-full overflow-hidden">
-        <p class="text-center">No hay etapa de clarificación registrada para este lote: {{itemEntity.internalCode}}.</p>
-      </div>
-
+      <clarification-stage-management :item="itemObject" />
     </div>
 
     <!-- ETAPA DE CRIANZA  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Crianza'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-
-      <div v-if="itemObject.agingStage !== null" class="flex flex-column w-full h-full overflow-hidden">
         <aging-stage-management :item="itemObject" />
-      </div>
-      <!-- Si no hay etapa de crianza registrada -->
-      <div v-else class="flex flex-column w-full h-full overflow-hidden">
-        <p class="text-center">No hay etapa de crianza registrada para este lote: {{itemEntity.internalCode}}.</p>
-      </div>
-
     </div>
 
     <!-- ETAPA DE FILTRACIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Filtración'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-
-      <div v-if="itemObject.filtrationStage !== null" class="flex flex-column w-full h-full overflow-hidden">
-        <filtration-stage-management :item="itemObject" />
-      </div>
-      <!-- Si no hay etapa de filtración registrada -->
-      <div v-else class="flex flex-column w-full h-full overflow-hidden">
-        <p class="text-center">No hay etapa de filtración registrada para este lote: {{itemEntity.internalCode}}.</p>
-      </div>
-
+      <filtration-stage-management :item="itemObject" />
     </div>
 
     <!-- ETAPA DE EMBOTELLADO  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Embotellado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-
-      <div v-if="itemObject.bottlingStage !== null" class="flex flex-column w-full h-full overflow-hidden">
-        <bottling-stage-management :item="itemObject" />
-      </div>
-      <!-- Si no hay etapa de embotellado registrada -->
-      <div v-else class="flex flex-column w-full h-full overflow-hidden">
-        <p class="text-center">No hay etapa de embotellado registrada para este lote: {{itemEntity.internalCode}}.</p>
-      </div>
-
+      <bottling-stage-management :item="itemObject" />
     </div>
 
     <!-- Mensaje en caso de no haber etapas registradas -->

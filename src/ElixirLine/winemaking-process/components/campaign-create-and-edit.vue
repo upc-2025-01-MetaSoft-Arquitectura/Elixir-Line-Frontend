@@ -50,11 +50,6 @@ export default {
         <div class="field">
 
           <pv-float-label class="field mt-4">
-            <label for="id"> Id </label>
-            <pv-input-text id="id" v-model="itemEntity.id" :class="{ 'p-invalid': submitted && !itemEntity.id}"/>
-          </pv-float-label>
-
-          <pv-float-label class="field mt-4">
             <label for="name"> Name </label>
             <pv-input-text id="name" v-model="itemEntity.name" :class="{ 'p-invalid': submitted && !itemEntity.name}"/>
           </pv-float-label>

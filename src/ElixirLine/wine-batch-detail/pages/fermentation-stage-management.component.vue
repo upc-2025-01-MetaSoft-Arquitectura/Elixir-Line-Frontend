@@ -25,6 +25,7 @@ export default {
       createAndEditDialogIsVisible: false,
       isEdit: false,
       submitted: false,
+      stageExist: false, // Assuming you want to check if a stage exists
     }
   },
 
@@ -117,8 +118,18 @@ export default {
   created() {
     this.fermentationStageApiService = new StagesApiService ('/stages');
 
-    this.itemObject = this.item;
-    this.fermentationStage = this.item.fermentationStage;
+
+    if (!this.item || !this.item.fermentationStage) {
+
+      this.stageExist = false;
+
+    } else {
+
+      this.itemObject = this.item;
+      this.stageExist = true;
+      this.fermentationStage = this.item.fermentationStage;
+
+    }
 
     console.log('RECEPTION STAGE ===================== ', this.fermentationStage);
 
@@ -142,7 +153,7 @@ export default {
       <!-- Título de la etapa -->
       <div class="flex align-items-center gap-2">
         <i class="pi pi-cog text-xl"></i>
-        <h3 class="m-0 text-xl font-medium">Etapa: {{ fermentationStage.stage || 'No registrada' }}</h3>
+        <h3 class="m-0 text-xl font-medium">Etapa: Fermentación</h3>
       </div>
 
       <!-- Botones de acción -->
@@ -150,8 +161,9 @@ export default {
         <pv-button
             label="Nueva Etapa"
             icon="pi pi-plus"
-            @click="onNewItem"
+            @click="onNewItem()"
             class="p-button-success"
+            v-if="!stageExist"
         />
 
         <pv-button
@@ -159,7 +171,7 @@ export default {
             icon="pi pi-pencil"
             @click="onEditItem(itemObject)"
             class="p-button-warning"
-            v-if="fermentationStage.stage"
+            v-if="stageExist"
         />
 
         <pv-button
@@ -167,7 +179,7 @@ export default {
             icon="pi pi-trash"
             @click="onDeleteItem(fermentationStage)"
             class="p-button-danger"
-            v-if="fermentationStage.stage"
+            v-if="stageExist"
         />
       </div>
     </div>

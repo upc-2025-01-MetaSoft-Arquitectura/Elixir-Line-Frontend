@@ -25,6 +25,7 @@ export default {
       createAndEditDialogIsVisible: false,
       isEdit: false,
       submitted: false,
+      stageExist: false, // Assuming you want to check if a stage exists
     }
   },
 
@@ -114,8 +115,18 @@ export default {
   created() {
     this.filtrationStageApiService = new StagesApiService ('/stages');
 
-    this.itemObject = this.item;
-    this.filtrationStage = this.item.filtrationStage;
+
+    if (!this.item || !this.item.filtrationStage) {
+
+      this.stageExist = false;
+
+    } else {
+
+      this.itemObject = this.item;
+      this.stageExist = true;
+      this.filtrationStage = this.item.filtrationStage;
+
+    }
 
     console.log('RECEPTION STAGE ===================== ', this.filtrationStage);
 
@@ -137,16 +148,19 @@ export default {
       <!-- Título de la etapa -->
       <div class="flex align-items-center gap-2">
         <i class="pi pi-cog text-xl"></i>
-        <h3 class="m-0 text-xl font-medium">Etapa: {{ filtrationStage.stage || 'No registrada' }}</h3>
+        <h3 class="m-0 text-xl font-medium">Etapa: Filtración </h3>
       </div>
+
+
 
       <!-- Botones de acción -->
       <div class="flex flex-wrap gap-2">
         <pv-button
             label="Nueva Etapa"
             icon="pi pi-plus"
-            @click="onNewItem"
+            @click="onNewItem()"
             class="p-button-success"
+            v-if="!stageExist"
         />
 
         <pv-button
@@ -154,7 +168,7 @@ export default {
             icon="pi pi-pencil"
             @click="onEditItem(itemObject)"
             class="p-button-warning"
-            v-if="filtrationStage.stage"
+            v-if="stageExist"
         />
 
         <pv-button
@@ -162,7 +176,7 @@ export default {
             icon="pi pi-trash"
             @click="onDeleteItem(filtrationStage)"
             class="p-button-danger"
-            v-if="filtrationStage.stage"
+            v-if="stageExist"
         />
       </div>
     </div>
