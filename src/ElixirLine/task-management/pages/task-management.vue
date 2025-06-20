@@ -100,7 +100,11 @@ async function createTask() {
   tasks.value = response.data;
 }
 async function saveTask() {
-  await taskService.updateTask(editTask.value.id, editTask.value);
+  const taskToSend = {
+    ...editTask.value,
+    supplies: editTask.value.supplies.map(s => ({ id: s.id, quantity: s.quantity }))
+  };
+  await taskService.updateTask(editTask.value.id, taskToSend);
   showEditDialog.value = false;
   const response = await taskService.getAllTasks();
   tasks.value = response.data;

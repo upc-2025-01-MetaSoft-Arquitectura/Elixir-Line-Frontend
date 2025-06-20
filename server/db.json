@@ -451,59 +451,128 @@
       "supplies": [
         {
           "id": "sup-002",
-          "name": "Ácido Tartárico",
-          "quantity": 2,
-          "unidad": "kg",
-          "image": "https://w7.pngwing.com/pngs/218/434/png-transparent-computer-icons-box-cargo-packaging-and-labeling-box-miscellaneous-service-logo.png"
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "e004",
+      "relatedId": "B2025-VINEYARD02",
+      "assignee": "Carlos Mendoza",
+      "title": "Control de temperatura",
+      "startDate": "2025-06-15T08:00:00.000Z",
+      "dueDate": "2025-06-20T17:00:00.000Z",
+      "type": "INDUSTRIAL",
+      "status": "InProcess",
+      "progress": 0,
+      "description": "Verificar y registrar temperatura de los tanques.",
+      "supplies": [
+        {
+          "id": "sup-001",
+          "quantity": 2
+        }
+      ]
+    },
+    {
+      "id": "e005",
+      "relatedId": "B2024-VINEYARD03",
+      "assignee": "Sofía Gómez",
+      "title": "Control de pH",
+      "startDate": "2025-06-19T09:00:00.000Z",
+      "dueDate": "2025-06-19T11:00:00.000Z",
+      "type": "CAMPO",
+      "status": "InProcess",
+      "progress": 0,
+      "description": "Medir y registrar el pH de los mostos en fermentación.",
+      "supplies": [
+        {
+          "id": "sup-002",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "e006",
+      "relatedId": "B2025-VINEYARD05",
+      "assignee": "Mariana Luna",
+      "title": "Revisión de clarificación",
+      "startDate": "2025-06-20T10:00:00.000Z",
+      "dueDate": "2025-06-21T16:00:00.000Z",
+      "type": "INDUSTRIAL",
+      "status": "Completed",
+      "progress": 0,
+      "description": "Verificar el proceso de clarificación y registrar observaciones.",
+      "supplies": [
+        {
+          "id": "sup-003",
+          "quantity": 2
         }
       ]
     }
   ],
-  "evidenceIndustrial": [
+  "evidences": [
     {
-      "id": "1",
-      "taskId": "TP000",
-      "percentage": 30,
-      "description": "Se ajustó la ASDASDAStemperatura de fermentación y quedó en 26°C",
-      "image": "",
-      "createdAt":  "2025-06-19T04:33:16.136Z"  },
+      "id": "1750391561913",
+      "taskId": "e003",
+      "percentage": 70,
+      "description": "Evidencia 1",
+      "image": "https://www.shutterstock.com/image-photo/wide-open-field-stretching-towards-600nw-2476599713.jpg",
+      "createdAt": "2025-06-19T12:52:41.913Z",
+      "type": "CAMPO"
+    },
     {
-      "id": "0446",
-      "taskId": "TP001",
+      "id": "1750391561914",
+      "taskId": "e004",
+      "percentage": 60,
+      "description": "Registro de temperatura completado.",
+      "image": "https://www.shutterstock.com/image-photo/wide-open-field-stretching-towards-600nw-2476599713.jpg",
+      "createdAt": "2025-06-16T18:00:00.000Z",
+      "type": "INDUSTRIAL"
+    },
+    {
+      "id": "1750391561914",
+      "taskId": "e004",
+      "percentage": 70,
+      "description": "Registro de temperatura completado.",
+      "image": "https://www.shutterstock.com/image-photo/wide-open-field-stretching-towards-600nw-2476599713.jpg",
+      "createdAt": "2025-06-16T19:00:00.000Z",
+      "type": "INDUSTRIAL"
+    },
+    {
+      "id": "1750391561915",
+      "taskId": "e005",
+      "percentage": 80,
+      "description": "Medición de pH realizada en todos los tanques.",
+      "image": "https://www.shutterstock.com/image-photo/wide-open-field-stretching-towards-600nw-2476599713.jpg",
+      "createdAt": "2025-06-19T12:00:00.000Z",
+      "type": "CAMPO"
+    },
+    {
+      "id": "1750391561916",
+      "taskId": "e006",
       "percentage": 100,
-      "description": "Terminado",
-      "image": "https://www.quimicabaza.com/wp-content/uploads/2018/08/analisis-vino.jpg",
-      "createdAt": "2025-06-19T05:13:09.952Z"
+      "description": "Clarificación verificada y documentada.",
+      "image": "https://www.shutterstock.com/image-photo/wide-open-field-stretching-towards-600nw-2476599713.jpg",
+      "createdAt": "2025-06-17T17:00:00.000Z",
+      "type": "INDUSTRIAL"
     }
   ],
-  "evidenceField": [
+  "incidences": [
     {
       "id": "a4f3",
-      "taskId": "TP004",
-      "percentage": 100,
+      "taskId": "e006",
       "description": "Esta perfecto",
-      "image": "https://www.senasa.gob.pe/senasacontigo/wp-content/uploads/2018/09/Senasa-convoca-a-productores-de-uva-para-capacitarlos-con-fines-de-exportaci%C3%B3n.jpg",
-      "createdAt": "2025-06-19T04:33:16.136Z"
-    }
-  ],
-  "incidenceIndustrial": [
+      "image": "https://www.gastronomiaycia.com/wp-content/uploads/2017/08/ava_winery_1-680x451.jpg",
+      "createdAt": "2025-06-19T14:33:16.136Z",
+      "type": "INDUSTRIAL"
+    },
     {
-      "id": "a4f3",
-      "taskId": "TP001",
-      "percentage": 100,
-      "description": "Esta perfecto",
-        "image": "https://www.gastronomiaycia.com/wp-content/uploads/2017/08/ava_winery_1-680x451.jpg",
-      "createdAt": "2025-06-19T04:33:16.136Z"
-    }
-  ],
-  "incidenceField": [
-    {
-      "id": "a4f3",
-      "taskId": "TP004",
-      "percentage": 100,
-      "description": "Esta perfecto",
+      "id": "a4f4",
+      "taskId": "e005",
+      "description": "Incidencia de campo",
       "image": "https://sp-ao.shortpixel.ai/client/to_auto,q_glossy,ret_img,w_4999,h_3332/https://cii.conchaytoro.com/web/wp-content/uploads/2015/05/noticia3.jpg",
-      "createdAt": "2025-06-19T04:33:16.136Z"
+      "createdAt": "2025-06-17T17:33:16.136Z",
+      "type": "CAMPO"
     }
   ]
 }

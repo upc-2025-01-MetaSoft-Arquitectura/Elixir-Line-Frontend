@@ -2,18 +2,11 @@
 
 import DataManager from '../../../shared/components/data-manager.component.vue'
 import basePageLayoutComponent from "../../../shared/components/base-page-layout.component.vue";
-import IndustrialTaskManagement from "./industrial-task.component.vue";
-import FieldTaskManagement from "./field-task.component.vue";
-import IndustrialIncidenceManagement from "./industrial-incidence.component.vue";
-import FieldIncidenceManagement from "./field-incidence.vue";
+
 
 export default {
   name: "incidence-manager",
   components: {
-    FieldIncidenceManagement,
-    IndustrialIncidenceManagement,
-    FieldTaskManagement,
-    IndustrialTaskManagement,
     DataManager,
     basePageLayoutComponent,
   },
@@ -54,11 +47,11 @@ export default {
 
   <div class="flex-1 h-full overflow-hidden flex flex-column">
     <div v-if="activeTask === '0'" class="flex-1 flex-column w-full overflow-hidden">
-      <industrial-incidence-management></industrial-incidence-management>
+      
     </div>
 
     <div v-if="activeTask === '1'" class="flex-1 flex-column w-full overflow-hidden">
-      <field-incidence-management></field-incidence-management>
+      
     </div>
   </div>
 </template>

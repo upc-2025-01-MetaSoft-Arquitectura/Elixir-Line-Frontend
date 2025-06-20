@@ -17,7 +17,6 @@ export default {
         { label: 'navbar.title-supplies-option', icon: 'pi pi-fw pi-box', to: '/vinicultor/supplies' },
         { label: 'navbar.title-calendar-option', icon: 'pi pi-fw pi-calendar', to: '/vinicultor/calendar' },
         { label: 'navbar.title-evidence-option', icon: 'pi pi-fw pi-image', to: '/vinicultor/evidence' },
-        { label: 'navbar.title-calendar-option', icon: 'pi pi-fw pi-calendar', to: '/calendar' },
         { label: 'navbar.title-reports-option', icon: 'pi pi-fw pi-chart-bar', to: '/reports' }
       ]
     }
