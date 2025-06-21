@@ -116,3 +116,5 @@ app.component('pv-button', Button)
     .component('pv-calendar', Calendar);
 
 app.mount('#app')
+export default class PvInputText {
+}

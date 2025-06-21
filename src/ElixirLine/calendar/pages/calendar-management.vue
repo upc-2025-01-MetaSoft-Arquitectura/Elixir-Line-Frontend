@@ -3,8 +3,9 @@ import {ref, computed, onMounted} from 'vue'
 import {startOfWeek, addDays, format, isSameDay} from 'date-fns'
 import { es } from 'date-fns/locale'
 import { EvidenceApiService } from '../../evidence-management/services/evidence-service.js'
-import { IncidenceApiService } from '../../evidence-management/services/incidence-service.js' // 1. Importa el servicio
-
+import { IncidenceApiService } from '../../evidence-management/services/incidence-service.js'
+import {TaskApiService} from "../../task-management/services/task-api.service.js";
+import Dialog from "primevue/dialog";
 
 const today = new Date()
 const selectedDate = ref(today)
@@ -25,6 +26,50 @@ const days = computed(() =>
       }
     })
 )
+
+
+const showEvidenceDialog = ref(false)
+const selectedEvidence = ref(null)
+
+const taskService = new TaskApiService() // 2. Instancia el servicio
+const selectedTask = ref(null) // 3. Estado para la tarea
+
+async function openEvidenceDialog(evidence) {
+  selectedEvidence.value = evidence
+  showEvidenceDialog.value = true
+  if (evidence.taskId) {
+    const task = await taskService.getTaskById(evidence.taskId)
+    selectedTask.value = task.data
+  } else {
+    selectedTask.value = null
+  }
+}
+function closeEvidenceDialog() {
+  showEvidenceDialog.value = false
+  selectedEvidence.value = null
+  selectedTask.value = null
+}
+
+const showIncidenceDialog = ref(false)
+const selectedIncidence = ref(null)
+
+async function openIncidenceDialog(incidence) {
+  selectedIncidence.value = incidence
+  showIncidenceDialog.value = true
+  if (incidence.taskId) {
+    const task = await taskService.getTaskById(incidence.taskId)
+    selectedTask.value = task.data
+  } else {
+    selectedTask.value = null
+  }
+}
+function closeIncidenceDialog() {
+  showIncidenceDialog.value = false
+  selectedIncidence.value = null
+  selectedTask.value = null
+}
+
+
 
 const hours = Array.from({ length: 16 }, (_, i) => `${i + 6}:00`)
 function goToPrevDay() {
@@ -109,28 +154,101 @@ function incidencesForDayAndHour(day, hour) {
             class="calendar-cell"
             :class="{ selected: isSameDay(day.date, selectedDate) }"
         >
-          <div
+          <button
               v-for="evidence in evidencesForDayAndHour(day.date, hour.split(':')[0])"
               :key="evidence.id"
               class="evidence-item"
+              type="button"
+              @click="openEvidenceDialog(evidence)"
           >
             {{ evidence.description }}
-          </div>
-          <div
+          </button>
+
+          <button
               v-for="incidence in incidencesForDayAndHour(day.date, hour.split(':')[0])"
               :key="incidence.id"
               class="incidence-item"
+              type="button"
+              @click="openIncidenceDialog(incidence)"
           >
             {{ incidence.description }}
-          </div>
+          </button>
+
         </td>
       </tr>
       </tbody>
     </table>
+
+
+
+
+
+    <!--<PvDialog v-model:visible="showEvidenceDialog" modal :closable="true" @hide="closeEvidenceDialog">
+      <div class="dialog-content">
+        <h3>Detalle de Evidencia</h3>
+        <p><strong>Tarea asociada:</strong> {{ selectedEvidence?.taskId }}</p>
+        <div v-if="selectedTask">
+          <p><strong>Nombre tarea:</strong> {{ selectedTask.title }}</p>
+          <p><strong>Trabajador:</strong> {{ selectedTask.assignee }}</p>
+          <p><strong>Descripción tarea:</strong> {{ selectedTask.description }}</p>
+          Agrega más campos si lo necesitas
+        </div>
+        <p><strong>Descripción evidencia:</strong> {{ selectedEvidence?.description }}</p>
+        <button @click="closeEvidenceDialog">Cerrar</button>
+      </div>
+    </PvDialog> -->
   </div>
+
+  <Dialog v-model:visible="showEvidenceDialog" modal :closable="true" @hide="closeEvidenceDialog">
+    <div class="dialog-content">
+      <h3>Detalle de Evidencia</h3>
+      <p><strong>Tarea asociada:</strong> {{ selectedEvidence?.taskId }}</p>
+      <div v-if="selectedTask">
+        <p><strong>Nombre tarea:</strong> {{ selectedTask.title }}</p>
+        <p><strong>Trabajador:</strong> {{ selectedTask.assignee }}</p>
+        <p><strong>Descripción tarea:</strong> {{ selectedTask.description }}</p>
+      </div>
+      <p><strong>Descripción evidencia:</strong> {{ selectedEvidence?.description }}</p>
+      <button @click="closeEvidenceDialog">Cerrar</button>
+    </div>
+  </Dialog>
+
+  <Dialog v-model:visible="showIncidenceDialog" modal :closable="true" @hide="closeIncidenceDialog">
+    <div class="dialog-content">
+      <h3>Detalle de Incidencia</h3>
+      <p><strong>Tarea asociada:</strong> {{ selectedIncidence?.taskId }}</p>
+      <div v-if="selectedTask">
+        <p><strong>Nombre tarea:</strong> {{ selectedTask.title }}</p>
+        <p><strong>Trabajador:</strong> {{ selectedTask.assignee }}</p>
+        <p><strong>Descripción tarea:</strong> {{ selectedTask.description }}</p>
+      </div>
+      <p><strong>Descripción evidencia:</strong> {{ selectedIncidence?.description }}</p>
+      <button @click="closeIncidenceDialog">Cerrar</button>
+    </div>
+  </Dialog>
+
 </template>
 
 <style scoped>
+
+
+.dialog-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.01);
+  backdrop-filter: blur(0px);
+}
+
+.dialog-content {
+  padding: 10px 32px;
+  border-radius: 8px;
+  min-width: 320px;
+}
+
 .calendar-filters {
   display: flex;
   align-items: center;
@@ -231,9 +349,9 @@ th {
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer;
+  border: none;
   transition: background 0.2s;
 }
-
 .evidence-item:hover {
   background: #1565c0;
 }
