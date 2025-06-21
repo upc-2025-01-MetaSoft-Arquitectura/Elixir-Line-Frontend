@@ -120,6 +120,62 @@ export default {
     },
 
     //#endregion
+
+
+
+    // Confirmar y cerrar al confirmar
+    confirmarCompletarEtapa() {
+      this.$confirm.require({
+        message: '¿Estás seguro de que deseas completar esta etapa? Esta acción no se puede deshacer.',
+        header: 'Confirmación',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Sí, completar',
+        rejectLabel: 'Cancelar',
+        acceptClass: 'p-button-danger',
+        accept: () => {
+          this.completarEtapa()
+          this.$confirm.close(); // Cierra el diálogo manualmente
+        },
+
+        reject: () => {
+          this.$toast.add({
+            severity: 'info',
+            summary: 'Cancelado',
+            detail: 'La etapa no fue completada.',
+          })
+          this.$confirm.close(); // También puedes cerrar aquí si lo deseas
+        }
+      })
+    },
+
+
+    completarEtapa() {
+      this.itemObject.agingStage.isCompleted = true
+
+      this.agingStageApiService.update(this.itemObject.id, this.itemObject)
+          .then(response => {
+            this.agingStage = new AgingStage(response.data.agingStage)
+            this.itemObject = new Stages(response.data)
+            this.notifySuccessfulAction('Etapa completada correctamente')
+          })
+          .catch(error => {
+            this.agingStage.isCompleted = false
+            this.itemObject.agingStage.isCompleted = false
+
+            console.error('❌ Error al completar la etapa:', error)
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo completar la etapa.',
+              life: 3000
+            })
+          })
+    }
+
+
+
+
+
   },
 
   //#region Lifecycle Hooks
@@ -178,15 +234,15 @@ export default {
             icon="pi pi-pencil"
             @click="onEditItem(itemObject)"
             class="p-button-warning"
-            v-if="stageExist  && canAddStage"
+            v-if="stageExist  && canAddStage /*&& !agingStage.isCompleted*/"
         />
 
         <pv-button
-            label="Eliminar"
-            icon="pi pi-trash"
-            @click="onDeleteItem(agingStage)"
-            class="p-button-danger"
-            v-if="stageExist  && canAddStage"
+            label="Completar etapa"
+            icon="pi pi-check"
+            class="p-button-success"
+            @click="confirmarCompletarEtapa"
+            v-show="stageExist && !agingStage.isCompleted"
         />
       </div>
     </div>

@@ -127,6 +127,7 @@ app.component('pv-button', Button)
     .component('pv-progress-bar', ProgressBar)
     .component('pv-calendar', Calendar)
     .component('pv-input-textarea', Textarea)
-    .component('pv-input-switch', InputSwitch);
+    .component('pv-input-switch', InputSwitch)
+    .component('pv-confirm-dialog', ConfirmDialog);
 
 app.mount('#app')

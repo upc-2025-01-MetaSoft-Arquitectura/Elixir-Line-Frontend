@@ -945,6 +945,52 @@
       "agingStage": null,
       "filtrationStage": null,
       "bottlingStage": null
+    },
+    {
+      "id": null,
+      "batchId": "a223c789-11af-47c2-8bf7-227399911000",
+      "receptionStage": {
+        "stage": "Recepción",
+        "registeredBy": "Gonzalo Saldaña",
+        "startDate": "2025-06-21T05:00:00.000Z",
+        "endDate": "2025-06-21T05:00:00.000Z",
+        "sugarLevelBrix": 20.5,
+        "pH": 3.4,
+        "temperature": 18.2,
+        "quantityKg": 1250.2,
+        "comments": "efdcdced",
+        "isCompleted": true
+      },
+      "correctionStage": null,
+      "fermentationStage": null,
+      "pressingStage": null,
+      "clarificationStage": null,
+      "agingStage": null,
+      "filtrationStage": null,
+      "bottlingStage": null
+    },
+    {
+      "id": null,
+      "batchId": "a223c789-11af-47c2-8bf7-227399911000",
+      "receptionStage": {
+        "stage": "Recepción",
+        "registeredBy": "Gonzalo Saldaña",
+        "startDate": "2025-06-21T05:00:00.000Z",
+        "endDate": "2025-06-21T05:00:00.000Z",
+        "sugarLevelBrix": 20.5,
+        "pH": 3.4,
+        "temperature": 18.2,
+        "quantityKg": 1250.2,
+        "comments": "efdcdced",
+        "isCompleted": false
+      },
+      "correctionStage": null,
+      "fermentationStage": null,
+      "pressingStage": null,
+      "clarificationStage": null,
+      "agingStage": null,
+      "filtrationStage": null,
+      "bottlingStage": null
     }
   ]
 }

@@ -90,7 +90,7 @@ export default {
         { name: 'Fermentación' },
         { name: 'Prensado' },
         { name: 'Clarificación' },
-        { name: 'Crianza' },
+        { name: 'Añejamiento' },
         { name: 'Filtración' },
         { name: 'Embotellado' }
       ],  // campañas filtradas (objetos)

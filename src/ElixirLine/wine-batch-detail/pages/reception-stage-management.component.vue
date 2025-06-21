@@ -14,7 +14,7 @@ export default {
 
   inject: ['batchId'], // Recibe el batchId desde el padre
 
-  props:{
+  props: {
     item: {
       type: Object,
       default: () => ({})
@@ -23,7 +23,7 @@ export default {
 
   data() {
     return {
-      title: { singular: 'Etapa de Recepción', plural: 'Etapa de Recepción' },
+      title: {singular: 'Etapa de Recepción', plural: 'Etapa de Recepción'},
       itemObject: new Stages({}),
       receptionStage: new ReceptionStage({}),
       receptionStageApiService: null,
@@ -33,7 +33,6 @@ export default {
       stageExist: false,
     }
   },
-
 
 
   methods: {
@@ -103,7 +102,7 @@ export default {
 
         this.notifySuccessfulAction('Stage created successfully');
       }).catch(error => {
-        console.error("Error creating a Stage",error);
+        console.error("Error creating a Stage", error);
       });
     },
 
@@ -111,11 +110,11 @@ export default {
       this.receptionStageApiService.update(this.itemObject.id, this.itemObject).then(response => {
 
         this.receptionStage = new ReceptionStage(response.data.receptionStage);
-        this.itemObject= new Stages(response.data);
+        this.itemObject = new Stages(response.data);
 
         this.notifySuccessfulAction('Stage updated successfully');
       }).catch(error => {
-        console.error("Error updating a Stage",error);
+        console.error("Error updating a Stage", error);
       });
     },
 
@@ -125,16 +124,68 @@ export default {
         this.arrayItems.splice(index, 1);
         this.notifySuccessfulAction('Batch deleted successfully');
       }).catch(error => {
-        console.error("Error deleting a campaign",error);
+        console.error("Error deleting a campaign", error);
       });
     },
 
-  },
 
+    // Confirmar y cerrar al confirmar
+    confirmarCompletarEtapa() {
+      this.$confirm.require({
+        message: '¿Estás seguro de que deseas completar esta etapa? Esta acción no se puede deshacer.',
+        header: 'Confirmación',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Sí, completar',
+        rejectLabel: 'Cancelar',
+        acceptClass: 'p-button-danger',
+        accept: () => {
+          this.completarEtapa()
+          this.$confirm.close(); // Cierra el diálogo manualmente
+        },
+
+        reject: () => {
+          this.$toast.add({
+            severity: 'info',
+            summary: 'Cancelado',
+            detail: 'La etapa no fue completada.',
+          })
+          this.$confirm.close(); // También puedes cerrar aquí si lo deseas
+        }
+      })
+    },
+
+
+    completarEtapa() {
+      this.itemObject.receptionStage.isCompleted = true
+
+      this.receptionStageApiService.update(this.itemObject.id, this.itemObject)
+          .then(response => {
+            this.receptionStage = new ReceptionStage(response.data.receptionStage)
+            this.itemObject = new Stages(response.data)
+            this.notifySuccessfulAction('Etapa completada correctamente')
+          })
+          .catch(error => {
+            this.receptionStage.isCompleted = false
+            this.itemObject.receptionStage.isCompleted = false
+
+            console.error('❌ Error al completar la etapa:', error)
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo completar la etapa.',
+              life: 3000
+            })
+          })
+    }
+
+
+    //#endregion
+
+  },
 
   //#region Lifecycle Hooks
   created() {
-    this.receptionStageApiService = new StagesApiService ('/stages');
+    this.receptionStageApiService = new StagesApiService('/stages');
 
 
     if (!this.item || !this.item.receptionStage) {
@@ -153,13 +204,14 @@ export default {
 
     console.log("Reception Stage Management component created");
   },
-  //#endregion
-
 
 }
+
 </script>
 
 <template>
+
+  <pv-confirm-dialog></pv-confirm-dialog>
 
   <div class="reception-container flex flex-column flex-1 w-full h-full gap-3 p-3 surface-ground overflow-auto">
 
@@ -187,16 +239,17 @@ export default {
             icon="pi pi-pencil"
             @click="onEditItem(itemObject)"
             class="p-button-warning"
-            v-if="stageExist"
+            v-if="stageExist /*&& !receptionStage.isCompleted*/"
         />
 
         <pv-button
-            label="Eliminar"
-            icon="pi pi-trash"
-            @click="onDeleteItem(receptionStage)"
-            class="p-button-danger"
-            v-if="stageExist"
+            label="Completar etapa"
+            icon="pi pi-check"
+            class="p-button-success"
+            @click="confirmarCompletarEtapa"
+            v-show="stageExist && !receptionStage.isCompleted"
         />
+
       </div>
     </div>
 

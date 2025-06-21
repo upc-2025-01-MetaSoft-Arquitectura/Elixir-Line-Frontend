@@ -160,22 +160,6 @@ export default {
     },
     //#endregion
 
-    /*
-    getAllBatches() {
-
-      this.batchAndCampaignApiService.getAllResources().then(response => {
-
-        this.batches = response.data.map(batch => new WineBatch(batch));
-
-        console.log("Batch resources", this.batches);
-      }).catch(error => {
-        console.error("Error getting batches",error);
-      });
-    },
-
-    */
-
-
     getAllCampaigns(){
       this.campaignApiService.getAllResources()
           .then(response => {
@@ -205,7 +189,6 @@ export default {
       // Limpiar lotes y selección al buscar
       this.batches = []; // Limpiar lotes al buscar
       this.selectedItem = null; // Limpiar selección al buscar
-
       const query = event.query.toLowerCase();
 
       this.filteredItems = this.arrayItems.filter(item =>
@@ -214,6 +197,7 @@ export default {
 
 
     },
+
 
     onSelect(event) {
       this.batches = []; // Limpiar lotes antes de cargar los nuevos
@@ -225,21 +209,6 @@ export default {
       this.getBatchesByCampaign(this.selectedItem.id)
     },
 
-    onEnter() {
-
-      this.batches = []; // Limpiar lotes antes de cargar los nuevos
-
-      if (this.selectedItem && this.selectedItem.name) {
-        console.log("Enter presionado, campaña:", this.selectedItem);
-        // Aquí puedes llamar a la misma lógica que quieras ejecutar al seleccionar
-        this.onSelect({ value: this.selectedItem });
-      } else {
-        console.warn("No hay campaña válida seleccionada.");
-      }
-
-      this.batches = []; // Limpiar lotes antes de cargar los nuevos
-      this.getBatchesByCampaign(this.selectedItem.id)
-    }
 
   },
 
@@ -289,8 +258,7 @@ export default {
               option-label="name"
               placeholder="Ingresa el nombre de la campaña"
               @complete="searchCampaign"
-              @select="onSelect"
-              @keydown.enter="onEnter"
+              @option-select="onSelect"
               :dropdown="true"
               :force-selection="true"
               aria-label="Ingresa el nombre de la campaña"
