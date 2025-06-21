@@ -12,10 +12,12 @@ export default {
       items: [
         { label: 'navbar.title-dashboard-option', icon: 'pi pi-fw pi-home', to: '/dashboard' },
         { label: 'navbar.title-batch-option', icon: 'pi pi-fw pi-table', to: '/vinicultor/winemaking' },
-        { label: 'navbar.title-task-option', icon: 'pi pi-pen-to-square', to: '/vinicultor/tasks' },
+        { label: 'navbar.title-tasks-option', icon: 'pi pi-fw pi-list-check', to: '/vinicultor/tasks' }, 
+
         { label: 'navbar.title-map-option', icon: 'pi pi-fw pi-map', to: '/map' },
         { label: 'navbar.title-supplies-option', icon: 'pi pi-fw pi-box', to: '/vinicultor/supplies' },
-        { label: 'navbar.title-calendar-option', icon: 'pi pi-fw pi-calendar', to: '/calendar' },
+        { label: 'navbar.title-calendar-option', icon: 'pi pi-fw pi-calendar', to: '/vinicultor/calendar' },
+        { label: 'navbar.title-evidence-option', icon: 'pi pi-fw pi-image', to: '/vinicultor/evidence' },
         { label: 'navbar.title-reports-option', icon: 'pi pi-fw pi-chart-bar', to: '/reports' }
       ]
     }

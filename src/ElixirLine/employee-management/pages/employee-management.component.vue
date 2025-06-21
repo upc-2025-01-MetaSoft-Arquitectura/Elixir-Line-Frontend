@@ -24,6 +24,26 @@ export default {
       createAndEditDialogIsVisible: false,
       isEdit: false,
       submitted: false,
+      taskDialogIsVisible: false,
+      selectedEmployeeForTask: {},
+      typeOptions: [
+        { label: 'INDUSTRIAL', value: 'INDUSTRIAL' },
+        { label: 'CAMPO', value: 'CAMPO' }
+      ],
+      taskObject: {
+        id: '',
+        relatedId: '',
+        assignee: '',
+        title: '',
+        dueDate: null,
+        startDate: null,
+        type: '',
+        status: '',
+        progress: 0,
+        description: '',
+        supplies: ''
+      },
+      availableBatches: [],
     }
   },
 
@@ -48,6 +68,86 @@ export default {
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
     },
+    onAddTaskItem(employee) {
+      this.selectedEmployeeForTask = employee;
+      this.taskObject = {
+        id: '',
+        relatedId: '',
+        assignee: employee.firstName + ' ' + employee.lastName,
+        title: '',
+        dueDate: null,
+        startDate: null, 
+        type: '',
+        status: '',
+        progress: 0,
+        description: '',
+        supplies: '' 
+      };
+      this.taskDialogIsVisible = true;
+      this.loadAvailableBatches();
+    },
+
+    loadAvailableBatches() {
+      const batchApiService = new EmployeeApiService('/wine-batches'); // o crea un servicio separado si prefieres
+
+      batchApiService.getAllResources().then(response => {
+        this.availableBatches = response.data;
+      }).catch(error => {
+        console.error("Error loading batches", error);
+      });
+    },
+
+
+    async onBatchChanged() {
+      if (!this.taskObject.relatedId) {
+        this.taskObject.status = '';
+        return;
+      }
+
+      try {
+        const response = await this.batchApiService.getStatusByInternalCode(this.taskObject.relatedId);
+        if (response.data && response.data.length > 0) {
+          const batchInfo = response.data[0];
+          this.taskObject.status = batchInfo.status || '';
+        } else {
+          this.taskObject.status = '';
+        }
+      } catch (error) {
+        console.error("Error fetching batch status", error);
+        this.taskObject.status = '';
+      }
+    },
+
+
+
+    onCancelTask() {
+      this.taskDialogIsVisible = false;
+    },
+
+    onSaveTask() {
+      const taskToSend = {
+        id: this.taskObject.id || undefined,
+        relatedId: this.taskObject.relatedId,
+        assignee: this.selectedEmployeeForTask.firstName + ' ' + this.selectedEmployeeForTask.lastName,
+        title: this.taskObject.title,
+        dueDate: this.taskObject.dueDate,
+        type: this.taskObject.type || '',
+        status: this.taskObject.status,
+        progress: 0,
+        description: this.taskObject.description
+      };
+
+      this.batchApiService.createTask(taskToSend)
+          .then(() => {
+            this.notifySuccessfulAction("Task saved successfully!");
+            this.taskDialogIsVisible = false;
+          })
+          .catch((error) => {
+            console.error("Error saving task:", error);
+          });
+    },
+
+
 
     onEditItem(item) {
       this.itemObject = new Employee(item);
@@ -152,6 +252,8 @@ export default {
   created() {
 
     this.batchAndCampaignApiService = new EmployeeApiService('/employees');
+    this.batchApiService = new EmployeeApiService('/wine-batches');
+
     this.getAllEmployees();
 
     console.log("Employees Management component created");
@@ -179,6 +281,7 @@ export default {
         :label-name="$t('employees.button-new-employee')"
         @new-item-requested-manager="onNewItem"
         @edit-item-requested-manager="onEditItem($event)"
+        @add-task-item-requested-manager="onAddTaskItem($event)"
         @delete-item-requested-manager="onDeleteItem($event)"
         @delete-selected-items-requested-manager="onDeleteSelectedItems($event)"
     >
@@ -210,7 +313,16 @@ export default {
             header="Password" />
 
       </template>
-
+      <template #actions="slotProps">
+        <pv-button
+            icon="pi pi-check-square"
+            outlined
+            rounded
+            severity="info"
+            class="mr-2"
+            @click="() => { console.log('slotProps', slotProps); onAddTaskItem(slotProps.data); }"
+        />
+      </template>
     </data-manager>
 
     <employee-create-and-edit
@@ -220,6 +332,79 @@ export default {
         @cancel-requested="onCancelRequested"
         @save-requested="onSaveRequested($event)"
     />
+    <pv-dialog
+        :visible="taskDialogIsVisible"
+        modal
+        header="Asignar Tarea"
+        @hide="onCancelTask"
+        class="task-dialog"
+    >
+      <div class="task-form">
+        <div class="field">
+          <label class="field-label">Assignee</label>
+          <pv-input-text
+              class="field-input"
+              :value="taskObject.assignee"
+              disabled
+          />
+        </div>
+
+        <div class="field">
+          <label class="field-label">Related ID</label>
+          <pv-select
+              class="field-input"
+              v-model="taskObject.relatedId"
+              :options="availableBatches"
+              optionLabel="internalCode"
+              optionValue="internalCode"
+              placeholder="Select a batch"
+              @change="onBatchChanged"
+          />
+        </div>
+
+        <div class="field">
+          <label class="field-label">Status</label>
+          <pv-input-text class="field-input" v-model="taskObject.status" disabled />
+        </div>
+
+        <div class="field">
+          <label class="field-label">Title</label>
+          <pv-input-text class="field-input" v-model="taskObject.title" />
+        </div>
+        <div class="field">
+          <label class="field-label">Fecha de inicio</label>
+          <pv-calendar class="field-input" v-model="taskObject.startDate" show-icon />
+        </div>
+        <div class="field">
+          <label class="field-label">Due Date</label>
+          <pv-calendar class="field-input" v-model="taskObject.dueDate" show-icon />
+        </div>
+
+        <div class="field">
+          <label class="field-label">Type</label>
+          <pv-select
+              class="field-input"
+              v-model="taskObject.type"
+              :options="typeOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select type"
+          />
+        </div>
+
+        <div class="field">
+          <label class="field-label">Description</label>
+          <pv-textarea class="field-input" v-model="taskObject.description" rows="3" auto-resize />
+        </div>
+      </div>
+
+      <template #footer>
+        <div class="dialog-footer">
+          <pv-button label="Cancelar" icon="pi pi-times" @click="onCancelTask" class="p-button-text" />
+          <pv-button label="Guardar" icon="pi pi-check" @click="onSaveTask" autofocus />
+        </div>
+      </template>
+    </pv-dialog>
 
   </div>
 
@@ -230,6 +415,33 @@ export default {
 
 
 <style>
+.task-dialog {
+  width: 100%;
+  max-width: 500px;
+}
 
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 0.5rem;
+}
+
+.field-label {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  display: block;
+  color: #333;
+}
+
+.field-input {
+  width: 100%;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
 
 </style>

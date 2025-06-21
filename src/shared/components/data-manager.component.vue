@@ -93,7 +93,7 @@ export default {
     <pv-toolbar class="w-full" style="height: 4rem;">
       <template #start>
         <pv-button
-            class="mr-2 w-8rem"
+            class="mr-2 w-12rem"
             icon="pi pi-plus"
             :label="labelName"
             severity="success"

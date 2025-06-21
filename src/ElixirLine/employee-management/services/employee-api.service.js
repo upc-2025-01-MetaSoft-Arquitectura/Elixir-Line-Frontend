@@ -31,5 +31,12 @@ export class EmployeeApiService {
     findResourceById(id) {
         return http.get(`${this.resourceEndpoint}?id=${id}`);
     }
+    getStatusByInternalCode(internalCode) {
+        return http.get(`/wine-batches?internalCode=${internalCode}`);
+    }
+    createTask(task) {
+        return http.post("/tasks", task);
+    }
+
 
 }

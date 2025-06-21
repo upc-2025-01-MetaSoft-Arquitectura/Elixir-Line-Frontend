@@ -992,5 +992,167 @@
       "filtrationStage": null,
       "bottlingStage": null
     }
+  ],
+  "tasks": [
+    {
+      "id": "e003",
+      "relatedId": "B2025-VINEYARD01",
+      "assignee": "Sofía Gómez",
+      "title": "Tarea Vineyard 1",
+      "startDate": "2025-06-10T05:00:00.000Z",
+      "dueDate": "2025-06-26T05:00:00.000Z",
+      "type": "CAMPO",
+      "status": "InProcess",
+      "progress": 0,
+      "description": "Lorem ipsos",
+      "supplies": [
+        {
+          "id": "sup-002",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "e004",
+      "relatedId": "B2025-VINEYARD02",
+      "assignee": "Carlos Mendoza",
+      "title": "Control de temperatura",
+      "startDate": "2025-06-15T08:00:00.000Z",
+      "dueDate": "2025-06-20T17:00:00.000Z",
+      "type": "INDUSTRIAL",
+      "status": "InProcess",
+      "progress": 0,
+      "description": "Verificar y registrar temperatura de los tanques.",
+      "supplies": [
+        {
+          "id": "sup-001",
+          "quantity": 2
+        }
+      ]
+    },
+    {
+      "id": "e005",
+      "relatedId": "B2024-VINEYARD03",
+      "assignee": "Sofía Gómez",
+      "title": "Control de pH",
+      "startDate": "2025-06-19T09:00:00.000Z",
+      "dueDate": "2025-06-19T11:00:00.000Z",
+      "type": "CAMPO",
+      "status": "InProcess",
+      "progress": 0,
+      "description": "Medir y registrar el pH de los mostos en fermentación.",
+      "supplies": [
+        {
+          "id": "sup-002",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "e006",
+      "relatedId": "B2025-VINEYARD05",
+      "assignee": "Mariana Luna",
+      "title": "Revisión de clarificación",
+      "startDate": "2025-06-20T10:00:00.000Z",
+      "dueDate": "2025-06-21T16:00:00.000Z",
+      "type": "INDUSTRIAL",
+      "status": "Completed",
+      "progress": 0,
+      "description": "Verificar el proceso de clarificación y registrar observaciones.",
+      "supplies": [
+        {
+          "id": "sup-003",
+          "quantity": 2
+        }
+      ]
+    },
+    {
+      "id": "23ab",
+      "assignee": "Ana Silva",
+      "title": "Tarea de Irrigación",
+      "startDate": "2025-08-12",
+      "dueDate": "2025-08-20",
+      "type": "CAMPO",
+      "status": "Pending",
+      "progress": 0,
+      "description": "Descripcion 1",
+      "supplies": [
+        {
+          "id": "sup-002",
+          "quantity": 2
+        },
+        {
+          "id": "sup-005",
+          "quantity": 1
+        }
+      ],
+      "suppliesIds": [],
+      "relatedId": "B2025-VINEYARD01"
+    }
+  ],
+  "evidences": [
+    {
+      "id": "1750391561913",
+      "taskId": "e003",
+      "percentage": 70,
+      "description": "Evidencia 1",
+      "image": "https://www.shutterstock.com/image-photo/wide-open-field-stretching-towards-600nw-2476599713.jpg",
+      "createdAt": "2025-06-19T12:52:41.913Z",
+      "type": "CAMPO"
+    },
+    {
+      "id": "1750391561914",
+      "taskId": "e004",
+      "percentage": 60,
+      "description": "Registro de temperatura completado.",
+      "image": "https://www.shutterstock.com/image-photo/wide-open-field-stretching-towards-600nw-2476599713.jpg",
+      "createdAt": "2025-06-16T18:00:00.000Z",
+      "type": "INDUSTRIAL"
+    },
+    {
+      "id": "1750391561914",
+      "taskId": "e004",
+      "percentage": 70,
+      "description": "Registro de temperatura completado.",
+      "image": "https://static.vecteezy.com/system/resources/previews/006/240/309/non_2x/nature-scenic-trees-and-green-meadow-field-rural-landscape-with-bright-cloudy-blue-sky-idyllic-adventure-landscape-natural-colorful-foliage-photo.jpg",
+      "createdAt": "2025-06-16T19:00:00.000Z",
+      "type": "INDUSTRIAL"
+    },
+    {
+      "id": "1750391561915",
+      "taskId": "e005",
+      "percentage": 80,
+      "description": "Medición de pH realizada en todos los tanques.",
+      "image": "https://www.shutterstock.com/image-photo/wide-open-field-stretching-towards-600nw-2476599713.jpg",
+      "createdAt": "2025-06-19T12:00:00.000Z",
+      "type": "CAMPO"
+    },
+    {
+      "id": "1750391561916",
+      "taskId": "e006",
+      "percentage": 100,
+      "description": "Clarificación verificada y documentada.",
+      "image": "https://www.shutterstock.com/image-photo/wide-open-field-stretching-towards-600nw-2476599713.jpg",
+      "createdAt": "2025-06-17T17:00:00.000Z",
+      "type": "INDUSTRIAL"
+    }
+  ],
+  "incidences": [
+    {
+      "id": "a4f3",
+      "taskId": "e006",
+      "description": "Esta perfecto",
+      "image": "https://www.gastronomiaycia.com/wp-content/uploads/2017/08/ava_winery_1-680x451.jpg",
+      "createdAt": "2025-06-19T14:33:16.136Z",
+      "type": "INDUSTRIAL"
+    },
+    {
+      "id": "a4f4",
+      "taskId": "e005",
+      "description": "Incidencia de campo",
+      "image": "https://sp-ao.shortpixel.ai/client/to_auto,q_glossy,ret_img,w_4999,h_3332/https://cii.conchaytoro.com/web/wp-content/uploads/2015/05/noticia3.jpg",
+      "createdAt": "2025-06-17T17:33:16.136Z",
+      "type": "CAMPO"
+    }
   ]
 }
