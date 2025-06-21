@@ -41,7 +41,6 @@ import Toolbar from "primevue/toolbar";
 import TabList from "primevue/tablist";
 import Tab from "primevue/tab";
 import TabPanel from "primevue/tabpanel";
-import Calendar from "primevue/calendar";
 
 import Toast from "primevue/toast";
 
@@ -130,9 +129,6 @@ app.component('pv-button', Button)
     .component('pv-input-switch', InputSwitch)
     .component('pv-confirm-dialog', ConfirmDialog);
 
-app.mount('#app')
-
-    .component('pv-calendar', Calendar);
 
 app.mount('#app')
 export default class PvInputText {

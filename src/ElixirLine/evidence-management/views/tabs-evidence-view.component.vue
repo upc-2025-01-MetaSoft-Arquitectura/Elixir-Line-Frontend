@@ -1,7 +1,7 @@
 <script>
 
 import BasePageLayoutComponent from "../../../shared/components/base-page-layout.component.vue";
-import WineBatchViews from "../../winemaking-process/views/accordion-batches-by-campaigns.component.vue";
+
 import EvidenceManager from "../pages/evidence-manager.vue";
 import IncidenceManager from "../pages/incidence-manager.vue";
 
@@ -10,7 +10,7 @@ export default {
   components: {
     IncidenceManager,
     EvidenceManager,
-    WineBatchViews,
+  
     BasePageLayoutComponent,
   },
 
