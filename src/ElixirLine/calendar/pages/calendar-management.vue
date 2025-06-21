@@ -178,25 +178,6 @@ function incidencesForDayAndHour(day, hour) {
       </tr>
       </tbody>
     </table>
-
-
-
-
-
-    <!--<PvDialog v-model:visible="showEvidenceDialog" modal :closable="true" @hide="closeEvidenceDialog">
-      <div class="dialog-content">
-        <h3>Detalle de Evidencia</h3>
-        <p><strong>Tarea asociada:</strong> {{ selectedEvidence?.taskId }}</p>
-        <div v-if="selectedTask">
-          <p><strong>Nombre tarea:</strong> {{ selectedTask.title }}</p>
-          <p><strong>Trabajador:</strong> {{ selectedTask.assignee }}</p>
-          <p><strong>Descripción tarea:</strong> {{ selectedTask.description }}</p>
-          Agrega más campos si lo necesitas
-        </div>
-        <p><strong>Descripción evidencia:</strong> {{ selectedEvidence?.description }}</p>
-        <button @click="closeEvidenceDialog">Cerrar</button>
-      </div>
-    </PvDialog> -->
   </div>
 
   <Dialog v-model:visible="showEvidenceDialog" modal :closable="true" @hide="closeEvidenceDialog">
@@ -244,6 +225,8 @@ function incidencesForDayAndHour(day, hour) {
 }
 
 .dialog-content {
+  z-index: 10000;
+  margin-top: -35px;
   padding: 10px 32px;
   border-radius: 8px;
   min-width: 320px;
