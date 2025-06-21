@@ -508,6 +508,29 @@
           "quantity": 2
         }
       ]
+    },
+    {
+      "id": "23ab",
+      "assignee": "Ana Silva",
+      "title": "Tarea de Irrigación",
+      "startDate": "2025-08-12",
+      "dueDate": "2025-08-20",
+      "type": "CAMPO",
+      "status": "Pending",
+      "progress": 0,
+      "description": "Descripcion 1",
+      "supplies": [
+        {
+          "id": "sup-002",
+          "quantity": 2
+        },
+        {
+          "id": "sup-005",
+          "quantity": 1
+        }
+      ],
+      "suppliesIds": [],
+      "relatedId": "B2025-VINEYARD01"
     }
   ],
   "evidences": [

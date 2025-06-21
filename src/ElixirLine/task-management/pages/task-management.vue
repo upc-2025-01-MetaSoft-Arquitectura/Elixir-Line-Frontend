@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import {ref, onMounted, computed, watch} from 'vue';
 import {SupplyApiService, TaskApiService, EmployeeApiService} from '../services/task-api.service.js';
 import DataManager from "../../../shared/components/data-manager.component.vue";
+import { WineBatchesApiService } from '../../winemaking-process/services/wine-batches-api.service.js';
 
 const taskService = new TaskApiService();
 const supplyService = new SupplyApiService();
@@ -16,7 +17,8 @@ const allSupplies = ref([]);
 const allEmployees = ref([]);
 const tasks = ref([]);
 const activeTab = ref('industrial');
-
+const wineBatchesService = new WineBatchesApiService();
+const wineBatches = ref([]);
 async function openEditTask(task) {
   const [taskRes, suppliesRes, employeesRes] = await Promise.all([
     taskService.getTaskById(task.id),
@@ -46,17 +48,30 @@ async function openNewTaskDialog() {
     startDate: '',
     dueDate: '',
     type: '',
-    status: '',
+    status: 'Pending',
     progress: 0,
     description: '',
-    supplies: []
+    supplies: [],
+    suppliesIds: []
   };
   showNewTaskDialog.value = true;
   console.log('Estado inicial de showNewTaskDialog:', showNewTaskDialog.value);
   showNewTaskDialog.value = true;
   console.log('Estado final de showNewTaskDialog:', showNewTaskDialog.value);
 }
+function getOrCreateSupplyQuantity(supplyId) {
+  let found = newTask.value.supplies.find(s => s.id === supplyId);
+  if (!found) {
+    found = { id: supplyId, quantity: 1 };
+    newTask.value.supplies.push(found);
+  }
+  return found.quantity;
+}
 
+watch(() => newTask.value.suppliesIds, (ids) => {
+  // Elimina insumos no seleccionados
+  newTask.value.supplies = newTask.value.supplies.filter(s => ids.includes(s.id));
+});
 function toggleSupply(supply) {
   const idx = editTask.value.supplies.findIndex(s => s.id === supply.id);
   if (idx === -1) {
@@ -121,8 +136,10 @@ const columns = [
 ];
 
 onMounted(async () => {
-  const response = await taskService.getAllTasks();
-  tasks.value = response.data;
+  const tasksResponse = await taskService.getAllTasks();
+  tasks.value = tasksResponse.data;
+  const wineBatchesResponse = await wineBatchesService.getAll();
+  wineBatches.value = wineBatchesResponse.data;
 });
 
 const filteredTasks = computed(() =>
@@ -143,8 +160,20 @@ const showTaskDialog = ref(false);
 const selectedTask = ref(null);
 
 async function previewTask(task) {
+  // Si la lista de insumos está vacía, cárgala primero
+  if (!allSupplies.value.length) {
+    const suppliesRes = await supplyService.getAllSupplies();
+    allSupplies.value = Array.from(new Map(suppliesRes.data.map(s => [s.id, s])).values());
+  }
   const response = await taskService.getTaskById(task.id);
-  selectedTask.value = response.data;
+  const suppliesWithNames = (response.data.supplies || []).map(s => {
+    const found = allSupplies.value.find(a => a.id === s.id);
+    return {
+      ...s,
+      name: found ? found.name : 'Insumo desconocido'
+    };
+  });
+  selectedTask.value = { ...response.data, supplies: suppliesWithNames };
   showTaskDialog.value = true;
 }
 </script>
@@ -219,6 +248,20 @@ async function previewTask(task) {
               </option>
             </select>
           </p>
+          <div>
+            <label for="relatedId">Lote de vino:</label>
+            <select
+                id="relatedId"
+                v-model="newTask.relatedId"
+                class="editable-field"
+                style="width: 220px; margin-bottom: 12px;"
+            >
+              <option disabled value="">Selecciona un lote</option>
+              <option v-for="batch in wineBatches" :key="batch.id" :value="batch.internalCode">
+                {{ batch.internalCode }} - {{ batch.vineyardOrigin }}
+              </option>
+            </select>
+          </div>
           <p>
             <label>Título:</label>
             <input v-model="newTask.title" class="editable-field" />
@@ -233,41 +276,49 @@ async function previewTask(task) {
           </p>
           <p>
             <label>Tipo:</label>
-            <input v-model="newTask.type" class="editable-field" />
-          </p>
-          <p>
-            <label>Estado:</label>
-            <input v-model="newTask.status" class="editable-field" />
-          </p>
-          <p>
-            <label>Avance:</label>
-            <input type="number" v-model="newTask.progress" min="0" max="100" class="editable-field" /> %
+            <select v-model="newTask.type" class="editable-field">
+              <option disabled value="">Selecciona tipo</option>
+              <option value="INDUSTRIAL">Industrial</option>
+              <option value="CAMPO">Campo</option>
+            </select>
           </p>
           <p>
             <label>Descripción:</label>
             <textarea v-model="newTask.description" class="editable-field"></textarea>
           </p>
-          <p>
+          <div>
             <label>Insumos:</label>
-            <div v-for="supply in allSupplies" :key="supply.id">
+            <div v-for="(item, idx) in newTask.supplies" :key="idx" style="margin-bottom: 8px;">
+              <select v-model="item.id" class="editable-field" style="width: 180px;">
+                <option disabled value="">Selecciona insumo</option>
+                <option v-for="supply in allSupplies" :key="supply.id" :value="supply.id">
+                  {{ supply.name }}
+                </option>
+              </select>
               <input
-                  type="checkbox"
-                  :checked="!!newTask.supplies.find(s => s.id === supply.id)"
-                  @change="toggleSupplyForm(supply)"
-              />
-              {{ supply.name }}
-              <input
-                  v-if="newTask.supplies.find(s => s.id === supply.id)"
                   type="number"
                   min="1"
-                  :value="getSupplyQuantityForm(supply.id)"
-                  @input="setSupplyQuantityForm(supply.id, $event.target.valueAsNumber)"
+                  v-model.number="item.quantity"
                   placeholder="Cantidad"
                   class="editable-field"
-                  style="width: 70px; margin-left: 8px;"
+                  style="width: 90px; margin-left: 8px;"
               />
+              <button
+                  type="button"
+                  class="boton-rojo"
+                  @click="newTask.supplies.splice(idx, 1)"
+              >
+                Quitar
+              </button>
             </div>
-          </p>
+            <button
+                type="button"
+                class="boton-verde"
+                @click="newTask.supplies.push({ id: '', quantity: 1 })"
+            >
+              Agregar insumo
+            </button>
+          </div>
           <pv-button label="Guardar" type="submit" />
           <pv-button label="Cancelar" severity="secondary" @click="showNewTaskDialog = false" />
         </form>
@@ -309,27 +360,39 @@ async function previewTask(task) {
             <label>Descripción:</label>
             <textarea v-model="editTask.description" class="editable-field"></textarea>
           </p>
-          <p>
+          <div>
             <label>Insumos:</label>
-            <div v-for="supply in allSupplies" :key="supply.id">
+            <div v-for="(item, idx) in editTask.supplies" :key="item.id" style="margin-bottom: 8px;">
+              <select v-model="item.id" class="editable-field" style="width: 180px;">
+                <option disabled value="">Selecciona insumo</option>
+                <option v-for="supply in allSupplies" :key="supply.id" :value="supply.id">
+                  {{ supply.name }}
+                </option>
+              </select>
               <input
-                  type="checkbox"
-                  :checked="!!editTask.supplies.find(s => s.id === supply.id)"
-                  @change="toggleSupply(supply)"
-              />
-              {{ supply.name }}
-              <input
-                  v-if="editTask.supplies.find(s => s.id === supply.id)"
                   type="number"
                   min="1"
-                  :value="getSupplyQuantity(supply.id)"
-                  @input="setSupplyQuantity(supply.id, $event.target.valueAsNumber)"
+                  v-model.number="item.quantity"
                   placeholder="Cantidad"
                   class="editable-field"
-                  style="width: 70px; margin-left: 8px;"
+                  style="width: 90px; margin-left: 8px;"
               />
+              <button
+                  type="button"
+                  class="boton-rojo"
+                  @click="editTask.supplies.splice(idx, 1)"
+              >
+                Quitar
+              </button>
             </div>
-          </p>
+            <button
+                type="button"
+                class="boton-verde"
+                @click="editTask.supplies.push({ id: '', quantity: 1 })"
+            >
+              Agregar insumo
+            </button>
+          </div>
           <pv-button label="Guardar" type="submit" />
           <pv-button label="Cancelar" severity="secondary" @click="showEditDialog = false" />
         </form>
@@ -351,10 +414,12 @@ async function previewTask(task) {
           <p><strong>Descripción:</strong> {{ selectedTask.description }}</p>
           <p><strong>Insumos:</strong>
             <span v-if="selectedTask.supplies && selectedTask.supplies.length">
-        <ul>
-          <li v-for="supply in selectedTask.supplies" :key="supply.id">{{ supply.name }}</li>
-        </ul>
-      </span>
+    <ul>
+      <li v-for="supply in selectedTask.supplies" :key="supply.id">
+        {{ supply.name }} <span v-if="supply.quantity">- {{ supply.quantity }}</span>
+      </li>
+    </ul>
+  </span>
             <span v-else> Sin insumos</span>
           </p>
         </div>
@@ -434,5 +499,90 @@ async function previewTask(task) {
   background: #f9f9f9;
   margin-bottom: 6px;
   color: #5F6868;
+}
+.pv-dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 10px 0;
+}
+
+.pv-dialog form p {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+}
+
+.pv-dialog label {
+  min-width: 110px;
+  font-weight: 500;
+  color: #444;
+}
+
+.pv-dialog input[type="text"],
+.pv-dialog input[type="date"],
+.pv-dialog input[type="number"],
+.pv-dialog select,
+.pv-dialog textarea {
+  flex: 1;
+  max-width: 320px;
+}
+
+.pv-dialog textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+.editable-field {
+  border: 1px solid #bdbdbd;
+  border-radius: 4px;
+  padding: 6px 10px;
+  background: #f9f9f9;
+  margin-bottom: 0;
+  color: #5F6868;
+  font-size: 15px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border 0.2s;
+}
+
+.editable-field:focus {
+  border: 1.5px solid #8B0000;
+  outline: none;
+  background: #fff;
+}
+
+.pv-dialog [type="checkbox"] {
+  margin-right: 6px;
+}
+
+.pv-button {
+  margin-right: 10px;
+}
+.insumos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.boton-verde {
+  background: #48b85b !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 4px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 8px;
+}
+.boton-rojo {
+  background: #c33535 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-left: 8px;
 }
 </style>

@@ -219,28 +219,6 @@ export default {
                 style="background: #222; color: #fff;"
             />
           </label>
-          <label>Porcentaje:
-            <div class="slider-container">
-              <input
-                  type="range"
-                  v-model.number="form.percentage"
-                  :min="minPercentageForTask"
-                  max="100"
-                  step="5"
-                  class="percentage-slider"
-              />
-              <input
-                  type="number"
-                  v-model.number="form.percentage"
-                  :min="minPercentageForTask"
-                  max="100"
-                  step="1"
-                  class="percentage-input"
-                  style="width: 60px; margin-left: 10px;"
-              />
-              <span class="slider-value">%</span>
-            </div>
-          </label>
           <label>Descripción:
             <input type="text" v-model="form.description" required />
           </label>
