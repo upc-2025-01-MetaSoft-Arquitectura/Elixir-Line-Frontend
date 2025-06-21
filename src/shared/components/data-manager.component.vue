@@ -29,7 +29,6 @@ export default {
 
 
     newItem() {
-      console.log('Evento emitido: new-item-requested-manager');
       this.$emit('new-item-requested-manager');
     },
 
@@ -56,6 +55,10 @@ export default {
       this.$emit('edit-item-requested-manager', item);
     },
 
+    viewItemDetails(item) {
+      this.$emit('view-item-details-requested-manager', item);
+    },
+
     confirmDeleteItem(item) {
       this.$confirm.require({
         message: `Are you sure you want to delete the selected ${this.title.singular}?`,
@@ -69,11 +72,8 @@ export default {
         reject: () => {
         }
       })
-    },
-    
+    }
   },
-  
-
 
   created() {
     this.initFilters();
@@ -93,12 +93,12 @@ export default {
     <pv-toolbar class="w-full" style="height: 4rem;">
       <template #start>
         <pv-button
-            class="mr-2"
-            style="min-width: 11rem; background: #556B2F; color: white; border: none;"
+            class="mr-2 w-12rem"
             icon="pi pi-plus"
             :label="labelName"
             severity="success"
             @click="newItem"
+            style="background: #556B2F; color: white; border: none;"
         />
         <pv-button
             class="w-8rem"
@@ -154,27 +154,29 @@ export default {
 
         <pv-column :exportable="false" style="min-width:8rem">
           <template #body="slotProps">
-            <pv-button
-                icon="pi pi-pencil"
-                outlined
-                rounded
-                class="mr-2"
-                @click="editItem(slotProps.data)"
-            />
+            <div class="flex flex-row">
+              <pv-button
+                  icon="pi pi-pencil"
+                  outlined rounded class="mr-2"
+                  @click="editItem(slotProps.data)" />
 
-            <pv-button
-                icon="pi pi-trash"
-                outlined
-                rounded
-                severity="danger"
-                class="mr-2"
-                @click="confirmDeleteItem(slotProps.data)"
-            />
-            <slot name="actions" :data="slotProps.data"></slot>
-            
+              <pv-button
+                  icon="pi pi-trash"
+                  outlined rounded
+                  class="mr-2"
+                  severity="danger"
+                  @click="confirmDeleteItem(slotProps.data)" />
+
+              <pv-button
+                  icon="pi pi-eye"
+                  outlined rounded
+                  severity="info"
+                  @click="viewItemDetails(slotProps.data)" />
+            </div>
+
+
           </template>
         </pv-column>
-
 
       </pv-data-table>
 

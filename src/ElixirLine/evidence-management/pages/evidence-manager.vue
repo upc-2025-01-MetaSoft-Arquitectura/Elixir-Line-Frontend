@@ -76,10 +76,11 @@ export default {
           .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
     },
     maxPercentageForSelectedTask() {
-      if (!this.form.taskId) return 0;
+      const taskId = this.selectedTask?.id || this.form.taskId;
+      if (!taskId) return 0;
       return Math.max(
           0,
-          ...this.evidences.filter(ev => ev.taskId === this.form.taskId).map(ev => ev.percentage)
+          ...this.evidences.filter(ev => ev.taskId === taskId).map(ev => ev.percentage)
       );
     }
   },
@@ -287,7 +288,7 @@ export default {
               Fecha: {{ formatDate(evidencesForSelectedTask[evidenceCarouselIndex].createdAt) }}
             </div>
             <div class="evidence-percentage">
-              Porcentaje: {{ evidencesForSelectedTask[evidenceCarouselIndex].percentage }}%
+              Porcentaje: {{ maxPercentageForSelectedTask }}%
             </div>
             <div class="evidence-desc">
               {{ evidencesForSelectedTask[evidenceCarouselIndex].description }}

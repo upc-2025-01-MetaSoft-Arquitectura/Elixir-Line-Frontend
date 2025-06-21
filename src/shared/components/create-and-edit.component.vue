@@ -41,7 +41,7 @@ export default {
 </script>
 
 <template>
-  <pv-dialog v-bind:visible="visible" :modal="true" :style="getDialogStyle()" class="p-fluid" :header="entityName">
+  <pv-dialog v-bind:visible="visible" :modal="true" :style="getDialogStyle()" class="p-fluid" :header="entityName" :closable="false">
     <template #header>
       <div class="flex justify-content-start">
         <div>{{ getHeaderTitle() }}</div>
