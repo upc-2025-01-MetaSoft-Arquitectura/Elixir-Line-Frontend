@@ -177,7 +177,13 @@ export default {
 </script>
 
 <template>
+  
+  
   <div>
+    <div class="header">
+      <h1>{{ title.plural }}</h1>
+      <p>Gestión de evidencias para tareas</p>
+    </div>
     <div class="filter-section">
       <pv-select
           class="type-select"
@@ -228,19 +234,31 @@ export default {
         </form>
       </template>
     </create-and-edit>
-    <button @click="openDialog">Nueva Evidencia</button>
-    <div class="evidence-grid">
-      <div
-          v-for="task in filteredTasks"
-          :key="task.id"
-          class="evidence-card"
-          @click="openEvidenceDialog(task)"
-          style="cursor:pointer"
-      >
-        <div class="evidence-title">{{ task.title || 'Sin título' }}</div>
-        <div class="evidence-encargado">Encargado: {{ task.assignee || 'N/A' }}</div>
-        <div class="evidence-tipo">Tipo: {{ task.type || 'N/A' }}</div>
-        <div class="evidence-fecha">ID: {{ task.id }}</div>
+    <div class="button-section">
+      <button @click="openDialog">Nueva Evidencia</button>
+    </div>
+    <div class="evidencias-container">
+      <div class="evidencias">
+        <div
+            v-for="task in filteredTasks"
+            :key="task.id"
+            class="card"
+            @click="openEvidenceDialog(task)"
+            style="cursor:pointer"
+        >
+          <img
+              v-if="task.image"
+              :src="task.image"
+              alt="Imagen"
+              class="imagen"
+          />
+          <div class="contenido">
+            <div class="titulo">{{ task.title || 'Sin título' }}</div>
+            <div class="tipo">{{ task.type || 'N/A' }}</div>
+            <div class="encargado">Encargado: {{ task.assignee || 'N/A' }}</div>
+            <div class="fecha">ID: {{ task.id }}</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -345,87 +363,7 @@ button:hover {
   border-color: #1976d2;
   outline: none;
 }
-.slider-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
 
-.percentage-slider {
-  width: 100%;
-  accent-color: #1976d2;
-  height: 4px;
-  background: #444;
-  border-radius: 2px;
-  outline: none;
-}
-
-.percentage-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #1976d2;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.percentage-slider:focus::-webkit-slider-thumb {
-  background: #1565c0;
-}
-
-.percentage-slider::-moz-range-thumb {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #1976d2;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.percentage-slider:focus::-moz-range-thumb {
-  background: #1565c0;
-}
-
-.percentage-slider::-ms-thumb {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #1976d2;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.slider-value {
-  min-width: 38px;
-  text-align: right;
-  font-weight: 600;
-  color: #fff;
-  font-size: 15px;
-}
-.evidence-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 22px;
-  margin-top: 32px;
-}
-
-.evidence-card {
-  background: #23272f;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.13);
-  padding: 18px 18px 14px 18px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
 
 .evidence-img {
   width: 100%;
@@ -538,5 +476,85 @@ button:hover {
   display: flex;
   justify-content: center;
   margin-top: 24px;
+}
+.evidencias-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.evidencias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: left;
+  padding: 10px;
+}
+
+.card {
+  width: 350px;
+  max-width: 100%;
+  overflow: hidden;
+  background: #23272f;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+  display: flex;
+  flex-direction: column;
+}
+
+.imagen {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 7px 7px 0 0;
+  background: #181818;
+}
+
+.imagenevidence {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 7px 7px 0 0;
+  background: #181818;
+}
+
+.contenido {
+  padding: 10px;
+  text-align: left;
+  flex: 1;
+  word-break: break-word;
+  overflow: hidden;
+}
+
+.tipo {
+  color: orange;
+  font-weight: bold;
+}
+.titulo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  padding-left: 24px; /* Separación izquierda */
+}
+
+.filter-section {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding-left: 24px; /* Separación izquierda */
+}
+.button-section {
+  display: flex;
+  align-items: flex-start;
+  padding-left: 24px;
+  margin-bottom: 12px;
 }
 </style>

@@ -132,6 +132,10 @@ export default {
 
 <template>
   <div>
+    <div class="header">
+      <h1>{{ title.plural }}</h1>
+      <p>Gestión de incidencias para tareas</p>
+    </div>
     <div class="filter-section">
       <pv-select
           class="type-select"
@@ -168,19 +172,31 @@ export default {
         <button type="button" @click="showDialog = false">Cancelar</button>
       </form>
     </dialog>
-    <button @click="openDialog">Nueva Incidencia</button>
-    <div class="incidence-grid">
-      <div
-          v-for="task in filteredTasks"
-          :key="task.id"
-          class="incidence-card"
-          @click="openIncidenceDialog(task)"
-          style="cursor:pointer"
-      >
-        <div class="incidence-title">{{ task.title || 'Sin título' }}</div>
-        <div class="incidence-encargado">Encargado: {{ task.assignee || 'N/A' }}</div>
-        <div class="incidence-tipo">Tipo: {{ task.type || 'N/A' }}</div>
-        <div class="incidence-fecha">ID: {{ task.id }}</div>
+    <div class="button-section">
+      <button @click="openDialog">Nueva Incidencia</button>
+    </div>
+    <div class="incidencias-container">
+      <div class="incidencias">
+        <div
+            v-for="task in filteredTasks"
+            :key="task.id"
+            class="card"
+            @click="openIncidenceDialog(task)"
+            style="cursor:pointer"
+        >
+          <img
+              v-if="task.image"
+              :src="task.image"
+              alt="Imagen"
+              class="imagen"
+          />
+          <div class="contenido">
+            <div class="titulo">{{ task.title || 'Sin título' }}</div>
+            <div class="tipo">{{ task.type || 'N/A' }}</div>
+            <div class="encargado">Encargado: {{ task.assignee || 'N/A' }}</div>
+            <div class="fecha">ID: {{ task.id }}</div>
+          </div>
+        </div>
       </div>
     </div>
     <dialog v-if="showIncidenceDialog" open class="incidence-dialog">
@@ -230,22 +246,7 @@ button:hover {
   background-color: #1565c0;
 }
 
-.incidence-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 22px;
-  margin-top: 32px;
-}
 
-.incidence-card {
-  background: #23272f;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.13);
-  padding: 18px 18px 14px 18px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
 
 .incidence-img {
   width: 100%;
@@ -260,15 +261,8 @@ button:hover {
   width: 100%;
 }
 
-.incidence-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 4px;
-}
 
-.incidence-encargado,
-.incidence-tipo,
+
 .incidence-fecha {
   font-size: 14px;
   color: #bdbdbd;
@@ -359,5 +353,65 @@ button:hover {
   justify-content: center;
   margin-top: 24px;
 }
+.incidencias-container {
+  display: flex;
+  flex-direction: column;
+}
 
+.incidencias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: left;
+  padding: 10px;
+}
+
+.card {
+  width: 350px;
+  max-width: 100%;
+  overflow: hidden;
+  background: #23272f;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+  display: flex;
+  flex-direction: column;
+}
+
+.imagen {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 7px 7px 0 0;
+  background: #181818;
+}
+
+.imagenevidence {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 7px 7px 0 0;
+  background: #181818;
+}
+
+.contenido {
+  padding: 10px;
+  text-align: left;
+  flex: 1;
+  word-break: break-word;
+  overflow: hidden;
+}
+
+.titulo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+.tipo {
+  color: orange;
+  font-weight: bold;
+}
 </style>
