@@ -33,7 +33,13 @@ export default {
     }
   },
 
-
+  computed: {
+    canAddStage() {
+      return this.item &&
+          this.item.agingStage &&
+          this.item.agingStage.isCompleted === true
+    }
+  },
 
   methods: {
 

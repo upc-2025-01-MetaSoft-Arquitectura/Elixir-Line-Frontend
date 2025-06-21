@@ -29,8 +29,6 @@ export default {
 
 <template>
 
-    entity-name="Batch" @close-shared="onClose">
-
   <view-details :entity="itemEntity" @close-shared="onClose" :visible="visible" >
 
     <template #header>

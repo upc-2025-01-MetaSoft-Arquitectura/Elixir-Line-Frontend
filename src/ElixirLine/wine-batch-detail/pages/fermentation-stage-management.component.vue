@@ -30,7 +30,13 @@ export default {
     }
   },
 
-
+  computed: {
+    canAddStage() {
+      return this.item &&
+          this.item.correctionStage &&
+          this.item.correctionStage.isCompleted === true
+    }
+  },
 
   methods: {
 

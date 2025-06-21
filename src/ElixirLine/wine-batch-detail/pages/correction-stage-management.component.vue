@@ -12,7 +12,6 @@ export default {
 
   props:{
     item: null,
-    canAddStage: false
   },
 
   data() {
@@ -25,10 +24,17 @@ export default {
       isEdit: false,
       submitted: false,
       stageExist: false, // Assuming you want to check if a stage exists
+      canAddStage: false, // Controla si se puede agregar una nueva etapa
     }
   },
 
-
+  computed: {
+    canAddStage() {
+      return this.item &&
+          this.item.receptionStage &&
+          this.item.receptionStage.isCompleted === true
+    }
+  },
 
   methods: {
 
@@ -128,7 +134,6 @@ export default {
     console.log('RECEPTION STAGE ===================== ', this.correctionStage);
 
     console.log('CAN STAGE ===================== ', this.canAddStage);
-
 
     console.log("Reception Stage Management component created");
   },

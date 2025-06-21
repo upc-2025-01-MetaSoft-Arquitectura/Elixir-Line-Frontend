@@ -37,7 +37,13 @@ export default {
     }
   },
 
-
+  computed: {
+    canAddStage() {
+      return this.item &&
+          this.item.pressingStage &&
+          this.item.pressingStage.isCompleted === true
+    }
+  },
 
   methods: {
 

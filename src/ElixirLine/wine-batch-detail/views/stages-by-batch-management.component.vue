@@ -26,7 +26,6 @@ import AgingStageManagement from "../pages/aging-stage-management.vue";
 import FiltrationStageManagement from "../pages/filtration-stage-management.component.vue";
 import BottlingStageManagement from "../pages/bottling-stage-management.vue";
 
-
 export default {
   name: 'stages-by-batch-management',
   components: {
@@ -44,6 +43,11 @@ export default {
     PressingStageDetailCreateAndEdit: PressingStageCreateAndEditComponent,
     ReceptionStageManagement, BasePageLayout},
 
+  provide() {
+    return {
+      batchId: this.itemEntity.id
+    }
+  },
 
   props: {
     itemEntity: null,
@@ -201,42 +205,42 @@ export default {
 
     <!-- ETAPA DE RECEPCIÓN  ====================================================================== -->
     <div v-if="selectedItem && selectedItem.name === 'Recepción'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <reception-stage-management :item="itemObject" :batch-id = "this.itemEntity.id"/>
+      <reception-stage-management :item="itemObject" />
     </div>
 
     <!-- ETAPA DE CORRECCIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Corrección'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden ">
-      <correction-stage-management :item="itemObject" :can-add-stage="itemObject.receptionStage?.isCompleted" />
+      <correction-stage-management :item="itemObject"  />
     </div>
 
     <!-- ETAPA DE FERMENTACIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Fermentación' " class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <fermentation-stage-management :item="itemObject" :can-add-stage="itemObject.correctionStage?.isCompleted" />
+      <fermentation-stage-management :item="itemObject" />
     </div>
 
     <!-- ETAPA DE PRENSADO  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Prensado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <pressing-stage-management :item="itemObject" :can-add-stage="itemObject.fermentationStage?.isCompleted"/>
+      <pressing-stage-management :item="itemObject"/>
     </div>
 
     <!-- ETAPA DE CLARIFICACIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Clarificación'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <clarification-stage-management :item="itemObject" :can-add-stage="itemObject.pressingStage?.isCompleted"/>
+      <clarification-stage-management :item="itemObject"/>
     </div>
 
     <!-- ETAPA DE CRIANZA  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Crianza'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-        <aging-stage-management :item="itemObject" :can-add-stage="itemObject.clarificationStage?.isCompleted" />
+        <aging-stage-management :item="itemObject"  />
     </div>
 
     <!-- ETAPA DE FILTRACIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Filtración'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <filtration-stage-management :item="itemObject" :can-add-stage="itemObject.agingStage?.isCompleted" />
+      <filtration-stage-management :item="itemObject" />
     </div>
 
     <!-- ETAPA DE EMBOTELLADO  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Embotellado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <bottling-stage-management :item="itemObject" :can-add-stage="itemObject.filtrationStage?.isCompleted"/>
+      <bottling-stage-management :item="itemObject" />
     </div>
 
     <!-- Mensaje en caso de no haber etapas registradas -->

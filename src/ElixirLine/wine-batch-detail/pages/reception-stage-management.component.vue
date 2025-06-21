@@ -12,12 +12,13 @@ export default {
 
   components: {ReceptionStageCreateAndEdit, DataManager, CampaignCreateAndEdit},
 
+  inject: ['batchId'], // Recibe el batchId desde el padre
+
   props:{
     item: {
       type: Object,
       default: () => ({})
     },
-    batchId: null,
   },
 
   data() {

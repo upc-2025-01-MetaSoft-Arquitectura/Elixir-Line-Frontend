@@ -23,6 +23,15 @@ export default {
     }
   },
 
+
+  computed: {
+    canAddStage() {
+      return this.item &&
+          this.item.filtrationStage &&
+          this.item.filtrationStage.isCompleted === true
+    }
+  },
+
   data() {
     return {
       title: { singular: 'Etapa de Fermentación', plural: 'Etapa de Fermentación' },

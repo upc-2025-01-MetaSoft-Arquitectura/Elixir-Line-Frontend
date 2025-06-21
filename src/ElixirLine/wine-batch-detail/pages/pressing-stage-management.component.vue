@@ -33,6 +33,14 @@ export default {
     }
   },
 
+  computed: {
+    canAddStage() {
+      return this.item &&
+          this.item.fermentationStage &&
+          this.item.fermentationStage.isCompleted === true
+    }
+  },
+
 
 
   methods: {
