@@ -8,7 +8,7 @@ export default {
 
   <div>
     <div>
-      <img src="../../assets/img/page-not-found.jpg" width="400"/>
+     
     </div>
 
     <div>

@@ -9,6 +9,7 @@ import TaskManagement from "../ElixirLine/task-management/pages/task-management.
 import CalendarManagement from "../ElixirLine/calendar/pages/calendar-management.vue";
 import EvidenceManager from "../ElixirLine/evidence-management/pages/evidence-manager.vue";
 import tabsEvidenceViewComponent from "../ElixirLine/evidence-management/views/tabs-evidence-view.component.vue";
+import WinemakingMap from "../ElixirLine/winemaking-map/page/winemaking-map.vue";
 
 
 const router = createRouter({
@@ -33,7 +34,7 @@ const router = createRouter({
 
                 { path: '/vinicultor/tasks', name: 'Tasks', component: TaskManagement, meta: { title: 'Tasks' } } ,
                 { path: '/vinicultor/Calendar', name: 'Calendar', component: CalendarManagement, meta: { title: 'Calendar' } },
-
+                { path: '/vinicultor/map', name: 'Map', component: WinemakingMap, meta: { title: 'Map' } },
                 {path: '/vinicultor/evidence', name: 'EvidenceManagement', component: tabsEvidenceViewComponent, meta: { title: 'EvidenceManagement'}},
                 
 

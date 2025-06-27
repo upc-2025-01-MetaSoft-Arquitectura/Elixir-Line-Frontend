@@ -213,7 +213,7 @@ export default {
           <label>Tarea:
             <select v-model="form.taskId" required @change="updateTaskType">
               <option v-for="task in tasks" :key="task.id" :value="task.id">
-                {{ task.title || task.id }} (ID: {{ task.id }}, Rel: {{ task.relatedId }})
+                {{ task.title || task.id }} ({{ task.relatedId }})
               </option>
             </select>
           </label>
