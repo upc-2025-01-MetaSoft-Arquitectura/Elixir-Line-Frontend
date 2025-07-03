@@ -36,5 +36,4 @@ export class Stages {
         this.bottlingStage = bottlingStage? new BottlingStage(bottlingStage) : null;
     }
 
-
 }
