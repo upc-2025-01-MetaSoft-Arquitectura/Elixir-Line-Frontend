@@ -19,7 +19,6 @@ export default {
     CampaignCreateAndEdit
   },
 
-
   data() {
     return {
       title: { singular: 'Campaign', plural: 'Campaigns' },
@@ -40,10 +39,7 @@ export default {
     }
   },
 
-
-
   methods: {
-
     //#region Utility Methods
     notifySuccessfulAction(message) {
       this.$toast.add({severity: 'success', summary: 'Success', detail: message, life: 3000});

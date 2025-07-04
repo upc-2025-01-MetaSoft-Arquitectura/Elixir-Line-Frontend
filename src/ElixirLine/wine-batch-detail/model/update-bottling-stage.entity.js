@@ -20,7 +20,7 @@
  */
 
 
-class UpdateBottlingStageEntity{
+export class UpdateBottlingStageEntity{
 
     constructor(
         {

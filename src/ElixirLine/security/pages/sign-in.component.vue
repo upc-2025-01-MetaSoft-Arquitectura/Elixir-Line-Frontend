@@ -1,5 +1,7 @@
 <script>
 
+import {SignInRequest} from "../model/sign-in.request.js";
+import {useAuthenticationStore} from "../services/authentication.store.js";
 
 export default {
   name: "sing-in",
@@ -8,31 +10,27 @@ export default {
   data() {
     return {
       username: '',
-      email: '',
       password: '',
       isAuthenticated: false
+
     };
   },
-
 
   methods: {
     onSignIn() {
 
-      // Lógica de autenticación aquí
-      // Si la autenticación es exitosa, redirige a la ruta deseada
-
       this.isAuthenticated = true;
       this.$router.push({ name: 'ElixirLineHome', params :{id:'1'} });
       console.log('Autenticación exitosa');
-    },
 
-  },
 
-  created() {
-    console.log('Login created');
+      /*
+      let authenticationStore = useAuthenticationStore();
+      let signInRequest = new SignInRequest(this.username, this.password);
+      authenticationStore.signIn(signInRequest, this.$router);
+      */
+    }
   }
-
-
 }
 
 </script>

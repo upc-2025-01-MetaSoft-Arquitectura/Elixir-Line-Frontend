@@ -14,7 +14,7 @@
   "completionStatus": "COMPLETED"
 }
  */
-class UpdatePressingStageEntity {
+export class UpdatePressingStageEntity {
 
     constructor(
         {

@@ -18,7 +18,7 @@
 }
  */
 
-class UpdateFermentationStageEntity {
+export class UpdateFermentationStageEntity {
 
     constructor(
         {

@@ -6,9 +6,9 @@
   "startDate": "2025-07-03",
   "endDate": "2025-07-03"
 }
- */
+*/
 
-class UpdateCampaignEntity {
+export class UpdateCampaignEntity {
     constructor(
         {
             name,

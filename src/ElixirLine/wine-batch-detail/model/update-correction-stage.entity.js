@@ -21,7 +21,7 @@
 }
  */
 
-class UpdateCorrectionStageEntity {
+export class UpdateCorrectionStageEntity {
 
     constructor(
         {

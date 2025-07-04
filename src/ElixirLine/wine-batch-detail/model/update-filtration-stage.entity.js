@@ -20,7 +20,7 @@
 }
  */
 
-class UpdateFiltrationStageEntity {
+export class UpdateFiltrationStageEntity {
 
     constructor(
         {

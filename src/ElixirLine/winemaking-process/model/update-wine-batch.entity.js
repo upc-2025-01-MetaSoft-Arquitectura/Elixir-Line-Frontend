@@ -12,7 +12,7 @@
 }
  */
 
-class UpdateWineBatchEntity {
+export class UpdateWineBatchEntity {
 
     constructor(
         {

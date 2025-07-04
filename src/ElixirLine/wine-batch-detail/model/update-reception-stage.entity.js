@@ -13,7 +13,7 @@
 }
  */
 
-class UpdateReceptionStageEntity {
+export class UpdateReceptionStageEntity {
 
     constructor(
         {

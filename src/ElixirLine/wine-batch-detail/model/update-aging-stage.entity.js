@@ -21,7 +21,7 @@
 }
  */
 
-class UpdateAgingStageEntity{
+export class UpdateAgingStageEntity{
 
     constructor(
         {

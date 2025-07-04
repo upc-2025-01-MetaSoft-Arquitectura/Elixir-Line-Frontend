@@ -20,7 +20,7 @@
 }
  */
 
-class UpdateClarificationStageEntity{
+export class UpdateClarificationStageEntity{
 
     constructor(
         {
