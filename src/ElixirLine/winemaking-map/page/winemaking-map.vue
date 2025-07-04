@@ -2,8 +2,9 @@
 // @ts-ignore
 // eslint-disable-next-line
 /* global google */
-import {onMounted, ref, nextTick, reactive, watch} from 'vue';
+import {onMounted, ref, nextTick, reactive, watch, computed} from 'vue';
 import { MapApiService } from '../services/maps-service';
+import { WineBatchesApiService } from '../../winemaking-process/services/wine-batches-api.service.js';
 import { defineExpose } from 'vue';
 import DialogComponent from '../component/dialog-component.vue';
 
@@ -27,6 +28,35 @@ let autocomplete = null;
 const editingField = ref(null); // Lote en edición
 const editSidebarVisible = ref(false);
 const editedField = reactive({}); // Copia editable
+const wineBatchOrigins = reactive({});
+const sidebarCollapsed = ref(false);
+const editSidebarCollapsed = ref(false);
+const wineBatchService = new WineBatchesApiService();
+const groupedFields = computed(() => {
+  const groups = {};
+  searchResults.value.forEach(field => {
+    if (!groups[field.wineBatchId]) {
+      groups[field.wineBatchId] = [];
+    }
+    groups[field.wineBatchId].push(field);
+  });
+  return groups;
+});
+// Después de eliminar la parcela y cerrar el sidebar
+const index = drawnShapes.value.findIndex(polygon => {
+  // Compara el primer punto del path para identificar el polígono
+  const polyPath = polygon.getPath().getArray();
+  return (
+      polyPath.length &&
+      editedField.path &&
+      polyPath[0].lat() === editedField.path[0].lat &&
+      polyPath[0].lng() === editedField.path[0].lng
+  );
+});
+if (index !== -1) {
+  drawnShapes.value[index].setMap(null); // Elimina del mapa
+  drawnShapes.value.splice(index, 1);    // Elimina del array
+}
 function loadGoogleMapsScript() {
   return new Promise((resolve) => {
     if (window.google?.maps?.drawing) return resolve();
@@ -70,6 +100,8 @@ onMounted(async () => {
       }
   );
   autocomplete.addListener('place_changed', onPlaceChanged);
+  await loadWineBatchOrigins();
+
 });
 async function loadSavedFields() {
   try {
@@ -93,6 +125,19 @@ async function loadSavedFields() {
     });
   } catch (e) {
     alert('Error al cargar los campos guardados');
+  }
+}
+async function loadWineBatchOrigins() {
+  const ids = [...new Set(searchResults.value.map(f => f.wineBatchId))];
+  for (const id of ids) {
+    if (id && !wineBatchOrigins[id]) {
+      try {
+        const res = await wineBatchService.getById(id);
+        wineBatchOrigins[id] = res.data.vineyardOrigin;
+      } catch {
+        wineBatchOrigins[id] = 'Desconocido';
+      }
+    }
   }
 }
 async function onSearch() {
@@ -261,7 +306,7 @@ function saveEditedField() {
     }));
   }
   mapService.updateField(editedField.id, { ...editedField }).then(() => {
-    alert('Lote actualizado');
+    alert('Parcela  actualizado');
     editSidebarVisible.value = false;
     if (polygon) {
       polygon.setEditable(false);
@@ -270,6 +315,20 @@ function saveEditedField() {
   }).catch(() => {
     alert('Error al guardar');
   });
+}
+// En <script setup>
+async function deleteEditedField() {
+  if (!editedField.id) return;
+  if (!confirm('¿Seguro que deseas eliminar esta parcela?')) return;
+  try {
+    await mapService.deleteField(editedField.id);
+    alert('Parcela eliminada');
+    editSidebarVisible.value = false;
+    // Opcional: recargar los campos o actualizar searchResults
+    onSearch();
+  } catch {
+    alert('Error al eliminar la parcela');
+  }
 }
 watch(editSidebarVisible, (visible) => {
   if (!visible && editingField.value?._polygon) {
@@ -308,6 +367,81 @@ function onPlaceChanged() {
     map.value.setZoom(12);
   });
 }
+watch(searchResults, async () => {
+  await loadWineBatchOrigins();
+});
+// Agrega esta función para calcular el convex hull (envolvente convexa)
+function getConvexHull(points) {
+  // Graham scan algorithm
+  points.sort((a, b) => a.lng - b.lng || a.lat - b.lat);
+  const cross = (o, a, b) => (a.lng - o.lng) * (b.lat - o.lat) - (a.lat - o.lat) * (b.lng - o.lng);
+  const lower = [];
+  for (const p of points) {
+    while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0) lower.pop();
+    lower.push(p);
+  }
+  const upper = [];
+  for (let i = points.length - 1; i >= 0; i--) {
+    const p = points[i];
+    while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0) upper.pop();
+    upper.push(p);
+  }
+  upper.pop();
+  lower.pop();
+  return lower.concat(upper);
+}
+
+// Dibuja las áreas verdes envolventes después de cargar los campos
+async function drawVineyardAreas() {
+  if (window._vineyardAreas) {
+    window._vineyardAreas.forEach(p => p.setMap(null));
+  }
+  window._vineyardAreas = [];
+
+  const groups = {};
+  searchResults.value.forEach(field => {
+    if (!groups[field.wineBatchId]) groups[field.wineBatchId] = [];
+    groups[field.wineBatchId].push(...field.path);
+  });
+
+  Object.values(groups).forEach(points => {
+    if (points.length < 3) return;
+    const hull = getConvexHull(points);
+    const expandedHull = expandPolygon(hull, 1.03); // 3% más grande
+    const areaPolygon = new window.google.maps.Polygon({
+      paths: expandedHull,
+      fillColor: '#4caf50',
+      fillOpacity: 0.18,
+      strokeColor: '#388e3c',
+      strokeOpacity: 0.7,
+      strokeWeight: 2,
+      map: map.value,
+      zIndex: 0
+    });
+    window._vineyardAreas.push(areaPolygon);
+  });
+}
+
+// Llama a drawVineyardAreas cada vez que cambian los resultados de búsqueda
+watch(searchResults, async () => {
+  await loadWineBatchOrigins();
+  drawVineyardAreas();
+});
+function expandPolygon(points, factor = 1.01) {
+  // Calcula el centroide
+  const centroid = points.reduce(
+      (acc, p) => ({ lat: acc.lat + p.lat, lng: acc.lng + p.lng }),
+      { lat: 0, lng: 0 }
+  );
+  centroid.lat /= points.length;
+  centroid.lng /= points.length;
+
+  // Expande cada punto alejándolo del centroide
+  return points.map(p => ({
+    lat: centroid.lat + (p.lat - centroid.lat) * factor,
+    lng: centroid.lng + (p.lng - centroid.lng) * factor
+  }));
+}
 defineExpose({ enableDrawing });
 </script>
 
@@ -315,35 +449,46 @@ defineExpose({ enableDrawing });
   <div class="map-outer">
     <div class="map-container">
       <div ref="mapElement" class="map-fullscreen"></div>
-      <div v-if="searchResults.length" class="sidebar">
-        <h3>Lotes en {{ foundCity }}</h3>
-        <div class="sidebar-cards">
-          <div
-              v-for="field in searchResults"
-              :key="field.id"
-              class="sidebar-card"
-              @click="focusField(field)"
-          >
-            <div class="sidebar-card-title">{{ field.label }}</div>
-            <div class="sidebar-card-info">
-              <span>Lote ID: {{ field.id }}</span>
+      <div v-if="searchResults.length" :class="['sidebar', { collapsed: sidebarCollapsed }]">
+        <button class="collapse-btn" @click="sidebarCollapsed = !sidebarCollapsed">
+          {{ sidebarCollapsed ? '▶' : '◀' }}
+        </button>
+        <template v-if="!sidebarCollapsed">
+          <h3>Parcelas en {{ foundCity }}</h3>
+          <div class="sidebar-cards">
+            <div v-for="(fields, wineBatchId) in groupedFields" :key="wineBatchId" class="sidebar-group">
+              <div class="sidebar-group-title">
+                Viñedo: {{ wineBatchOrigins[wineBatchId] || 'Cargando...' }}
+              </div>
+              <div v-for="field in fields" :key="field.id" class="sidebar-card" @click="focusField(field)">
+                <div class="sidebar-card-title">{{ field.label }}</div>
+                <div class="sidebar-card-info">
+                  <span>Parcela ID: {{ field.id }}</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </template>
       </div>
       <!-- Cambia la posición de la barra lateral de edición -->
-      <div v-if="editSidebarVisible" class="edit-sidebar">
-        <h3>Editar Lote</h3>
-        <label>
-          Nombre:
-          <input v-model="editedField.label" />
-        </label>
-        <label>
-          ID de Lote:
-          <input v-model="editedField.id" disabled />
-        </label>
-        <button @click="saveEditedField" class="save-btn">Guardar</button>
-        <button @click="editSidebarVisible = false" class="cancel-btn">Cancelar</button>
+      <div v-if="editSidebarVisible" :class="['edit-sidebar', { collapsed: editSidebarCollapsed }]">
+        <button class="collapse-btn right" @click="editSidebarCollapsed = !editSidebarCollapsed">
+          {{ editSidebarCollapsed ? '◀' : '▶' }}
+        </button>
+        <template v-if="!editSidebarCollapsed">
+          <h3>Editar Parcela</h3>
+          <label>
+            Nombre:
+            <input v-model="editedField.label" />
+          </label>
+          <label>
+            ID de Parcela:
+            <input v-model="editedField.id" disabled />
+          </label>
+          <button @click="saveEditedField" class="save-btn">Guardar</button>
+          <button @click="editSidebarVisible = false" class="cancel-btn">Cancelar</button>
+          <button @click="deleteEditedField" class="delete-btn">Eliminar Parcela</button>
+        </template>
       </div>
     </div>
     <input
@@ -494,8 +639,14 @@ defineExpose({ enableDrawing });
   padding: 24px 16px;
   overflow-y: auto;
   color: #111; /* Letras negras */
+  transition: width 0.2s;
 }
-
+.sidebar.collapsed {
+  width: 40px !important;
+  min-width: 40px;
+  padding: 8px 4px;
+  overflow: hidden;
+}
 .sidebar-cards {
   display: flex;
   flex-direction: column;
@@ -540,6 +691,14 @@ defineExpose({ enableDrawing });
   gap: 16px;
   color: #111;
   overflow-y: auto;
+  transition: width 0.2s;
+
+}
+.edit-sidebar.collapsed {
+  width: 40px !important;
+  min-width: 40px;
+  padding: 8px 4px;
+  overflow: hidden;
 }
 .save-btn {
   background: #1890ff;
@@ -558,5 +717,41 @@ defineExpose({ enableDrawing });
   border-radius: 4px;
   margin-top: 8px;
   cursor: pointer;
+}
+.sidebar-group-title {
+  font-weight: bold;
+  font-size: 15px;
+  margin: 12px 0 4px 0;
+  color: #2d4a22;
+}
+/* Agrega estilos para el botón si lo deseas */
+.delete-btn {
+  background: #d32f2f;
+  color: #fff;
+  border: none;
+  padding: 10px 0;
+  border-radius: 4px;
+  margin-top: 8px;
+  cursor: pointer;
+}
+.collapse-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 20;
+  background: #e0e0e0;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.collapse-btn.right {
+  left: auto;
+  right: 8px;
 }
 </style>
