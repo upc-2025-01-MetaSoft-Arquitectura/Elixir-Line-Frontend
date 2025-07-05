@@ -1,5 +1,5 @@
-import {defineStore} from "pinia";
 import {AuthenticationService} from "./authentication.service.js";
+import {defineStore} from "pinia";
 import {SignInResponse} from "../model/sign-in.response.js";
 import {SignUpResponse} from "../model/sign-up.response.js";
 
@@ -10,8 +10,9 @@ const authenticationService = new AuthenticationService();
  * Represents the authentication store
  */
 export const useAuthenticationStore = defineStore({
+
     id: 'authentication',
-    state: () => ({ signedIn: false, userId: 0, username: ''}),
+    state: () => ({ signedIn: false, userId: 0, email: ''}),
     getters: {
         /**
          * Is signed in
@@ -30,14 +31,13 @@ export const useAuthenticationStore = defineStore({
          * @param state - The state of the store
          * @returns {string} - The current username
          */
-        currentUsername: (state) => state['username'],
+        currentUsername: (state) => state['email'],
         /**
          * Current token
          * @returns {string} - The current token
          */
         currentToken: () => localStorage.getItem('token'),
 
-        currentRole: (state) => state['role']
     },
     actions: {
         /**
@@ -48,19 +48,23 @@ export const useAuthenticationStore = defineStore({
          * @param router - The router
          */
         async signIn(signInRequest, router) {
+
             authenticationService.signIn(signInRequest)
                 .then(response => {
-                    let signInResponse = new SignInResponse(response.data.id, response.data.username, response.data.token,response.data.role);
+                    let signInResponse = new SignInResponse(response.data.id, response.data.email, response.data.token);
+
+
                     this.signedIn = true;
                     this.userId = signInResponse.id;
-                    this.username = signInResponse.username;
-                    this.role = signInResponse.role;
+                    this.email = signInResponse.email;
+
                     localStorage.setItem('token', signInResponse.token);
-                    console.log(signInResponse);
-                    if(signInResponse.role === 1) {
-                        router.push({name: 'Inventory-Management'});
-                    }else
-                        router.push({name: 'OrderRequests'});
+                    localStorage.setItem('userId', signInResponse.id);
+                    localStorage.setItem('email', signInResponse.email);
+
+                    console.log("✔ Login completo:", signInResponse);
+
+                    router.push({ name: 'ElixirLineHome', params: { id: signInResponse.id } });
 
                 })
                 .catch(error => {
@@ -97,9 +101,28 @@ export const useAuthenticationStore = defineStore({
         async signOut(router) {
             this.signedIn = false;
             this.userId = 0;
-            this.username = '';
+            this.email = '';
             localStorage.removeItem('token');
             router.push({name: 'sign-in'});
+        },
+
+        initialize() {
+            console.log('[INIT] Restaurando sesión desde localStorage');
+            const token = localStorage.getItem('token');
+            const userId = localStorage.getItem('userId');
+            const email = localStorage.getItem('email');
+
+            if (token && userId && email) {
+                this.signedIn = true;
+                this.userId = parseInt(userId);
+                this.email = email;
+                console.log('[INIT] Sesión restaurada:', this.email);
+            } else {
+                console.warn('[INIT] No hay datos válidos en localStorage');
+            }
         }
+
+
+
     }
 })

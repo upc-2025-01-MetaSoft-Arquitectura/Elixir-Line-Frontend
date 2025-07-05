@@ -61,6 +61,7 @@ import {
     SplitButton,
     TabPanels
 } from "primevue";
+import {createPinia} from "pinia";
 
 
 
@@ -77,6 +78,10 @@ app.use(i18n)
 
 // Use Router
 app.use(router);
+
+// Use Pinia
+const pinia = createPinia();
+app.use(pinia);
 
 
 // Use PrimeVue

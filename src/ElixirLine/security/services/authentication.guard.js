@@ -8,10 +8,21 @@ import {useAuthenticationStore} from "./authentication.store.js";
  * @returns {*}
  */
 export const authenticationGuard = (to, from, next) => {
-    const authenticationStore = useAuthenticationStore();
-    const isAnonymous = !authenticationStore.isSignedIn;
-    const publicRoutes = ['/home/sign-in', '/home/sign-up', '/page-not-found', '/home'];
-    const routeRequiresToBeAuthenticated = !publicRoutes.includes(to.path);
-    if (isAnonymous && routeRequiresToBeAuthenticated) return next({name: 'sign-in'});
-    else next();
-}
+    const store = useAuthenticationStore();
+
+    console.log('[GUARD] Navegando a:', to.fullPath);
+
+    if (!store.isSignedIn && localStorage.getItem('token')) {
+        console.log('[GUARD] Restaurando sesión desde localStorage...');
+        store.initialize();
+    }
+
+    const isPublic = to.path.startsWith('/elixir-line/sign-in') || to.path.startsWith('/elixir-line/sign-up');
+
+    if (!isPublic && !store.isSignedIn) {
+        console.warn('[GUARD] Acceso denegado. Redirigiendo a login');
+        return next({ name: 'sign-in' });
+    }
+
+    next();
+};

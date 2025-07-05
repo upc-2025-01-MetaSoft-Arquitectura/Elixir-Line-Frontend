@@ -41,9 +41,7 @@ export default {
 </script>
 
 
-
 <template>
-
 
   <create-and-edit :entity="itemEntity" :visible="visible" entity-name="Batch"
                    @canceled-shared="onCancelRequested" @saved-shared="onSaveRequested">

@@ -7,15 +7,13 @@ export class SignInResponse {
     /**
      * Constructor
      * @param {string} id - The user id
-     * @param {string} username - The username
+     * @param {string} email - The username
      * @param {string} token - The token
-     * @param role
      */
-    constructor(id, username, token, role) {
+    constructor(id, email, token) {
         this.id = id;
-        this.username = username;
+        this.email = email;
         this.token = token;
-        this.role = role;
     }
 
 }
