@@ -6,6 +6,8 @@ import {StagesApiService} from "../services/stages-api.service.js";
 import {Stages} from "../model/stages.entity.js";
 import ReceptionStageCreateAndEdit from "../components/reception-stage-create-and-edit.component.vue";
 import {ReceptionStage} from "../model/receptionStage.entity.js";
+import {ReceptionStageApiService} from "../services/reception-stage-api.service.js";
+import {CreateReceptionStage} from "../model/create-reception-stage.entity.js";
 
 export default {
   name: 'reception-stage-management',
@@ -24,12 +26,21 @@ export default {
   data() {
     return {
       title: {singular: 'Etapa de Recepción', plural: 'Etapa de Recepción'},
-      itemObject: new Stages({}),
+
+      batchId: null,
+
       receptionStage: new ReceptionStage({}),
+
+      createReceptionStage: new CreateReceptionStage({}),
+
       receptionStageApiService: null,
+
       createAndEditDialogIsVisible: false,
+
       isEdit: false,
+
       submitted: false,
+
       stageExist: false,
     }
   },
@@ -44,24 +55,20 @@ export default {
 
     //#region Event Handlers
     onNewItem() {
-      this.itemObject = new Stages({});
-      console.log('======================= NEW ITEM MANAGEMENT', this.itemObject);
+      this.receptionStage = new ReceptionStage({});
+      console.log('=== NEW RECEPTION', this.receptionStage);
       this.isEdit = false;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
     },
 
     onEditItem(item) {
-      console.log('======================= EDIT ITEM MANAGEMENT', item);
-      this.itemObject = new Stages(item);
+      console.log('=== EDIT RECEPTION STAGE ===', item);
+      this.receptionStage = new ReceptionStage(item);
+
       this.isEdit = true;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
-    },
-
-    onDeleteItem(item) {
-      this.itemObject = new Stages(item);
-      this.deleteBatch();
     },
 
     onCancelRequested() {
@@ -89,45 +96,61 @@ export default {
 
     //#region CRUD Operations
     create() {
+      console.log('== CREANDO RECEPTION: ==', this.receptionStage);
 
-      this.itemObject.batchId = this.batchId;
+      this.createReceptionStage.employee = this.receptionStage.employee;
+      this.createReceptionStage.startDate = this.receptionStage.startDate;
+      this.createReceptionStage.endDate = this.receptionStage.endDate;
+      this.createReceptionStage.temperature = this.receptionStage.temperature;
+      this.createReceptionStage.pHLevel = this.receptionStage.pHLevel;
+      this.createReceptionStage.sugarLevel = this.receptionStage.sugarLevel;
+      this.createReceptionStage.quantityKg = this.receptionStage.quantityKg;
+      this.createReceptionStage.comment = this.receptionStage.comment;
 
-      console.log('=========================================================', this.itemObject);
+      this.receptionStageApiService.create(this.batchId, this.createReceptionStage).then(response => {
 
-      this.receptionStageApiService.create(this.itemObject).then(response => {
-
-        this.receptionStage = new ReceptionStage(response.data.receptionStage);
-
-        this.itemObject = new Stages(response.data);
+        this.receptionStage = new ReceptionStage(response.data);
 
         this.notifySuccessfulAction('Stage created successfully');
       }).catch(error => {
         console.error("Error creating a Stage", error);
+        console.error('🔴 Message:', error.message);
+        console.error('🔴 Status:', error.response?.status);
+        console.error('🔴 Details:', error.response?.data);
       });
     },
 
     update() {
-      this.receptionStageApiService.update(this.itemObject.id, this.itemObject).then(response => {
+      this.receptionStageApiService.patch(this.receptionStage.id, this.receptionStage).then(response => {
 
-        this.receptionStage = new ReceptionStage(response.data.receptionStage);
-        this.itemObject = new Stages(response.data);
+        this.receptionStage = new ReceptionStage(response.data);
 
         this.notifySuccessfulAction('Stage updated successfully');
       }).catch(error => {
         console.error("Error updating a Stage", error);
+        console.error('🔴 Message:', error.message);
+        console.error('🔴 Status:', error.response?.status);
+        console.error('🔴 Details:', error.response?.data);
       });
     },
 
-    delete() {
-      this.batchAndCampaignApiService.delete(this.itemObject.id).then(() => {
-        let index = this.findIndexById(this.itemObject.id);
-        this.arrayItems.splice(index, 1);
-        this.notifySuccessfulAction('Batch deleted successfully');
-      }).catch(error => {
-        console.error("Error deleting a campaign", error);
-      });
-    },
+    getReceptionStage() {
+      this.receptionStageApiService.getReceptionStageByBatchId(this.batchId)
+          .then(response => {
+            this.receptionStage = new ReceptionStage(response.data);
 
+            console.log("===== ETAPA DE RECEPCIÓN RECUPERADO: ===== ", this.receptionStage);
+          })
+          .catch(error => {
+            console.error('❌ Error al obtener la etapa de recepción:', error);
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo obtener la etapa de recepción.',
+              life: 3000
+            });
+          });
+    },
 
     // Confirmar y cerrar al confirmar
     confirmarCompletarEtapa() {
@@ -154,19 +177,17 @@ export default {
       })
     },
 
-
     completarEtapa() {
-      this.itemObject.receptionStage.isCompleted = true
+      this.receptionStage.completionStatus = 'COMPLETED'
 
-      this.receptionStageApiService.update(this.itemObject.id, this.itemObject)
+      this.receptionStageApiService.patch(this.receptionStage.batchId, this.receptionStage)
           .then(response => {
-            this.receptionStage = new ReceptionStage(response.data.receptionStage)
-            this.itemObject = new Stages(response.data)
+            this.receptionStage = new ReceptionStage(response.data)
             this.notifySuccessfulAction('Etapa completada correctamente')
+            console.log("== ETAPA DE RECEPCIÓN COMPLETADA ==", this.receptionStage)
           })
           .catch(error => {
-            this.receptionStage.isCompleted = false
-            this.itemObject.receptionStage.isCompleted = false
+            this.receptionStage.completionStatus = 'NOT_COMPLETED'
 
             console.error('❌ Error al completar la etapa:', error)
             this.$toast.add({
@@ -177,30 +198,17 @@ export default {
             })
           })
     }
-
-
     //#endregion
 
   },
 
   //#region Lifecycle Hooks
   created() {
-    this.receptionStageApiService = new StagesApiService('/stages');
+    this.batchId = this.item.id;
+    this.receptionStageApiService = new ReceptionStageApiService('/batches');
+    this.getReceptionStage();
 
-
-    if (!this.item || !this.item.receptionStage) {
-
-      this.stageExist = false;
-
-    } else {
-
-      this.itemObject = this.item;
-      this.stageExist = true;
-      this.receptionStage = this.item.receptionStage;
-
-    }
-
-    console.log('RECEPTION STAGE ===================== ', this.receptionStage);
+    console.log("= ESTAMOS EN RECEPTION-STAGE-MANAGEMENT ==> BatchId: ", this.batchId);
 
     console.log("Reception Stage Management component created");
   },
@@ -231,15 +239,15 @@ export default {
             icon="pi pi-plus"
             @click="onNewItem"
             class="p-button-success"
-            v-if="!stageExist"
+            v-if="!receptionStage.id"
         />
 
         <pv-button
             label="Editar"
             icon="pi pi-pencil"
-            @click="onEditItem(itemObject)"
+            @click="onEditItem(receptionStage)"
             class="p-button-warning"
-            v-if="stageExist /*&& !receptionStage.isCompleted*/"
+            v-if="receptionStage.id  && receptionStage.completionStatus !== 'COMPLETED'"
         />
 
         <pv-button
@@ -247,44 +255,54 @@ export default {
             icon="pi pi-check"
             class="p-button-success"
             @click="confirmarCompletarEtapa"
-            v-show="stageExist && !receptionStage.isCompleted"
+            v-if="receptionStage.id  && receptionStage.completionStatus !== 'COMPLETED'"
         />
 
       </div>
     </div>
 
     <!-- Tarjeta con detalles -->
-    <pv-card v-if="receptionStage.stage">
+    <pv-card v-if="receptionStage && receptionStage.id" class="mt-3">
       <template #header>
         <h4 class="m-0">Detalles de la etapa de recepción</h4>
       </template>
 
       <template #content>
-
+        <!--
+        completionStatus = '',
+        dataHash = null
+        -->
         <div class="flex align-items-center gap-2">
           <i class="pi pi-user text-lg"></i>
-          <p><strong>Registrado por:</strong> {{ receptionStage.registeredBy }}</p>
+          <p><strong>Registrado por:</strong> {{ receptionStage.employee }}</p>
         </div>
 
         <div class="grid p-2">
           <div class="col-12 md:col-6">
-            <p><strong>Fecha:</strong> {{ receptionStage.startDate }}</p>
+            <p><strong>Fecha Inicio:</strong> {{ receptionStage.startDate }}</p>
             <p><strong>Temperatura:</strong> {{ receptionStage.temperature }} °C</p>
-            <p><strong>pH:</strong> {{ receptionStage.pH }}</p>
+            <p><strong>Nivel de pH:</strong> {{ receptionStage.pHLevel }}</p>
           </div>
           <div class="col-12 md:col-6">
-            <p><strong>Brix:</strong> {{ receptionStage.sugarLevelBrix }}</p>
+            <p><strong>Fecha Fin:</strong> {{ receptionStage.endDate }}</p>
+            <p><strong>Nivel de Azúcar (%):</strong> {{ receptionStage.sugarLevel }}</p>
             <p><strong>Cantidad (kg):</strong> {{ receptionStage.quantityKg }}</p>
-            <p><strong>Comentarios:</strong> {{ receptionStage.comments }}</p>
           </div>
         </div>
 
-        <!-- Estado de finalización -->
-        <div class="flex align-items-center gap-2 mt-4">
-          <i class="pi text-xl" :class="receptionStage.isCompleted ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"></i>
-          <span class="text-lg font-medium">{{ receptionStage.isCompleted ? 'Etapa completada' : 'Etapa no completada' }} </span>
-        </div>
+        <p><strong>Comentarios:</strong> {{ receptionStage.comment }}</p>
 
+
+        <!-- Visualización de estado -->
+        <div class="flex align-items-center gap-2 mt-4">
+          <i
+              class="pi text-xl"
+              :class="receptionStage.completionStatus === 'COMPLETED' ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"
+          ></i>
+          <span class="text-lg font-medium">
+            {{ receptionStage.completionStatus === 'COMPLETED' ? 'Etapa completada' : 'Etapa no completada' }}
+          </span>
+        </div>
 
       </template>
     </pv-card>
@@ -292,7 +310,7 @@ export default {
     <!-- Diálogo para crear o editar etapa -->
     <reception-stage-create-and-edit
         :edit="isEdit"
-        :item-entity="itemObject"
+        :item="receptionStage"
         :visible="createAndEditDialogIsVisible"
         @cancel-requested="onCancelRequested"
         @save-requested="onSaveRequested($event)"

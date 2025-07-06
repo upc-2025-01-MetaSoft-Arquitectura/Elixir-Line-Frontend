@@ -5,34 +5,49 @@ import {StagesApiService} from "../services/stages-api.service.js";
 import {CorrectionStage} from "../model/correctionStage.entity.js";
 import ReceptionStageCreateAndEdit from "../components/reception-stage-create-and-edit.component.vue";
 import CorrectionStageCreateAndEdit from "../components/correction-stage-create-and-edit.vue";
+import {CreateReceptionStage} from "../model/create-reception-stage.entity.js";
+import {ReceptionStageApiService} from "../services/reception-stage-api.service.js";
+import {ReceptionStage} from "../model/receptionStage.entity.js";
+import {CorrectionStageApiService} from "../services/correction-stage-api.service.js";
+import {CreateCorrectionStage} from "../model/create-correction-stage.entity.js";
 
 export default {
   name: 'correction-stage-management',
-  components: {CorrectionStageCreateAndEdit, ReceptionStageCreateAndEdit},
+  components: {CorrectionStageCreateAndEdit },
 
-  props:{
-    item: null,
+  props: {
+    item: {
+      type: Object,
+      default: () => ({})
+    },
   },
 
   data() {
     return {
       title: { singular: 'Etapa de Corrección', plural: 'Etapa de Corrección' },
-      itemObject: new Stages({}),
+
+      batchId: null,
+
       correctionStage: new CorrectionStage({}),
+      receptionStage: new ReceptionStage({}),
+
+      createCorrectionStage: new CreateCorrectionStage({}),
+
       correctionStageApiService: null,
+      receptionStageApiService: null,
+
       createAndEditDialogIsVisible: false,
+
       isEdit: false,
+
       submitted: false,
-      stageExist: false, // Assuming you want to check if a stage exists
-      canAddStage: false, // Controla si se puede agregar una nueva etapa
+
     }
   },
 
   computed: {
     canAddStage() {
-      return this.item &&
-          this.item.receptionStage &&
-          this.item.receptionStage.isCompleted === true
+      return this.receptionStage && this.receptionStage.completionStatus === 'COMPLETED';
     }
   },
 
@@ -43,11 +58,10 @@ export default {
       this.$toast.add({severity: 'success', summary: 'Success', detail: message, life: 3000});
     },
 
-
     //#region Event Handlers
     onNewItem() {
-      this.itemObject = this.item;
-      console.log('======================= NEW ITEM MANAGEMENT', this.itemObject);
+      this.correctionStage = this.item;
+      console.log('======================= NEW ITEM MANAGEMENT', this.correctionStage);
       this.isEdit = false;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
@@ -55,15 +69,10 @@ export default {
 
     onEditItem(item) {
       console.log('======================= EDIT ITEM MANAGEMENT', item);
-      this.itemObject = new Stages(item);
+      this.correctionStage = new CorrectionStage(item);
       this.isEdit = true;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
-    },
-
-    onDeleteItem(item) {
-      this.itemObject = new Stages(item);
-      this.deleteBatch();
     },
 
     onCancelRequested() {
@@ -91,31 +100,72 @@ export default {
 
     //#region CRUD Operations
     create() {
-      this.correctionStageApiService.create(this.itemObject).then(response => {
+      this.correctionStageApiService.create(this.batchId, this.correctionStage).then(response => {
 
-        this.correctionStage = new CorrectionStage(response.data.correctionStage);
-        this.itemObject = new Stages(response.data);
+        this.correctionStage = new CorrectionStage(response.data);
 
         this.notifySuccessfulAction('Stage created successfully');
       }).catch(error => {
         console.error("Error creating a Stage",error);
+        console.error('🔴 Message:', error.message);
+        console.error('🔴 Status:', error.response?.status);
+        console.error('🔴 Details:', error.response?.data);
       });
     },
 
     update() {
-      this.correctionStageApiService.update(this.itemObject.id, this.itemObject).then(response => {
+      this.correctionStageApiService.patch(this.batchId, this.correctionStage).then(response => {
 
-        this.correctionStage = new CorrectionStage(response.data.correctionStage);
-        this.itemObject= new Stages(response.data);
+        this.correctionStage = new CorrectionStage(response.data);
 
         this.notifySuccessfulAction('Stage updated successfully');
       }).catch(error => {
         console.error("Error updating a Stage",error);
+        console.error('🔴 Message:', error.message);
+        console.error('🔴 Status:', error.response?.status);
+        console.error('🔴 Details:', error.response?.data);
       });
     },
 
-    //#endregion
+    getCorrectionStage() {
+      this.correctionStageApiService.getCorrectionStageByBatchId(this.batchId)
+          .then(response => {
 
+            this.correctionStage = new CorrectionStage(response.data);
+
+            console.log("=== ETAPA DE CORRECTION RECUPERADO: ===",response.data);
+
+          })
+          .catch(error => {
+            console.error('❌ Error al obtener la etapa de corrección:', error);
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo obtener la etapa de corrección.',
+              life: 3000
+            });
+          });
+    },
+
+    getReceptionStage() {
+      this.receptionStageApiService.getReceptionStageByBatchId(this.batchId)
+          .then(response => {
+            this.receptionStage = new ReceptionStage(response.data);
+
+            console.log("===== ETAPA DE RECEPCIÓN RECUPERADO: ===== ", this.receptionStage);
+          })
+          .catch(error => {
+            console.error('❌ Error al obtener la etapa de recepción:', error);
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo obtener la etapa de recepción.',
+              life: 3000
+            });
+          });
+    },
+
+    //#endregion
 
     // Confirmar y cerrar al confirmar
     confirmarCompletarEtapa() {
@@ -142,19 +192,17 @@ export default {
       })
     },
 
-
     completarEtapa() {
-      this.itemObject.correctionStage.isCompleted = true
+      this.correctionStage.completionStatus = 'COMPLETED'
 
-      this.correctionStageApiService.update(this.itemObject.id, this.itemObject)
+      this.correctionStageApiService.patch(this.correctionStage.batchId, this.correctionStage)
           .then(response => {
-            this.correctionStage = new CorrectionStage(response.data.correctionStage)
-            this.itemObject = new Stages(response.data)
+            this.correctionStage = new CorrectionStage(response.data)
             this.notifySuccessfulAction('Etapa completada correctamente')
+            console.log("== ETAPA DE RECEPCIÓN COMPLETADA ==", this.correctionStage)
           })
           .catch(error => {
-            this.correctionStage.isCompleted = false
-            this.itemObject.correctionStage.isCompleted = false
+            this.correctionStage.completionStatus = 'NOT_COMPLETED'
 
             console.error('❌ Error al completar la etapa:', error)
             this.$toast.add({
@@ -165,33 +213,22 @@ export default {
             })
           })
     }
-
-
-
-
-
-
   },
 
 
   //#region Lifecycle Hooks
   created() {
-    this.correctionStageApiService = new StagesApiService ('/stages');
+    this.batchId = this.item.id;
 
-    if (!this.item || !this.item.correctionStage) {
-      this.stageExist = false;
-    } else {
-      this.itemObject = this.item;
-      this.stageExist = true;
-      this.correctionStage = this.item.correctionStage;
-    }
+    this.correctionStageApiService = new CorrectionStageApiService('/batches');
+    this.receptionStageApiService = new ReceptionStageApiService('/batches');
 
-    console.log('RECEPTION STAGE ===================== ', this.correctionStage);
+    this.getCorrectionStage();
+    this.getReceptionStage();
 
-    console.log('CAN STAGE ===================== ', this.canAddStage);
-
-    console.log("Reception Stage Management component created");
+    console.log("= ESTAMOS EN CORRECTION-STAGE-MANAGEMENT ==> BatchId: ", this.batchId);
   },
+
   //#endregion
 
 
@@ -217,17 +254,17 @@ export default {
         <pv-button
             label="Nueva Etapa"
             icon="pi pi-plus"
-            @click="onNewItem()"
+            @click="onNewItem"
             class="p-button-success"
-            v-if="!stageExist && canAddStage"
+            v-if="!correctionStage.id"
         />
 
         <pv-button
             label="Editar"
             icon="pi pi-pencil"
-            @click="onEditItem(itemObject)"
+            @click="onEditItem(correctionStage)"
             class="p-button-warning"
-            v-if="stageExist  && canAddStage /*&& !correctionStage.isCompleted*/"
+            v-if="correctionStage.id  && correctionStage.completionStatus !== 'COMPLETED'"
         />
 
         <pv-button
@@ -235,7 +272,7 @@ export default {
             icon="pi pi-check"
             class="p-button-success"
             @click="confirmarCompletarEtapa"
-            v-show="stageExist && !correctionStage.isCompleted"
+            v-if="correctionStage.id  && correctionStage.completionStatus !== 'COMPLETED'"
         />
       </div>
     </div>
@@ -246,8 +283,17 @@ export default {
       <span> No se puede agregar una nueva etapa de CORRECCIÓN hasta que se complete la etapa de RECEPCIÓN. </span>
     </div>
 
+    <!-- Mensaje de aviso si no hay una etapa de corrección -->
+    <div v-if="canAddStage && !correctionStage.id "
+         class="p-3 bg-red-100 text-red-800 border-round">
+      <i class="pi pi-exclamation-triangle"></i>
+      <span> No hay una etapa de corrección registrada para este lote. </span>
+    </div>
+
+
+
     <!-- Detalles de la etapa de corrección -->
-    <pv-card v-if="correctionStage.stage && canAddStage === true">
+    <pv-card v-if="correctionStage && correctionStage.id && canAddStage === true">
       <template #header>
         <h4 class="m-0">Detalles de la etapa de corrección</h4>
       </template>
@@ -256,42 +302,47 @@ export default {
 
         <div class="flex align-items-center gap-2">
           <i class="pi pi-user text-lg"></i>
-          <p><strong>Registrado por:</strong> {{ correctionStage.registeredBy }}</p>
+          <p><strong>Registrado por:</strong> {{ correctionStage.employee }}</p>
         </div>
 
         <div class="grid p-2">
           <div class="col-12 md:col-6">
-            <p><strong>Registrado por:</strong> {{ correctionStage.registeredBy }}</p>
-            <p><strong>Fecha de inicio:</strong> {{ correctionStage.startDate }}</p>
-            <p><strong>Fecha de finalización:</strong> {{ correctionStage.endDate }}</p>
-            <p><strong>Brix inicial:</strong> {{ correctionStage.initialBrix }}</p>
+            <p><strong>Fecha Inicio:</strong> {{ correctionStage.startDate }}</p>
+            <p><strong>Nivel de Azúcar Inicial:</strong> {{ correctionStage.initialSugarLevel }}</p>
+            <p><strong>Nivel de pH inicial:</strong> {{ correctionStage.initialPH }}</p>
+            <p><strong>Azúcar añadido:</strong> {{ correctionStage.addedSugar }}</p>
           </div>
           <div class="col-12 md:col-6">
-            <p><strong>Brix final:</strong> {{ correctionStage.finalBrix }}</p>
-            <p><strong>Azúcar añadido (kg):</strong> {{ correctionStage.addedSugarKg }}</p>
-            <p><strong>pH inicial:</strong> {{ correctionStage.initialPH }}</p>
-            <p><strong>pH final:</strong> {{ correctionStage.finalPH }}</p>
+            <p><strong>Fecha Fin:</strong> {{ correctionStage.endDate }}</p>
+            <p><strong>Nivel de Azúcar Final:</strong> {{ correctionStage.finalSugarLevel }}</p>
+            <p><strong>Nivel de pH final:</strong> {{ correctionStage.finalPH }}</p>
           </div>
           <div class="col-12 md:col-6">
             <p><strong>Tipo de ácido:</strong> {{ correctionStage.acidType }}</p>
-            <p><strong>Ácido añadido (g/L):</strong> {{ correctionStage.acidAddedGL }}</p>
-            <p><strong>Sulfitos añadidos (mg/L):</strong> {{ correctionStage.SO2AddedMgL }}</p>
+            <p><strong>Sulfitos añadidos (mg/L):</strong> {{ correctionStage.addedSulphites }}</p>
+            <p><strong>Justificación:</strong> {{ correctionStage.justification }}</p>
+
           </div>
           <div class="col-12 md:col-6">
-            <p v-for="(nutrient, index) in correctionStage.nutrientsAdded" :key="index">
-              <strong>Nutriente añadido:</strong> {{ nutrient.name }} ({{ nutrient.quantity }} mg/L)
+            <p><strong>Ácido añadido (g/L):</strong> {{ correctionStage.addedAcid }}</p>
+            <p>
+              <strong>Nutrientes añadidos:</strong>
+              {{ correctionStage.nutrients?.length ? correctionStage.nutrients.join(', ') : 'Ninguno' }}
             </p>
-            <p><strong>Justificación:</strong> {{ correctionStage.justification }}</p>
-            <p><strong>Comentarios:</strong> {{ correctionStage.comments }}</p>
+            <p><strong>Comentarios:</strong> {{ correctionStage.comment }}</p>
           </div>
         </div>
 
-        <!-- Estado de finalización -->
+        <!-- Visualización de estado -->
         <div class="flex align-items-center gap-2 mt-4">
-          <i class="pi text-xl" :class="correctionStage.isCompleted ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"></i>
-          <span class="text-lg font-medium">{{ correctionStage.isCompleted ? 'Etapa completada' : 'Etapa no completada' }} </span>
+          <i
+              class="pi text-xl"
+              :class="correctionStage.completionStatus === 'COMPLETED' ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"
+          ></i>
+          <span class="text-lg font-medium">
+            {{ correctionStage.completionStatus === 'COMPLETED' ? 'Etapa completada' : 'Etapa no completada' }}
+          </span>
         </div>
-
 
       </template>
     </pv-card>
@@ -299,7 +350,7 @@ export default {
     <!-- Diálogo para crear o editar etapa -->
     <correction-stage-create-and-edit
         :edit="isEdit"
-        :item-entity="itemObject"
+        :item="correctionStage"
         :visible="createAndEditDialogIsVisible"
         @cancel-requested="onCancelRequested"
         @save-requested="onSaveRequested($event)"

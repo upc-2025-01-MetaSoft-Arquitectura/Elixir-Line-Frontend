@@ -6,41 +6,60 @@ import {Stages} from "../model/stages.entity.js";
 import {StagesApiService} from "../services/stages-api.service.js";
 import {FermentationStage} from "../model/fermentationStage.entity.js";
 import FermentationStageCreateAndEdit from "../components/fermentation-stage-create-and-edit.component.vue";
+import {CorrectionStage} from "../model/correctionStage.entity.js";
+import {CreateCorrectionStage} from "../model/create-correction-stage.entity.js";
+import {CreateFermentationStage} from "../model/create-fermentation-stage.entity.js";
+import {CorrectionStageApiService} from "../services/correction-stage-api.service.js";
+import {ReceptionStageApiService} from "../services/reception-stage-api.service.js";
+import {FermentationStageApiService} from "../services/fermentation-stage-api.service.js";
 
 export default {
   name: 'fermentation-stage-management',
 
   components: {FermentationStageCreateAndEdit, CorrectionStageCreateAndEdit, ReceptionStageCreateAndEdit},
 
-  props:{
-    item: null,
-    canAddStage: false
+  props: {
+    item: {
+      type: Object,
+      default: () => ({})
+    },
   },
+
 
   data() {
     return {
       title: { singular: 'Etapa de Fermentación', plural: 'Etapa de Fermentación' },
-      itemObject: new Stages({}),
+
+      batchId: null, // Assuming you want to track the batch ID
+
       fermentationStage: new FermentationStage({}),
+      correctionStage: new CorrectionStage({}),
+
+      createFermentationStage: new CreateFermentationStage({}),
+
+      correctionStageApiService: null,
       fermentationStageApiService: null,
+
       createAndEditDialogIsVisible: false,
+
       isEdit: false,
+
       submitted: false,
+
       stageExist: false, // Assuming you want to check if a stage exists
     }
   },
 
   computed: {
     canAddStage() {
-      return this.item &&
-          this.item.correctionStage &&
-          this.item.correctionStage.isCompleted === true
+      return this.correctionStage && this.correctionStage.completionStatus === 'COMPLETED';
     }
   },
 
+
   methods: {
 
-    //#region Utility Methods
+    //#region utility methods
     notifySuccessfulAction(message) {
       this.$toast.add({severity: 'success', summary: 'Success', detail: message, life: 3000});
     },
@@ -48,8 +67,8 @@ export default {
 
     //#region Event Handlers
     onNewItem() {
-      this.itemObject = new Stages({});
-      console.log('======================= NEW ITEM MANAGEMENT', this.itemObject);
+      this.fermentationStage = this.item;
+      console.log('======================= NEW ITEM MANAGEMENT', this.fermentationStage);
       this.isEdit = false;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
@@ -57,15 +76,10 @@ export default {
 
     onEditItem(item) {
       console.log('======================= EDIT ITEM MANAGEMENT', item);
-      this.itemObject = new Stages(item);
+      this.fermentationStage = new FermentationStage(item);
       this.isEdit = true;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
-    },
-
-    onDeleteItem(item) {
-      this.itemObject = new Stages(item);
-      this.deleteBatch();
     },
 
     onCancelRequested() {
@@ -93,28 +107,76 @@ export default {
 
     //#region CRUD Operations
     create() {
-      this.fermentationStageApiService.create(this.itemObject).then(response => {
 
-        this.fermentationStage = new FermentationStage(response.data.fermentationStage);
-        this.itemObject = new Stages(response.data);
+      this.fermentationStageApiService.create(this.batchId, this.fermentationStage).then(response => {
+
+        this.fermentationStage = new FermentationStage(response.data);
 
         this.notifySuccessfulAction('Stage created successfully');
       }).catch(error => {
         console.error("Error creating a Stage",error);
+        console.error('🔴 Message:', error.message);
+        console.error('🔴 Status:', error.response?.status);
+        console.error('🔴 Details:', error.response?.data);
       });
     },
 
     update() {
-      this.fermentationStageApiService.update(this.itemObject.id, this.itemObject).then(response => {
 
-        this.fermentationStage = new FermentationStage(response.data.fermentationStage);
-        this.itemObject= new Stages(response.data);
+      this.fermentationStageApiService.patch(this.batchId, this.fermentationStage).then(response => {
+
+        this.fermentationStage = new FermentationStage(response.data);
 
         this.notifySuccessfulAction('Stage updated successfully');
       }).catch(error => {
         console.error("Error updating a Stage",error);
+        console.error('🔴 Message:', error.message);
+        console.error('🔴 Status:', error.response?.status);
+        console.error('🔴 Details:', error.response?.data);
       });
     },
+
+    getFermentationStage() {
+      this.fermentationStageApiService.getFermentationStageByBatchId(this.batchId)
+          .then(response => {
+
+            this.fermentationStage = new FermentationStage(response.data);
+
+            console.log("=== ETAPA DE FERMENTACIÓN RECUPERADO: ===",response.data);
+
+          })
+          .catch(error => {
+            console.error('❌ Error al obtener la etapa de fermentación:', error);
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo obtener la etapa de fermentación.',
+              life: 3000
+            });
+          });
+    },
+
+
+    getCorrectionStage() {
+      this.correctionStageApiService.getCorrectionStageByBatchId(this.batchId)
+          .then(response => {
+
+            this.correctionStage = new CorrectionStage(response.data);
+
+            console.log("=== ETAPA DE CORRECTION RECUPERADO: ===",response.data);
+
+          })
+          .catch(error => {
+            console.error('❌ Error al obtener la etapa de corrección:', error);
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo obtener la etapa de corrección.',
+              life: 3000
+            });
+          });
+    },
+
 
     //#endregion
 
@@ -146,17 +208,16 @@ export default {
 
 
     completarEtapa() {
-      this.itemObject.fermentationStage.isCompleted = true
+      this.fermentationStage.completionStatus = 'COMPLETED'
 
-      this.fermentationStageApiService.update(this.itemObject.id, this.itemObject)
+      this.fermentationStageApiService.patch(this.fermentationStage.batchId, this.fermentationStage)
           .then(response => {
-            this.fermentationStage = new FermentationStage(response.data.fermentationStage)
-            this.itemObject = new Stages(response.data)
+            this.fermentationStage = new FermentationStage(response.data)
             this.notifySuccessfulAction('Etapa completada correctamente')
+            console.log("== ETAPA DE RECEPCIÓN COMPLETADA ==", this.fermentationStage)
           })
           .catch(error => {
-            this.fermentationStage.isCompleted = false
-            this.itemObject.fermentationStage.isCompleted = false
+            this.fermentationStage.completionStatus = 'NOT_COMPLETED'
 
             console.error('❌ Error al completar la etapa:', error)
             this.$toast.add({
@@ -166,11 +227,7 @@ export default {
               life: 3000
             })
           })
-    }
-
-
-
-
+    },
 
 
 
@@ -180,24 +237,16 @@ export default {
 
   //#region Lifecycle Hooks
   created() {
-    this.fermentationStageApiService = new StagesApiService ('/stages');
+    this.batchId = this.item.id;
 
+    this.correctionStageApiService = new CorrectionStageApiService('/batches');
+    this.fermentationStageApiService = new FermentationStageApiService('/batches');
 
-    if (!this.item || !this.item.fermentationStage) {
+    this.getFermentationStage();
+    this.getCorrectionStage();
 
-      this.stageExist = false;
+    console.log("= ESTAMOS EN FERMENTATION-STAGE-MANAGEMENT ==> BatchId: ", this.batchId);
 
-    } else {
-
-      this.itemObject = this.item;
-      this.stageExist = true;
-      this.fermentationStage = this.item.fermentationStage;
-
-    }
-
-    console.log('RECEPTION STAGE ===================== ', this.fermentationStage);
-
-    console.log("🔍 Reception Stage Management created with item:", this.item);
   },
   //#endregion  
   
@@ -207,8 +256,7 @@ export default {
 
 <template>
 
-  <div
-      class="fermentation-container flex flex-column flex-1 w-full h-full gap-3 p-3 surface-ground overflow-auto">
+  <div class="fermentation-container flex flex-column flex-1 w-full h-full gap-3 p-3 surface-ground overflow-auto">
 
     <!-- Encabezado y botones de acción -->
     <div
@@ -225,17 +273,17 @@ export default {
         <pv-button
             label="Nueva Etapa"
             icon="pi pi-plus"
-            @click="onNewItem()"
+            @click="onNewItem"
             class="p-button-success"
-            v-if="!stageExist && canAddStage"
+            v-if="!fermentationStage.id"
         />
 
         <pv-button
             label="Editar"
             icon="pi pi-pencil"
-            @click="onEditItem(itemObject)"
+            @click="onEditItem(fermentationStage)"
             class="p-button-warning"
-            v-if="stageExist  && canAddStage /*&& !fermentationStage.isCompleted*/"
+            v-if="fermentationStage.id  && fermentationStage.completionStatus !== 'COMPLETED'"
         />
 
         <pv-button
@@ -243,78 +291,92 @@ export default {
             icon="pi pi-check"
             class="p-button-success"
             @click="confirmarCompletarEtapa"
-            v-show="stageExist && !fermentationStage.isCompleted"
+            v-if="fermentationStage.id  && fermentationStage.completionStatus !== 'COMPLETED'"
         />
       </div>
+
+      <!-- Mensaje de aviso si no se puede agregar una nueva etapa -->
+      <div v-if="!canAddStage" class="p-3 bg-yellow-100 text-yellow-800 border-round">
+        <i class="pi pi-exclamation-triangle"></i>
+        <span> No se puede agregar una nueva etapa de FERMENTACIÓN hasta que se complete la etapa de CORRECCIÓN. </span>
+      </div>
+
+      <!-- Mensaje de aviso si no hay una etapa de corrección -->
+      <div v-if="canAddStage && !fermentationStage.id "
+           class="p-3 bg-red-100 text-red-800 border-round">
+        <i class="pi pi-exclamation-triangle"></i>
+        <span> No hay una etapa de FERMENTACIÓN registrada para este lote. </span>
+      </div>
+
+
+      <!-- Detalles de la etapa de fermentación -->
+
+      <pv-card v-if="fermentationStage && fermentationStage.id && canAddStage === true">
+
+        <template #header>
+          <h4 class="m-0">Detalles de la etapa de fermentación</h4>
+        </template>
+
+        <template #content>
+
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-user text-lg"></i>
+            <p><strong>Registrado por:</strong> {{ fermentationStage.employee }}</p>
+          </div>
+
+          <div class="grid p-2">
+            <div class="col-12 md:col-6">
+              <p><strong>Fecha de inicio: </strong> {{ fermentationStage.startDate }}</p>
+              <p><strong>Nivel de pH inicial:</strong> {{ fermentationStage.initialPH }}</p>
+              <p><strong>Tipo de fermentación:</strong> {{ fermentationStage.fermentationType }}</p>
+              <p><strong>Nivel de Azúcar Inicial:</strong> {{ fermentationStage.initialSugarLevel }}</p>
+              <p><strong>Temperatura mínima:</strong> {{ fermentationStage.minTemperature }} °C</p>
+              <p><strong>Código de tanque: </strong> {{ fermentationStage.tankCode }} </p>
+
+            </div>
+
+            <div class="col-12 md:col-6">
+              <p><strong>Fecha fin: </strong> {{ fermentationStage.endDate }}</p>
+              <p><strong>Nivel de pH final:</strong> {{ fermentationStage.finalPH }}</p>
+              <p><strong>Levadura utilizada:</strong> {{ fermentationStage.yeastUsed }} g</p>
+              <p><strong>Nivel de Azúcar Final:</strong> {{ fermentationStage.finalSugarLevel }}</p>
+              <p><strong>Temperatura máxima:</strong> {{ fermentationStage.maxTemperature }} °C</p>
+            </div>
+
+          </div>
+
+          <!-- Comentario -->
+          <div class="mt-4">
+            <p><strong>Comentario:</strong></p>
+            <p class="text-gray-700">{{ fermentationStage.comment || 'No hay comentarios.' }}</p>
+          </div>
+
+          <!-- Visualización de estado -->
+          <div class="flex align-items-center gap-2 mt-4">
+            <i
+                class="pi text-xl"
+                :class="fermentationStage.completionStatus === 'COMPLETED' ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"
+            ></i>
+            <span class="text-lg font-medium">
+            {{ fermentationStage.completionStatus === 'COMPLETED' ? 'Etapa completada' : 'Etapa no completada' }}
+            </span>
+          </div>
+
+        </template>
+      </pv-card>
+
+
+
+      <!-- Diálogo para crear o editar etapa -->
+      <fermentation-stage-create-and-edit
+          :edit="isEdit"
+          :item="fermentationStage"
+          :visible="createAndEditDialogIsVisible"
+          @cancel-requested="onCancelRequested"
+          @save-requested="onSaveRequested($event)"
+      />
+
     </div>
-
-    <!-- Mensaje de aviso si no se puede agregar una nueva etapa -->
-    <div v-if="!canAddStage" class="p-3 bg-yellow-100 text-yellow-800 border-round">
-      <i class="pi pi-exclamation-triangle"></i>
-      <span> No se puede agregar una nueva etapa de FERMENTACIÓN hasta que se complete la etapa de CORRECCIÓN. </span>
-    </div>
-
-
-    <!-- Detalles de la etapa de fermentación -->
-
-    <pv-card v-if="fermentationStage.stage && canAddStage">
-      <template #header>
-        <h4 class="m-0">Detalles de la etapa de fermentación</h4>
-      </template>
-
-      <!-- contenido de la tarjeta -->
-      <template #content>
-
-        <div class="flex align-items-center gap-2">
-          <i class="pi pi-user text-lg"></i>
-          <p><strong>Registrado por:</strong> {{ fermentationStage.registeredBy }}</p>
-        </div>
-
-        <div class="grid p-2">
-          <div class="col-12 md:col-6">
-            <p><strong>Fecha de inicio:</strong> {{ fermentationStage.startDate }}</p>
-            <p><strong>Fecha de finalización:</strong> {{ fermentationStage.endDate }}</p>
-            <p><strong>Levadura utilizada (mg/L):</strong> {{ fermentationStage.yeastUsedMgL }}</p>
-          </div>
-          <div class="col-12 md:col-6">
-            <p><strong>pH:</strong> {{ fermentationStage.pH }}</p>
-            <p><strong>Brix inicial:</strong> {{ fermentationStage.initialBrix }}</p>
-            <p><strong>Brix final:</strong> {{ fermentationStage.finalBrix }}</p>
-          </div>
-          <div class="col-12 md:col-6">
-            <p><strong>Temperatura máxima (°C):</strong> {{ fermentationStage.temperatureMax }}</p>
-            <p><strong>Temperatura mínima (°C):</strong> {{ fermentationStage.temperatureMin }}</p>
-            <p><strong>Tipo de fermentación:</strong> {{ fermentationStage.fermentationType }}</p>
-          </div>
-          <div class="col-12 md:col-6">
-            <p><strong>Código del tanque:</strong> {{ fermentationStage.tankCode }}</p>
-            <p><strong>Comentarios:</strong> {{ fermentationStage.comments }}</p>
-          </div>
-        </div>
-
-        <!-- Estado de finalización -->
-        <div class="flex align-items-center gap-2 mt-4">
-          <i class="pi text-xl" :class="fermentationStage.isCompleted ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"></i>
-          <span class="text-lg font-medium">{{ fermentationStage.isCompleted ? 'Etapa completada' : 'Etapa no completada' }} </span>
-        </div>
-
-
-      </template>
-    </pv-card>
-
-
-
-    <!-- Diálogo para crear o editar etapa -->
-    <fermentation-stage-create-and-edit
-        :edit="isEdit"
-        :item-entity="itemObject"
-        :visible="createAndEditDialogIsVisible"
-        @cancel-requested="onCancelRequested"
-        @save-requested="onSaveRequested($event)"
-    />
-
-
-
   </div>
 
 

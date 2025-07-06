@@ -9,14 +9,14 @@ export default {
   components: {CreateAndEdit},
 
   props: {
-    itemEntity: null,
+    item: null,
     edit : Boolean,
     visible: Boolean,
   },
 
   data() {
     return {
-      agingStage: new AgingStage({}),     submitted: false
+      submitted: false
     }
   },
 
@@ -27,28 +27,14 @@ export default {
       this.$emit('cancel-requested');
     },
 
-    onSaveRequested(newItem) {
+    onSaveRequested() {
       this.submitted = true;
 
-      newItem.stage = "Añejamiento"; // Assuming the stage is always "Envejecimiento" for this component
+      console.log('batches-create-and-edit onSaveRequested',this.item);
 
-      this.itemEntity.agingStage = newItem;
-
-      console.log('batches-create-and-edit onSaveRequested',this.agingStage);
-
-      this.$emit('save-requested', this.itemEntity);
+      this.$emit('save-requested', this.item);
     }
   },
-
-
-  created() {
-
-    this.agingStage = this.itemEntity?.agingStage ||  new AgingStage({})
-
-    console.log('===============', this.agingStage);
-
-    console.log('Pressing Stage Create and Edit component created');
-  }
 
 
 
@@ -59,10 +45,10 @@ export default {
 <template>
 
   <create-and-edit
-      :entity="agingStage"
+      :entity="item"
       :edit="edit"
       :visible="visible"
-      :entity-name="agingStage.stage || 'Añejamiento'"
+      :entity-name="item.stage || 'Añejamiento'"
       @canceled-shared="onCancelRequested"
       @saved-shared="onSaveRequested($event)"
   >
@@ -78,8 +64,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="registeredBy"
-              v-model="agingStage.registeredBy"
-              :class="{ 'p-invalid': submitted && !agingStage.registeredBy }"
+              v-model="item.registeredBy"
+              :class="{ 'p-invalid': submitted && !item.registeredBy }"
           />
         </pv-float-label>
 
@@ -88,10 +74,10 @@ export default {
           <pv-calendar
               class="w-full"
               id="startDate"
-              v-model="agingStage.startDate"
+              v-model="item.startDate"
               date-format="yy-mm-dd"
               show-icon
-              :class="{ 'p-invalid': submitted && !agingStage.startDate }"
+              :class="{ 'p-invalid': submitted && !item.startDate }"
           />
         </pv-float-label>
 
@@ -100,10 +86,10 @@ export default {
           <pv-calendar
               class="w-full"
               id="endDate"
-              v-model="agingStage.endDate"
+              v-model="item.endDate"
               date-format="yy-mm-dd"
               show-icon
-              :class="{ 'p-invalid': submitted && !agingStage.endDate }"
+              :class="{ 'p-invalid': submitted && !item.endDate }"
           />
         </pv-float-label>
 
@@ -112,8 +98,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="containerType"
-              v-model="agingStage.containerType"
-              :class="{ 'p-invalid': submitted && !agingStage.containerType }"
+              v-model="item.containerType"
+              :class="{ 'p-invalid': submitted && !item.containerType }"
           />
         </pv-float-label>
 
@@ -122,8 +108,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="material"
-              v-model="agingStage.material"
-              :class="{ 'p-invalid': submitted && !agingStage.material }"
+              v-model="item.material"
+              :class="{ 'p-invalid': submitted && !item.material }"
           />
         </pv-float-label>
 
@@ -132,8 +118,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="containerCode"
-              v-model="agingStage.containerCode"
-              :class="{ 'p-invalid': submitted && !agingStage.containerCode }"
+              v-model="item.containerCode"
+              :class="{ 'p-invalid': submitted && !item.containerCode }"
           />
         </pv-float-label>
 
@@ -142,8 +128,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="avgTemperature"
-              v-model.number="agingStage.avgTemperature"
-              :class="{ 'p-invalid': submitted && !agingStage.avgTemperature }"
+              v-model.number="item.avgTemperature"
+              :class="{ 'p-invalid': submitted && !item.avgTemperature }"
           />
         </pv-float-label>
 
@@ -152,8 +138,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="volumeLiters"
-              v-model.number="agingStage.volumeLiters"
-              :class="{ 'p-invalid': submitted && !agingStage.volumeLiters }"
+              v-model.number="item.volumeLiters"
+              :class="{ 'p-invalid': submitted && !item.volumeLiters }"
           />
         </pv-float-label>
 
@@ -162,8 +148,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="durationMonths"
-              v-model.number="agingStage.durationMonths"
-              :class="{ 'p-invalid': submitted && !agingStage.durationMonths }"
+              v-model.number="item.durationMonths"
+              :class="{ 'p-invalid': submitted && !item.durationMonths }"
           />
         </pv-float-label>
 
@@ -173,9 +159,9 @@ export default {
           <pv-input-text
               class="w-full"
               id="frequencyDays"
-              v-model.number="agingStage.frequencyDays"
-              @input="(e) => agingStage.frequencyDays = e.target.value === '' ? 0 : Number(e.target.value)"
-              :class="{ 'p-invalid': submitted && (agingStage.frequencyDays === null || agingStage.frequencyDays === undefined || agingStage.frequencyDays === '') }"
+              v-model.number="item.frequencyDays"
+              @input="(e) => item.frequencyDays = e.target.value === '' ? 0 : Number(e.target.value)"
+              :class="{ 'p-invalid': submitted && (item.frequencyDays === null || item.frequencyDays === undefined || item.frequencyDays === '') }"
           />
         </pv-float-label>
 
@@ -185,9 +171,9 @@ export default {
           <pv-input-text
               class="w-full"
               id="batonnage"
-              v-model.number="agingStage.batonnage"
-              @input="(e) => agingStage.batonnage = e.target.value === '' ? 0 : Number(e.target.value)"
-              :class="{ 'p-invalid': submitted && (agingStage.batonnage === null || agingStage.batonnage === undefined || agingStage.batonnage === '') }"
+              v-model.number="item.batonnage"
+              @input="(e) => item.batonnage = e.target.value === '' ? 0 : Number(e.target.value)"
+              :class="{ 'p-invalid': submitted && (item.batonnage === null || item.batonnage === undefined || item.batonnage === '') }"
           />
         </pv-float-label>
 
@@ -197,9 +183,9 @@ export default {
           <pv-input-text
               class="w-full"
               id="refilled"
-              v-model.number="agingStage.refilled"
-              @input="(e) => agingStage.refilled = e.target.value === '' ? 0 : Number(e.target.value)"
-              :class="{ 'p-invalid': submitted && (agingStage.refilled === null || agingStage.refilled === undefined || agingStage.refilled === '') }"
+              v-model.number="item.refilled"
+              @input="(e) => item.refilled = e.target.value === '' ? 0 : Number(e.target.value)"
+              :class="{ 'p-invalid': submitted && (item.refilled === null || item.refilled === undefined || item.refilled === '') }"
           />
         </pv-float-label>
 
@@ -209,9 +195,9 @@ export default {
           <pv-input-text
               class="w-full"
               id="rackings"
-              v-model.number="agingStage.rackings"
-              @input="(e) => agingStage.rackings = e.target.value === '' ? 0 : Number(e.target.value)"
-              :class="{ 'p-invalid': submitted && (agingStage.rackings === null || agingStage.rackings === undefined || agingStage.rackings === '') }"
+              v-model.number="item.rackings"
+              @input="(e) => item.rackings = e.target.value === '' ? 0 : Number(e.target.value)"
+              :class="{ 'p-invalid': submitted && (item.rackings === null || item.rackings === undefined || item.rackings === '') }"
           />
         </pv-float-label>
 
@@ -220,8 +206,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="purpose"
-              v-model="agingStage.purpose"
-              :class="{ 'p-invalid': submitted && !agingStage.purpose }"
+              v-model="item.purpose"
+              :class="{ 'p-invalid': submitted && !item.purpose }"
           />
         </pv-float-label>
 
@@ -230,15 +216,15 @@ export default {
           <pv-input-textarea
               class="w-full"
               id="comments"
-              v-model="agingStage.comments"
-              :class="{ 'p-invalid': submitted && !agingStage.comments }"
+              v-model="item.comments"
+              :class="{ 'p-invalid': submitted && !item.comments }"
           />
         </pv-float-label>
 
         <div class="field-checkbox mt-4 w-full">
           <pv-checkbox
               input-id="isCompleted"
-              v-model="agingStage.isCompleted"
+              v-model="item.isCompleted"
               :binary="true"
           />
           <label for="isCompleted">Completado</label>

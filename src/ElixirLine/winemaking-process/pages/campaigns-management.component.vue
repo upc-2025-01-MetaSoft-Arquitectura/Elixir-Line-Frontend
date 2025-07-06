@@ -7,6 +7,7 @@ import DataManager from "../../../shared/components/data-manager.component.vue";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
 import TabsViewDetails from "../../wine-batch-detail/views/tabs-view-details.component.vue";
 import CampaignViewDetails from "../components/campaign-view-details.component.vue";
+import {CreateCampaign} from "../model/create-campaign.entity.js";
 
 export default {
   name: "campaigns-management",
@@ -30,6 +31,7 @@ export default {
       isEdit: false,
       submitted: false,
 
+      createItem : new CreateCampaign({}), // Para crear una nueva campaña
 
 
       // Para ver detalles de una campaña
@@ -73,7 +75,7 @@ export default {
 
     onDeleteItem(item) {
       this.itemObject = new Campaign(item);
-      this.deleteBatch();
+      this.delete();
     },
 
     onDeleteSelectedItems(selectedItems) {
@@ -111,7 +113,16 @@ export default {
 
     //#region CRUD Operations
     create() {
-      this.batchAndCampaignApiService.create(this.itemObject).then(response => {
+
+      this.createItem.name = this.itemObject.name;
+      this.createItem.year = this.itemObject.year;
+      this.createItem.winegrowerId = this.itemObject.winegrowerId;
+      this.createItem.batches = this.itemObject.batches;
+      this.createItem.status = this.itemObject.status;
+      this.createItem.startDate = this.itemObject.startDate;
+      this.createItem.endDate = this.itemObject.endDate;
+
+      this.batchAndCampaignApiService.create(this.createItem).then(response => {
         let newItem = new Campaign(response.data);
         this.arrayItems.push(newItem);
         this.notifySuccessfulAction('Campaign created successfully');
@@ -203,8 +214,7 @@ export default {
     </template>
 
 
-    <div v-if="arrayItems && arrayItems.length > 0"
-         class="data-table-container p-2 h-full flex-1 overflow-hidden flex flex-column">
+    <div class="data-table-container p-2 h-full flex-1 overflow-hidden flex flex-column">
 
       <data-manager :title="title"
                     v-bind:items="arrayItems"
@@ -215,6 +225,19 @@ export default {
                     v-on:delete-item-requested-manager="onDeleteItem($event)"
                     v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)" >
 
+        <!--
+          {
+          "id": 1,
+          "name": "Campaña Vendimia Sur 2025",
+          "year": "2025",
+          "winegrowerId": 2,
+          "batches": 0,
+          "status": "NO_INICIADO",
+          "startDate": "2025-02-15",
+          "endDate": null
+          }
+         -->
+
       <template #custom-columns-manager >
           <pv-column
               :sortable="true"
@@ -224,8 +247,20 @@ export default {
 
           <pv-column
               :sortable="true"
-              field="createdBy"
-              header="Created By"
+              field="year"
+              header="Year"
+          />
+
+          <pv-column
+              :sortable="true"
+              field="batches"
+              header="Batches Quantity "
+          />
+
+          <pv-column
+              :sortable="true"
+              field="status"
+              header="Status"
           />
 
           <pv-column
@@ -236,20 +271,8 @@ export default {
 
           <pv-column
               :sortable="true"
-              field="endDate"
+              field= "endDate"
               header="End Date"
-          />
-
-          <pv-column
-              :sortable="true"
-              field="batchesQuantity"
-              header="Batches Quantity"
-          />
-
-          <pv-column
-              :sortable="true"
-              field="status"
-              header="Status"
           />
 
         </template>

@@ -15,7 +15,12 @@ export default {
 
   data() {
     return {
-      submitted: false
+      submitted: false,
+      campaignStatusOptions: [
+        { label: 'No Iniciado', value: 'NO_INICIADO' },
+        { label: 'En Proceso', value: 'EN_PROCESO' },
+        { label: 'Finalizado', value: 'FINALIZADO' }
+      ]
     }
   },
 
@@ -47,36 +52,60 @@ export default {
     <!--CreateAndEdit-->
     <template #content>
 
+      <!--
+      {
+      "id": 1,
+      "name": "Campaña Vendimia Sur 2025",
+      "year": "2025",
+      "winegrowerId": 2,
+      "batches": 0,
+      "status": "NO_INICIADO",
+      "startDate": "2025-02-15",
+      "endDate": null
+      }
+      -->
+
         <div class="field">
 
-          <pv-float-label class="field mt-4">
-            <label for="name"> Name </label>
-            <pv-input-text id="name" v-model="itemEntity.name" :class="{ 'p-invalid': submitted && !itemEntity.name}"/>
+          <pv-float-label class="field mt-5">
+            <label for="name"> Name Campaign </label>
+            <pv-input-text class="flex w-full" id="name" v-model="itemEntity.name" :class="{ 'p-invalid': submitted && !itemEntity.name}"/>
           </pv-float-label>
 
           <pv-float-label class="field mt-4">
-            <label for="createdBy"> Created By </label>
-            <pv-input-text id="createdBy" v-model="itemEntity.createdBy" :class="{ 'p-invalid': submitted && !itemEntity.createdBy}"/>
+            <label for="year"> Year </label>
+            <pv-input-text class="flex w-full" id="year" v-model="itemEntity.year" :class="{ 'p-invalid': submitted && !itemEntity.year}"/>
           </pv-float-label>
+
+          <pv-float-label class="field mt-4">
+            <label for="batches">  Batches Quantity </label>
+            <pv-input-text class="flex w-full" id="batches" v-model="itemEntity.batches" :class="{ 'p-invalid': submitted &&
+            !itemEntity.batches}"/>
+          </pv-float-label>
+
+          <pv-float-label class="field mt-4">
+            <pv-dropdown
+                class="flex w-full"
+                id="status"
+                v-model="itemEntity.status"
+                :options="campaignStatusOptions"
+                option-label="label"
+                option-value="value"
+                :class="{ 'p-invalid': submitted && !itemEntity.status }"
+            />
+            <label for="status">Status</label>
+          </pv-float-label>
+
 
           <pv-float-label class="field mt-4">
             <label for="startDate"> Start Date </label>
-            <pv-input-text id="startDate" v-model="itemEntity.startDate" :class="{ 'p-invalid': submitted && !itemEntity.startDate}"/>
-          </pv-float-label >
-
-          <pv-float-label class="field mt-4">
-            <label for="endDate"> End Date </label>
-            <pv-input-text id="endDate" v-model="itemEntity.endDate" :class="{ 'p-invalid': submitted && !itemEntity.endDate}"/>
+            <pv-calendar class="flex w-full" id="startDate" v-model="itemEntity.startDate" :class="{ 'p-invalid': submitted &&
+            !itemEntity.startDate}"/>
           </pv-float-label>
 
           <pv-float-label class="field mt-4">
-            <label for="batchesQuantity"> Batches Quantity </label>
-            <pv-input-text id="batchesQuantity" v-model="itemEntity.batchesQuantity" :class="{ 'p-invalid': submitted && !itemEntity.batchesQuantity}"/>
-          </pv-float-label>
-
-          <pv-float-label class="field mt-4">
-            <label for="status"> Status </label>
-            <pv-input-text id="status" v-model="itemEntity.status" :class="{ 'p-invalid': submitted && !itemEntity.status}"/>
+            <label for="endDate" > End Date </label>
+            <pv-calendar class="flex w-full" id="endDate" v-model="itemEntity.endDate"/>
           </pv-float-label>
 
         </div>

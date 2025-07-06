@@ -1,12 +1,8 @@
 
 
-
-export class ReceptionStage {
-
+export class CreateReceptionStage {
     constructor(
         {
-            id = '',
-            batchId = '',
             employee = '',
             startDate = '',
             endDate = '',
@@ -14,15 +10,9 @@ export class ReceptionStage {
             pHLevel = 0,
             temperature = 0,
             quantityKg = 0,
-            comment = '',
-            completionStatus = '',
-            currentStage = '',
-            completedAt = false,
-            dataHash = null
+            comment = ''
         }
     ) {
-        this.id = id;
-        this.batchId = batchId;
         this.employee = employee;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -31,10 +21,5 @@ export class ReceptionStage {
         this.temperature = temperature;
         this.quantityKg = quantityKg;
         this.comment = comment;
-        this.completionStatus = completionStatus;
-        this.currentStage = currentStage;
-        this.completedAt = completedAt;
-        this.dataHash = dataHash;
     }
-
 }

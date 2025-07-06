@@ -36,7 +36,16 @@ export default {
       dialogStyle = this.size === 'large' ? { width: '900px' } : dialogStyle;
       return dialogStyle;
     }
+  },
+
+  created() {
+    console.log('== ESTAMOS EN CREATE AND EDIT BASE ==', this.entity);
   }
+
+
+
+
+
 }
 </script>
 

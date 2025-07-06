@@ -9,14 +9,13 @@ export default {
   components: {CreateAndEdit, BasePageLayout},
 
   props: {
-    itemEntity: null,
+    item: null,
     edit : Boolean,
     visible: Boolean,
   },
 
   data() {
     return {
-      correctionStage: new CorrectionStage({}),
       submitted: false
     }
   },
@@ -28,28 +27,15 @@ export default {
       this.$emit('cancel-requested');
     },
 
-    onSaveRequested(newItem) {
+    onSaveRequested() {
       this.submitted = true;
 
-      newItem.stage = "Corrección"; // Assuming the stage is always "Corrección" for this component
+      console.log('batches-create-and-edit onSaveRequested',this.item);
 
-      this.itemEntity.correctionStage = newItem;
-
-      console.log('AL GUARDAR ===============================',this.itemEntity);
-
-      this.$emit('save-requested', this.itemEntity);
+      this.$emit('save-requested', this.item);
     }
   },
 
-
-  created() {
-
-    this.correctionStage = this.itemEntity?.correctionStage || new CorrectionStage({})
-
-    console.log('===============', this.correctionStage);
-
-    console.log('Reception Stage Detail component created');
-  }
 
 }
 
@@ -58,170 +44,202 @@ export default {
 <template>
 
   <create-and-edit
-      :entity="correctionStage"
+      :entity="item"
       :edit="edit"
       :visible="visible"
-      :entity-name="correctionStage.stage || 'Corrección'"
+      :entity-name=" 'Corrección'"
       @canceled-shared="onCancelRequested"
       @saved-shared="onSaveRequested($event)"
   >
 
-    <!-- Content slot for additional fields or information -->
+    <!-- Content slot for additional fields or information
+    {
+      "employee": "string",
+      "startDate": "2025-07-06",
+      "endDate": "2025-07-06",
+      "initialSugarLevel": 0.1,
+      "finalSugarLevel": 0.1,
+      "addedSugar": 0.1,
+      "initialPH": 0.1,
+      "finalPH": 0.1,
+      "acidType": "string",
+      "addedAcid": 0.1,
+      "addedSulphites": 0.1,
+      "nutrients": [
+        "string"
+      ],
+      "justification": "string",
+      "comment": "string",
+      "completionStatus": "COMPLETED"
+    }
+    -->
 
     <template #content>
+
+
       <div class="field">
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="startDate">Fecha de inicio</label>
+        <pv-float-label class="field mt-5">
+          <label for="employee">Registrado por</label>
+          <pv-input-text
+              class="w-full"
+              id="employee"
+              v-model="item.employee"
+              :class="{ 'p-invalid': submitted && !item.employee }"
+          />
+        </pv-float-label>
+
+        <pv-float-label class="field mt-5">
+          <label for="startDate">Fecha de Inicio</label>
           <pv-calendar
-            class="w-full"
-            id="startDate"
-            v-model="correctionStage.startDate"
-            date-format="yy-mm-dd"
-            show-icon
-            :class="{ 'p-invalid': submitted && !correctionStage.startDate }"
+              class="w-full"
+              id="startDate"
+              v-model="item.startDate"
+              type="date"
+              :class="{ 'p-invalid': submitted && !item.startDate }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="endDate">Fecha de fin</label>
+        <pv-float-label class="field mt-5">
+          <label for="endDate">Fecha de Fin</label>
           <pv-calendar
-            class="w-full"
-            id="endDate"
-            v-model="correctionStage.endDate"
-            date-format="yy-mm-dd"
-            show-icon
-            :class="{ 'p-invalid': submitted && !correctionStage.endDate }"
+              class="w-full"
+              id="endDate"
+              v-model="item.endDate"
+              type="date"
+              :class="{ 'p-invalid': submitted && !item.endDate }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="initialBrix">Brix inicial</label>
+        <pv-float-label class="field mt-5">
+          <label for="initialSugarLevel">Nivel de Azúcar Inicial (%)</label>
           <pv-input-text
-            class="w-full"
-            id="initialBrix"
-            v-model.number="correctionStage.initialBrix"
-            :class="{ 'p-invalid': submitted && !correctionStage.initialBrix }"
+              class="w-full"
+              id="initialSugarLevel"
+              v-model="item.initialSugarLevel"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.initialSugarLevel }"
           />
         </pv-float-label>
 
-        <!-- Brix final es decimal -->
-        <pv-float-label class="field mt-4 w-full">
-          <label for="finalBrix">Brix final</label>
+        <pv-float-label class="field mt-5">
+          <label for="finalSugarLevel">Nivel de Azúcar Final (%)</label>
           <pv-input-text
-            class="w-full"
-            id="finalBrix"
-            v-model.number="correctionStage.finalBrix"
-            :class="{ 'p-invalid': submitted && !correctionStage.finalBrix }"
+              class="w-full"
+              id="finalSugarLevel"
+              v-model="item.finalSugarLevel"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.finalSugarLevel }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="addedSugarKg">Azúcar añadido (kg)</label>
+        <pv-float-label class="field mt-5">
+          <label for="addedSugar">Azúcar Añadido (%)</label>
           <pv-input-text
-            class="w-full"
-            id="addedSugarKg"
-            v-model.number="correctionStage.addedSugarKg"
-            :class="{ 'p-invalid': submitted && !correctionStage.addedSugarKg }"
+              class="w-full"
+              id="addedSugar"
+              v-model="item.addedSugar"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.addedSugar }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="initialPH">pH inicial</label>
+        <pv-float-label class="field mt-5">
+          <label for="initialPH">Nivel de pH Inicial</label>
           <pv-input-text
-            class="w-full"
-            id="initialPH"
-            v-model.number="correctionStage.initialPH"
-            :class="{ 'p-invalid': submitted && !correctionStage.initialPH }"
+              class="w-full"
+              id="initialPH"
+              v-model="item.initialPH"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.initialPH }"
           />
-
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="finalPH">pH final</label>
+
+        <pv-float-label class="field mt-5">
+          <label for="finalPH">Nivel de pH Final</label>
           <pv-input-text
-            class="w-full"
-            id="finalPH"
-            v-model.number="correctionStage.finalPH"
-            :class="{ 'p-invalid': submitted && !correctionStage.finalPH }"
+              class="w-full"
+              id="finalPH"
+              v-model="item.finalPH"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.finalPH }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="acidType">Tipo de ácido</label>
+        <pv-float-label class="field mt-5">
+          <label for="acidType">Tipo de Ácido</label>
           <pv-input-text
-            class="w-full"
-            id="acidType"
-            v-model="correctionStage.acidType"
-            :class="{ 'p-invalid': submitted && !correctionStage.acidType }"
+              class="w-full"
+              id="acidType"
+              v-model="item.acidType"
+              :class="{ 'p-invalid': submitted && !item.acidType }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="acidAddedGL">Ácido añadido (g/L)</label>
+
+        <pv-float-label class="field mt-5">
+          <label for="addedAcid">Ácido Añadido (%)</label>
           <pv-input-text
-            class="w-full"
-            id="acidAddedGL"
-            v-model.number="correctionStage.acidAddedGL"
-            :class="{ 'p-invalid': submitted && !correctionStage.acidAddedGL }"
+              class="w-full"
+              id="addedAcid"
+              v-model="item.addedAcid"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.addedAcid }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="SO2AddedMgL">Sulfitos añadidos (mg/L)</label>
+
+        <pv-float-label class="field mt-5">
+          <label for="addedSulphites">Sulfatos Añadidos (%)</label>
           <pv-input-text
-            class="w-full"
-            id="SO2AddedMgL"
-            v-model.number="correctionStage.SO2AddedMgL"
-            :class="{ 'p-invalid': submitted && !correctionStage.SO2AddedMgL }"
+              class="w-full"
+              id="addedSulphites"
+              v-model="item.addedSulphites"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.addedSulphites }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="nutrientsAdded">Nutrientes añadidos</label>
-          <pv-textarea
-            class="w-full"
-            id="nutrientsAdded"
-            v-model="correctionStage.nutrientsAdded"
-            :class="{ 'p-invalid': submitted && !correctionStage.nutrientsAdded }"
-            rows="3"
-            placeholder="Ingrese los nutrientes añadidos, separados por comas."
+        <!-- Nutrients can be a string or an array, adjust accordingly -->
+        <pv-float-label class="field mt-5">
+          <label for="nutrients">Nutrientes</label>
+          <pv-chips
+              id="nutrients"
+              v-model="item.nutrients"
+              class="w-full"
+              separator=","
+              :class="{ 'p-invalid': submitted && (!item.nutrients || item.nutrients.length === 0) }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+
+        <pv-float-label class="field mt-5">
           <label for="justification">Justificación</label>
           <pv-textarea
-            class="w-full"
-            id="justification"
-            v-model="correctionStage.justification"
-            :class="{ 'p-invalid': submitted && !correctionStage.justification }"
-            rows="3"
+              class="w-full"
+              id="justification"
+              v-model="item.justification"
+              :class="{ 'p-invalid': submitted && !item.justification }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="comments">Comentarios</label>
+        <pv-float-label class="field mt-5">
+          <label for="comment">Comentario</label>
           <pv-textarea
-            class="w-full"
-            id="comments"
-            v-model="correctionStage.comments"
-            :class="{ 'p-invalid': submitted && !correctionStage.comments }"
-            rows="3"
+              class="w-full"
+              id="comment"
+              v-model="item.comment"
+              :class="{ 'p-invalid': submitted && !item.comment }"
           />
         </pv-float-label>
-
-
-        <div class="field-checkbox mt-4 w-full">
-          <pv-checkbox
-              input-id="isCompleted"
-              v-model="correctionStage.isCompleted"
-              :binary="true"
-          />
-          <label for="isCompleted">Completado</label>
-        </div>
-
-
 
       </div>
 

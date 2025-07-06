@@ -10,14 +10,14 @@ export default {
   components: {CreateAndEdit},
 
   props: {
-    itemEntity: null,
+    item: null,
     edit : Boolean,
     visible: Boolean,
   },
 
   data() {
     return {
-      bottlingStage: new BottlingStage({}),     submitted: false
+      submitted: false
     }
   },
 
@@ -28,28 +28,14 @@ export default {
       this.$emit('cancel-requested');
     },
 
-    onSaveRequested(newItem) {
+    onSaveRequested() {
       this.submitted = true;
 
-      newItem.stage = "Embotellado"; // Assuming the stage is always "Embotellado" for this component
+      console.log('batches-create-and-edit onSaveRequested',this.item);
 
-      this.itemEntity.bottlingStage = newItem;
-
-      console.log('batches-create-and-edit onSaveRequested',this.bottlingStage);
-
-      this.$emit('save-requested', this.itemEntity);
+      this.$emit('save-requested', this.item);
     }
   },
-
-
-  created() {
-
-    this.bottlingStage = this.itemEntity?.bottlingStage || new BottlingStage({})
-
-    console.log('===============', this.bottlingStage);
-
-    console.log('Pressing Stage Create and Edit component created');
-  }
 
 }
 
@@ -61,10 +47,10 @@ export default {
 
 
   <create-and-edit
-      :entity="bottlingStage"
+      :entity="item"
       :edit="edit"
       :visible="visible"
-      :entity-name="bottlingStage.stage || 'Embotellado'"
+      :entity-name="item.stage || 'Embotellado'"
       @canceled-shared="onCancelRequested"
       @saved-shared="onSaveRequested($event)"
   >
@@ -80,8 +66,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="registeredBy"
-              v-model="bottlingStage.registeredBy"
-              :class="{ 'p-invalid': submitted && !bottlingStage.registeredBy }"
+              v-model="item.registeredBy"
+              :class="{ 'p-invalid': submitted && !item.registeredBy }"
           />
         </pv-float-label>
 
@@ -90,10 +76,10 @@ export default {
           <pv-calendar
               class="w-full"
               id="startDate"
-              v-model="bottlingStage.startDate"
+              v-model="item.startDate"
               date-format="yy-mm-dd"
               show-icon
-              :class="{ 'p-invalid': submitted && !bottlingStage.startDate }"
+              :class="{ 'p-invalid': submitted && !item.startDate }"
           />
         </pv-float-label>
 
@@ -102,10 +88,10 @@ export default {
           <pv-calendar
               class="w-full"
               id="endDate"
-              v-model="bottlingStage.endDate"
+              v-model="item.endDate"
               date-format="yy-mm-dd"
               show-icon
-              :class="{ 'p-invalid': submitted && !bottlingStage.endDate }"
+              :class="{ 'p-invalid': submitted && !item.endDate }"
           />
         </pv-float-label>
 
@@ -114,8 +100,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="bottlingLine"
-              v-model="bottlingStage.bottlingLine"
-              :class="{ 'p-invalid': submitted && !bottlingStage.bottlingLine }"
+              v-model="item.bottlingLine"
+              :class="{ 'p-invalid': submitted && !item.bottlingLine }"
           />
         </pv-float-label>
 
@@ -124,8 +110,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="bottlesFilled"
-              v-model.number="bottlingStage.bottlesFilled"
-              :class="{ 'p-invalid': submitted && !bottlingStage.bottlesFilled }"
+              v-model.number="item.bottlesFilled"
+              :class="{ 'p-invalid': submitted && !item.bottlesFilled }"
           />
         </pv-float-label>
 
@@ -135,8 +121,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="bottleVolumeMl"
-              v-model.number="bottlingStage.bottleVolumeMl"
-              :class="{ 'p-invalid': submitted && !bottlingStage.bottleVolumeMl }"
+              v-model.number="item.bottleVolumeMl"
+              :class="{ 'p-invalid': submitted && !item.bottleVolumeMl }"
           />
         </pv-float-label>
 
@@ -146,8 +132,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="totalVolumeLiters"
-              v-model.number="bottlingStage.totalVolumeLiters"
-              :class="{ 'p-invalid': submitted && !bottlingStage.totalVolumeLiters }"
+              v-model.number="item.totalVolumeLiters"
+              :class="{ 'p-invalid': submitted && !item.totalVolumeLiters }"
           />
         </pv-float-label>
 
@@ -157,8 +143,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="sealType"
-              v-model="bottlingStage.sealType"
-              :class="{ 'p-invalid': submitted && !bottlingStage.sealType }"
+              v-model="item.sealType"
+              :class="{ 'p-invalid': submitted && !item.sealType }"
           />
         </pv-float-label>
 
@@ -168,8 +154,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="code"
-              v-model="bottlingStage.code"
-              :class="{ 'p-invalid': submitted && !bottlingStage.code }"
+              v-model="item.code"
+              :class="{ 'p-invalid': submitted && !item.code }"
           />
         </pv-float-label>
 
@@ -179,16 +165,16 @@ export default {
           <pv-input-text
               class="w-full"
               id="temperature"
-              v-model.number="bottlingStage.temperature"
-              :class="{ 'p-invalid': submitted && !bottlingStage.temperature }"
+              v-model.number="item.temperature"
+              :class="{ 'p-invalid': submitted && !item.temperature }"
           />
         </pv-float-label>
 
         <div class="field-checkbox mt-4 w-full">
           <pv-checkbox
               id="wasFiltered"
-              v-model="bottlingStage.wasFiltered"
-              :class="{ 'p-invalid': submitted && !bottlingStage.wasFiltered }"
+              v-model="item.wasFiltered"
+              :class="{ 'p-invalid': submitted && !item.wasFiltered }"
               inputId="wasFiltered"
               label="¿Fue filtrado?"
           />
@@ -197,8 +183,8 @@ export default {
         <div class="field-checkbox mt-4 w-full">
           <pv-checkbox
               id="wereLabelsApplied"
-              v-model="bottlingStage.wereLabelsApplied"
-              :class="{ 'p-invalid': submitted && !bottlingStage.wereLabelsApplied }"
+              v-model="item.wereLabelsApplied"
+              :class="{ 'p-invalid': submitted && !item.wereLabelsApplied }"
               inputId="wereLabelsApplied"
               label="¿Se aplicaron etiquetas?"
           />
@@ -207,8 +193,8 @@ export default {
         <div class="field-checkbox mt-4 w-full">
           <pv-checkbox
               id="wereCapsulesApplied"
-              v-model="bottlingStage.wereCapsulesApplied"
-              :class="{ 'p-invalid': submitted && !bottlingStage.wereCapsulesApplied }"
+              v-model="item.wereCapsulesApplied"
+              :class="{ 'p-invalid': submitted && !item.wereCapsulesApplied }"
               inputId="wereCapsulesApplied"
               label="¿Se aplicaron cápsulas?"
           />
@@ -219,15 +205,15 @@ export default {
           <pv-input-textarea
               class="w-full"
               id="comments"
-              v-model="bottlingStage.comments"
-              :class="{ 'p-invalid': submitted && !bottlingStage.comments }"
+              v-model="item.comments"
+              :class="{ 'p-invalid': submitted && !item.comments }"
           />
         </pv-float-label>
 
         <div class="field-checkbox mt-4 w-full">
           <pv-checkbox
               input-id="isCompleted"
-              v-model="bottlingStage.isCompleted"
+              v-model="item.isCompleted"
               :binary="true"
           />
           <label for="isCompleted">Completado</label>

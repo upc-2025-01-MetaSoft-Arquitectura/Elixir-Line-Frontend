@@ -1,8 +1,8 @@
 <script>
-
 import ViewDetails from "../../../shared/components/view-details.component.vue";
 import CreateAndEdit from "../../../shared/components/create-and-edit.component.vue";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
+import {WineBatch} from "../../winemaking-process/model/wine-batch.entity.js";
 
 export default {
   name: "batch-view-details",
@@ -16,6 +16,10 @@ export default {
 
 
   created() {
+
+    console.log('==== DATOS DEL BATCH ====', this.itemEntity);
+
+
     console.log('Batch View Details component created');
   }
 }
@@ -31,15 +35,28 @@ export default {
 
     <pv-card>
 
+      <!--
+      vineyardCode = '',
+      receptionDate = '',
+      harvestCampaign = '',
+      vineyardOrigin = '',
+      grapeVariety = '',
+      initialGrapeQuantityKg = 0,
+      createdBy = '',
+      progress = 0,
+      status = 'NOT_STARTED',
+      currentStage = 'RECEPTION'
+      -->
       <template #content>
         <div class="mb-3">
           <p><strong>Viñedo:</strong> {{ itemEntity.vineyardOrigin }}</p>
+          <p><strong>Código de Viñedo:</strong> {{ itemEntity.vineyardCode }}</p>
           <p><strong>Variedad de uva:</strong> {{ itemEntity.grapeVariety }}</p>
           <p><strong>Campaña:</strong> {{ itemEntity.harvestCampaign }}</p>
           <p><strong>Fecha Recepción:</strong> {{ itemEntity.receptionDate }}</p>
           <p><strong>Cantidad inicial de uva (kg):</strong> {{ itemEntity.initialGrapeQuantityKg }}</p>
-          <p><strong>Código Interno:</strong> {{ itemEntity.internalCode }}</p>
           <p><strong>Creado por:</strong> {{ itemEntity.createdBy }}</p>
+          <p><strong>Estado:</strong> {{ itemEntity.status }}</p>
           <p><strong>Fase actual:</strong> {{ itemEntity.currentStage }}</p>
           <p><strong>Avance general:</strong> {{ itemEntity.progress }}%</p>
         </div>

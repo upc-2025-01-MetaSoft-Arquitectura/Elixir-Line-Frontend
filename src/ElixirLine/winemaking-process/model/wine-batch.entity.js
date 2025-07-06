@@ -1,27 +1,26 @@
 
 /*
-{
-  "batchId": 10,
-  "campaignId": 5,
-  "winegrowerId": 1,
-  "vineyardCode": "B2025-VINEYARD01",
-  "receptionDate": "2025-06-03",
-  "harvestCampaign": 2025,
-  "vineyardOrigin": "Valle de Ica",
-  "grapeVariety": "MALBEC",
-  "initialGrapeQuantityKg": 3200,
-  "createdBy": "Luis Carlos Prada Naez",
-  "progress": 0,
-  "status": "NOT_STARTED",
-  "currentStage": "RECEPTION"
-}
- */
+ {
+    "id": 10,
+    "campaignId": 5,
+    "winegrowerId": 1,
+    "vineyardCode": "B2025-VINEYARD01",
+    "receptionDate": "2025-06-03",
+    "harvestCampaign": 2025,
+    "vineyardOrigin": "Valle de Ica",
+    "grapeVariety": "MALBEC",
+    "initialGrapeQuantityKg": 3200,
+    "createdBy": "Luis Carlos Prada Naez",
+    "progress": 0,
+    "status": "NOT_STARTED",
+    "currentStage": "RECEPTION"
+  }
+*/
 
 export class WineBatch {
-
     constructor(
         {
-            batchId = '',
+            id = '',
             campaignId = '',
             winegrowerId = '',
             vineyardCode = '',
@@ -32,11 +31,11 @@ export class WineBatch {
             initialGrapeQuantityKg = 0,
             createdBy = '',
             progress = 0,
-            status = '',
-            currentStage = ''
+            status = 'NOT_STARTED',
+            currentStage = 'RECEPTION'
         }
     ) {
-        this.batchId = batchId;
+        this.id = id;
         this.campaignId = campaignId;
         this.winegrowerId = winegrowerId;
         this.vineyardCode = vineyardCode;
@@ -50,5 +49,4 @@ export class WineBatch {
         this.status = status;
         this.currentStage = currentStage;
     }
-
 }

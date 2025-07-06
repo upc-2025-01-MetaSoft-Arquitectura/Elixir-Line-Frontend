@@ -11,12 +11,6 @@ import {AgingStage} from "../model/agingStage.entity.js";
 import {FiltrationStage} from "../model/filtrationStage.entity.js";
 import {BottlingStage} from "../model/bottlingStage.entity.js";
 import ReceptionStageManagement from "../pages/reception-stage-management.component.vue";
-import PressingStageCreateAndEditComponent from "../components/pressing-stage-create-and-edit.component.vue";
-import ClarificationStageCreateAndEditComponent
-  from "../components/clarification-stage-create-and-edit.component.vue";
-import BottlingStageCreateAndEditComponent from "../components/bottling-stage-create-and-edit.component.vue";
-import AgingStageCreateAndEditComponent from "../components/aging-stage-create-and-edit.component.vue";
-import FiltrationStageCreateAndEditComponent from "../components/filtration-stage-create-and-edit.component.vue";
 import {Stages} from "../model/stages.entity.js";
 import CorrectionStageManagement from "../pages/correction-stage-management.component.vue";
 import FermentationStageManagement from "../pages/fermentation-stage-management.component.vue";
@@ -36,50 +30,22 @@ export default {
     PressingStageManagement,
     FermentationStageManagement,
     CorrectionStageManagement,
-    FiltrationStageDetailCreateAndEdit: FiltrationStageCreateAndEditComponent,
-    AgingStageDetailCreateAndEdit: AgingStageCreateAndEditComponent,
-    BottlingStageDetailCreateAndEdit: BottlingStageCreateAndEditComponent,
-    ClarificationStageDetailCreateAndEdit: ClarificationStageCreateAndEditComponent,
-    PressingStageDetailCreateAndEdit: PressingStageCreateAndEditComponent,
     ReceptionStageManagement, BasePageLayout},
 
   provide() {
     return {
-      batchId: this.itemEntity.id
+      batchId: this.itemBatch.id
     }
   },
 
   props: {
-    itemEntity: null,
+    itemBatch: null,
     title: String,
     visible: Boolean
   },
 
   data() {
     return {
-
-      itemObject: new Stages({}),
-      stagesApiService: null,
-      createAndEditDialogIsVisible: false,
-      isEdit: false,
-      submitted: false,
-
-
-      // Etapas obtenidas por batch (objeto completo)
-      stagesByBatch: new Stages({}),
-
-      receptionStage : new ReceptionStage({}),
-      correctionStage : new CorrectionStage({}),
-      fermentationStage : new FermentationStage({}),
-      pressingStage : new PressingStage({}),
-      clarificationStage: new ClarificationStage({}),
-      agingStage : new AgingStage({}),
-      filtrationStage : new FiltrationStage({}),
-      bottlingStage : new BottlingStage({}),
-
-
-
-      //============ Datos de campañas y búsqueda ==============
 
       // Datos de la vista
       selectedItem: null, // campaña seleccionada (objeto)
@@ -101,36 +67,6 @@ export default {
   },
 
   methods: {
-
-
-    getAllStagesByBatch(batchId) {
-
-      this.stagesApiService.findStagesByBatchId(batchId)
-          .then(response => {
-            const data = response.data[0];
-
-            this.stagesByBatch = data; // guardas el objeto completo si quieres
-            this.itemObject = data; // Actualiza el itemEntity con el objeto completo
-
-            // Poblar etapas específicas
-            this.receptionStage     = new ReceptionStage(data.receptionStage || {});
-            this.correctionStage    = new CorrectionStage(data.correctionStage || {});
-            this.fermentationStage  = new FermentationStage(data.fermentationStage || {});
-            this.pressingStage      = new PressingStage(data.pressingStage || {});
-            this.clarificationStage = new ClarificationStage(data.clarificationStage || {});
-            this.agingStage         = new AgingStage(data.agingStage || {});
-            this.filtrationStage    = new FiltrationStage(data.filtrationStage || {});
-            this.bottlingStage      = new BottlingStage(data.bottlingStage || {});
-
-            console.log('✅ Etapas cargadas por batch:', this.itemObject);
-          })
-          .catch(error => {
-            console.error('❌ Error fetching stages by batch:', error);
-          });
-    },
-
-    // ===================================================================================================
-
 
     searchStages(event) {
 
@@ -162,8 +98,10 @@ export default {
   },
 
   created() {
-    this.stagesApiService = new StagesApiService('/stages');
-    this.getAllStagesByBatch(this.itemEntity.id);
+
+    console.log("= ESTAMOS EN STAGES-BY-BATCH-MANAGEMENT = ");
+    // Recuperar el batchId desde las props
+    console.log('======= Batch ID recuperado de Tabs-view-details:', this.itemBatch.id);
   }
 }
 
@@ -205,48 +143,48 @@ export default {
 
     <!-- ETAPA DE RECEPCIÓN  ====================================================================== -->
     <div v-if="selectedItem && selectedItem.name === 'Recepción'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <reception-stage-management :item="itemObject" />
+      <reception-stage-management :item="itemBatch" />
     </div>
 
     <!-- ETAPA DE CORRECCIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Corrección'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden ">
-      <correction-stage-management :item="itemObject"  />
+      <correction-stage-management :item="itemBatch"  />
     </div>
 
     <!-- ETAPA DE FERMENTACIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Fermentación' " class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <fermentation-stage-management :item="itemObject" />
+      <fermentation-stage-management :item="itemBatch" />
     </div>
 
     <!-- ETAPA DE PRENSADO  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Prensado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <pressing-stage-management :item="itemObject"/>
+      <pressing-stage-management :item="itemBatch"/>
     </div>
 
     <!-- ETAPA DE CLARIFICACIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Clarificación'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <clarification-stage-management :item="itemObject"/>
+      <clarification-stage-management :item="itemBatch"/>
     </div>
 
     <!-- ETAPA DE CRIANZA  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Crianza'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-        <aging-stage-management :item="itemObject"  />
+        <aging-stage-management :item="itemBatch"  />
     </div>
 
     <!-- ETAPA DE FILTRACIÓN  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Filtración'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <filtration-stage-management :item="itemObject" />
+      <filtration-stage-management :item="itemBatch" />
     </div>
 
     <!-- ETAPA DE EMBOTELLADO  ====================================================================== -->
     <div v-else-if="selectedItem && selectedItem.name === 'Embotellado'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <bottling-stage-management :item="itemObject" />
+      <bottling-stage-management :item="itemBatch" />
     </div>
 
     <!-- Mensaje en caso de no haber etapas registradas -->
     <div v-else-if="!stagesByBatch || Object.keys(stagesByBatch).length === 0" class="p-2 w-full h-full flex-1 flex
     flex-column overflow-hidden">
-      <p class="text-center">No hay etapas registradas para este lote: {{itemEntity.internalCode}}.</p>
+      <p class="text-center">No hay etapas registradas para este lote.</p>
     </div>
 
     <!-- Mensaje si no hay etapa seleccionada -->

@@ -11,14 +11,14 @@ export default {
   components: {CreateAndEdit, BasePageLayout},
 
   props: {
-    itemEntity: null,
+    item: null,
     edit : Boolean,
     visible: Boolean,
   },
 
   data() {
     return {
-      clarificationStage: new ClarificationStage({}),     submitted: false
+      submitted: false
     }
   },
 
@@ -29,26 +29,17 @@ export default {
       this.$emit('cancel-requested');
     },
 
-    onSaveRequested(newItem) {
+    onSaveRequested() {
       this.submitted = true;
 
-      newItem.stage = "Clarificación"; // Assuming the stage is always "Clarificación" for this component
+      console.log('batches-create-and-edit onSaveRequested',this.item);
 
-      this.itemEntity.clarificationStage = newItem;
-
-      this.$emit('save-requested', this.itemEntity);
+      this.$emit('save-requested', this.item);
     }
   },
 
 
-  created() {
 
-    this.clarificationStage =  this.itemEntity?.clarificationStage || new ClarificationStage({})
-
-    console.log('===============', this.clarificationStage);
-
-    console.log('Clarification Stage Create and Edit component created');
-  }
 };
 
 </script>
@@ -58,10 +49,10 @@ export default {
   <!-- Etapa: Clarificación -->
 
   <create-and-edit
-      :entity="clarificationStage"
+      :entity="item"
       :edit="edit"
       :visible="visible"
-      :entity-name="clarificationStage.stage || 'Clarificación'"
+      :entity-name="item.stage || 'Clarificación'"
       @canceled-shared="onCancelRequested"
       @saved-shared="onSaveRequested($event)"
   >
@@ -75,8 +66,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="registeredBy"
-              v-model="clarificationStage.registeredBy"
-              :class="{ 'p-invalid': submitted && !clarificationStage.registeredBy }"
+              v-model="item.registeredBy"
+              :class="{ 'p-invalid': submitted && !item.registeredBy }"
           />
         </pv-float-label>
 
@@ -85,10 +76,10 @@ export default {
           <pv-calendar
               class="w-full"
               id="startDate"
-              v-model="clarificationStage.startDate"
+              v-model="item.startDate"
               date-format="yy-mm-dd"
               show-icon
-              :class="{ 'p-invalid': submitted && !clarificationStage.startDate }"
+              :class="{ 'p-invalid': submitted && !item.startDate }"
           />
         </pv-float-label>
 
@@ -97,10 +88,10 @@ export default {
           <pv-calendar
               class="w-full"
               id="endDate"
-              v-model="clarificationStage.endDate"
+              v-model="item.endDate"
               date-format="yy-mm-dd"
               show-icon
-              :class="{ 'p-invalid': submitted && !clarificationStage.endDate }"
+              :class="{ 'p-invalid': submitted && !item.endDate }"
           />
         </pv-float-label>
 
@@ -109,8 +100,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="method"
-              v-model="clarificationStage.method"
-              :class="{ 'p-invalid': submitted && !clarificationStage.method }"
+              v-model="item.method"
+              :class="{ 'p-invalid': submitted && !item.method }"
           />
         </pv-float-label>
 
@@ -119,8 +110,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="turbidityBeforeNTU"
-              v-model="clarificationStage.turbidityBeforeNTU"
-              :class="{ 'p-invalid': submitted && !clarificationStage.turbidityBeforeNTU }"
+              v-model="item.turbidityBeforeNTU"
+              :class="{ 'p-invalid': submitted && !item.turbidityBeforeNTU }"
           />
         </pv-float-label>
 
@@ -129,8 +120,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="turbidityAfterNTU"
-              v-model="clarificationStage.turbidityAfterNTU"
-              :class="{ 'p-invalid': submitted && !clarificationStage.turbidityAfterNTU }"
+              v-model="item.turbidityAfterNTU"
+              :class="{ 'p-invalid': submitted && !item.turbidityAfterNTU }"
           />
         </pv-float-label>
 
@@ -139,8 +130,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="volumeLiters"
-              v-model="clarificationStage.volumeLiters"
-              :class="{ 'p-invalid': submitted && !clarificationStage.volumeLiters }"
+              v-model="item.volumeLiters"
+              :class="{ 'p-invalid': submitted && !item.volumeLiters }"
           />
         </pv-float-label>
 
@@ -149,8 +140,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="temperature"
-              v-model="clarificationStage.temperature"
-              :class="{ 'p-invalid': submitted && !clarificationStage.temperature }"
+              v-model="item.temperature"
+              :class="{ 'p-invalid': submitted && !item.temperature }"
           />
         </pv-float-label>
 
@@ -160,8 +151,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="durationHours"
-              v-model="clarificationStage.durationHours"
-              :class="{ 'p-invalid': submitted && !clarificationStage.durationHours }"
+              v-model="item.durationHours"
+              :class="{ 'p-invalid': submitted && !item.durationHours }"
           />
         </pv-float-label>
 
@@ -170,8 +161,8 @@ export default {
           <pv-input-textarea
               class="w-full"
               id="comments"
-              v-model="clarificationStage.comments"
-              :class="{ 'p-invalid': submitted && !clarificationStage.comments }"
+              v-model="item.comments"
+              :class="{ 'p-invalid': submitted && !item.comments }"
           />
         </pv-float-label>
 
@@ -179,19 +170,11 @@ export default {
         <div class="field-checkbox mt-4 w-full">
           <pv-checkbox
               input-id="isCompleted"
-              v-model="clarificationStage.isCompleted"
+              v-model="item.isCompleted"
               :binary="true"
           />
           <label for="isCompleted">Completado</label>
         </div>
-
-
-
-
-
-
-
-
 
 
 

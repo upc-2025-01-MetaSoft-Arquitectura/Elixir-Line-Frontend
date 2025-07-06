@@ -3,20 +3,20 @@
 import CreateAndEdit from "../../../shared/components/create-and-edit.component.vue";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
 import {FermentationStage} from "../model/fermentationStage.entity.js";
+import {Calendar as PvCalendar} from "primevue";
 
 export default {
   name: 'fermentation-stage-create-and-edit',
-  components: {CreateAndEdit, BasePageLayout},
+  components: {PvCalendar, CreateAndEdit, BasePageLayout},
 
   props: {
-    itemEntity: null,
+    item: null,
     edit : Boolean,
     visible: Boolean,
   },
 
   data() {
     return {
-      fermentationStage: new FermentationStage({}),
       submitted: false
     }
   },
@@ -28,28 +28,14 @@ export default {
       this.$emit('cancel-requested');
     },
 
-    onSaveRequested(newItem) {
+    onSaveRequested() {
       this.submitted = true;
 
-      newItem.stage = "Fermentación"; // Assuming the stage is always "Fermentación" for this component
+      console.log('batches-create-and-edit onSaveRequested',this.item);
 
-      this.itemEntity.fermentationStage = newItem;
-
-      console.log('batches-create-and-edit onSaveRequested',this.itemEntity);
-
-      this.$emit('save-requested', this.itemEntity);
+      this.$emit('save-requested', this.item);
     }
   },
-
-
-  created() {
-
-    this.fermentationStage =  this.itemEntity?.fermentationStage || new FermentationStage({})
-
-    console.log('===============', this.fermentationStage);
-
-    console.log('Fermentation Stage Detail component created');
-  }
 
 
 
@@ -61,183 +47,167 @@ export default {
 
 
   <create-and-edit
-      :entity="fermentationStage"
+      :entity="item"
       :edit="edit"
       :visible="visible"
-      :entity-name="fermentationStage.stage || 'Fermentación'"
+      :entity-name=" 'Fermentación'"
       @canceled-shared="onCancelRequested"
       @saved-shared="onSaveRequested($event)"
   >
     <template #content>
       <div class="field">
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="registeredBy">Registrado por</label>
+        <pv-float-label class="field mt-5">
+          <label for="employee">Registrado por</label>
           <pv-input-text
               class="w-full"
-              id="registeredBy"
-              v-model="fermentationStage.registeredBy"
-              :class="{ 'p-invalid': submitted && !fermentationStage.registeredBy }"
+              id="employee"
+              v-model="item.employee"
+              :class="{ 'p-invalid': submitted && !item.employee }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <pv-float-label class="field mt-5">
           <label for="startDate">Fecha de inicio</label>
           <pv-calendar
               class="w-full"
               id="startDate"
-              v-model="fermentationStage.startDate"
-              date-format="yy-mm-dd"
-              show-icon
-              :class="{ 'p-invalid': submitted && !fermentationStage.startDate }"
+              v-model="item.startDate"
+              :class="{ 'p-invalid': submitted && !item.startDate }"
           />
-        </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        </pv-float-label>
+        <pv-float-label class="field mt-5">
           <label for="endDate">Fecha de fin</label>
           <pv-calendar
               class="w-full"
               id="endDate"
-              v-model="fermentationStage.endDate"
-              date-format="yy-mm-dd"
-              show-icon
-              :class="{ 'p-invalid': submitted && !fermentationStage.endDate }"
+              v-model="item.endDate"
+              :class="{ 'p-invalid': submitted && !item.endDate }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="yeastUsedMgL">Levadura usada (mg/L)</label>
-          <pv-input-number
+        <pv-float-label class="field mt-5">
+          <label for="yeastUsed">Levadura utilizada</label>
+          <pv-input-text
               class="w-full"
-              id="yeastUsedMgL"
-              v-model="fermentationStage.yeastUsedMgL"
-              :min="0"
-              mode="decimal"
-              :class="{ 'p-invalid': submitted && !fermentationStage.yeastUsedMgL }"
+              id="yeastUsed"
+              v-model="item.yeastUsed"
+              :class="{ 'p-invalid': submitted && !item.yeastUsed }"
           />
-        </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        </pv-float-label>
+        <pv-float-label class="field mt-5">
           <label for="fermentationType">Tipo de fermentación</label>
-          <pv-dropdown
+          <pv-input-text
               class="w-full"
               id="fermentationType"
-              v-model="fermentationStage.fermentationType"
-              :options="['alcohólica', 'maloláctica', 'espontánea']"
-              placeholder="Selecciona tipo"
-              :class="{ 'p-invalid': submitted && !fermentationStage.fermentationType }"
+              v-model="item.fermentationType"
+              :class="{ 'p-invalid': submitted && !item.fermentationType }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="initialBrix">Brix inicial</label>
-          <pv-input-number
+
+        <pv-float-label class="field mt-5">
+          <label for="initialSugarLevel">Nivel de azúcar inicial (%)</label>
+          <pv-input-text
               class="w-full"
-              id="initialBrix"
-              v-model="fermentationStage.initialBrix"
-              mode="decimal"
-              :min="0"
-              :max="40"
-              :step="0.1"
-              :class="{ 'p-invalid': submitted && !fermentationStage.initialBrix }"
+              id="initialSugarLevel"
+              v-model="item.initialSugarLevel"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.initialSugarLevel }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="finalBrix">Brix final</label>
-          <pv-input-number
+
+        <pv-float-label class="field mt-5">
+          <label for="finalSugarLevel">Nivel de azúcar final (%)</label>
+          <pv-input-text
               class="w-full"
-              id="finalBrix"
-              v-model="fermentationStage.finalBrix"
-              mode="decimal"
-              :min="0"
-              :max="40"
-              :step="0.1"
-              :class="{ 'p-invalid': submitted && !fermentationStage.finalBrix }"
+              id="finalSugarLevel"
+              v-model="item.finalSugarLevel"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.finalSugarLevel }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="initialpH">pH inicial</label>
-          <pv-input-number
+
+        <pv-float-label class="field mt-5">
+          <label for="initialPH">pH inicial</label>
+          <pv-input-text
               class="w-full"
-              id="initialpH"
-              v-model="fermentationStage.initialpH"
-              mode="decimal"
-              :min="2"
-              :max="5"
-              :step="0.01"
-              :class="{ 'p-invalid': submitted && !fermentationStage.initialpH }"
+              id="initialPH"
+              v-model="item.initialPH"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.initialPH }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="finalpH">pH final</label>
-          <pv-input-number
+
+
+        <pv-float-label class="field mt-5">
+          <label for="finalPH">pH final</label>
+          <pv-input-text
               class="w-full"
-              id="finalpH"
-              v-model="fermentationStage.finalpH"
-              mode="decimal"
-              :min="2"
-              :max="5"
-              :step="0.01"
-              :class="{ 'p-invalid': submitted && !fermentationStage.finalpH }"
+              id="finalPH"
+              v-model="item.finalPH"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.finalPH }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="temperatureMin">Temperatura mínima (°C)</label>
-          <pv-input-number
+
+        <pv-float-label class="field mt-5">
+          <label for="maxTemperature">Temperatura máxima (°C)</label>
+          <pv-input-text
               class="w-full"
-              id="temperatureMin"
-              v-model="fermentationStage.temperatureMin"
-              mode="decimal"
-              :step="0.1"
-              :class="{ 'p-invalid': submitted && !fermentationStage.temperatureMin }"
+              id="maxTemperature"
+              v-model="item.maxTemperature"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.maxTemperature }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="temperatureMax">Temperatura máxima (°C)</label>
-          <pv-input-number
+
+        <pv-float-label class="field mt-5">
+          <label for="minTemperature">Temperatura mínima (°C)</label>
+          <pv-input-text
               class="w-full"
-              id="temperatureMax"
-              v-model="fermentationStage.temperatureMax"
-              mode="decimal"
-              :step="0.1"
-              :class="{ 'p-invalid': submitted && !fermentationStage.temperatureMax }"
+              id="minTemperature"
+              v-model="item.minTemperature"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.minTemperature }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="tankCode">Código de tanque</label>
+
+        <pv-float-label class="field mt-5">
+          <label for="tankCode">Código del tanque</label>
           <pv-input-text
               class="w-full"
               id="tankCode"
-              v-model="fermentationStage.tankCode"
-              :class="{ 'p-invalid': submitted && !fermentationStage.tankCode }"
+              v-model="item.tankCode"
+              :class="{ 'p-invalid': submitted && !item.tankCode }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="comments">Comentarios</label>
-          <pv-textarea
+
+        <pv-float-label class="field mt-5">
+          <label for="comment">Comentario</label>
+          <pv-input-text
               class="w-full"
-              id="comments"
-              v-model="fermentationStage.comments"
-              auto-resize
-              rows="3"
+              id="comment"
+              v-model="item.comment"
+              :class="{ 'p-invalid': submitted && !item.comment }"
           />
         </pv-float-label>
 
-        <div class="field-checkbox mt-4 w-full">
-          <pv-checkbox
-              input-id="isCompleted"
-              v-model="fermentationStage.isCompleted"
-              :binary="true"
-          />
-          <label for="isCompleted">Completado</label>
-        </div>
 
       </div>
     </template>

@@ -9,14 +9,14 @@ export default {
   components: {CreateAndEdit},
 
   props: {
-    itemEntity: null,
+    item: null,
     edit : Boolean,
     visible: Boolean,
   },
 
   data() {
     return {
-      filtrationStage: new FiltrationStage({}),     submitted: false
+      submitted: false
     }
   },
 
@@ -27,30 +27,14 @@ export default {
       this.$emit('cancel-requested');
     },
 
-    onSaveRequested(newItem) {
+    onSaveRequested() {
       this.submitted = true;
 
-      newItem.stage = "Filtración"; // Assuming the stage is always "Filtración" for this component
+      console.log('batches-create-and-edit onSaveRequested',this.item);
 
-      this.itemEntity.filtrationStage = newItem;
-
-      console.log('batches-create-and-edit onSaveRequested',this.itemEntity);
-
-      this.$emit('save-requested', this.itemEntity);
+      this.$emit('save-requested', this.item);
     }
   },
-
-
-  created() {
-
-    this.filtrationStage =  this.itemEntity?.filtrationStage || new FiltrationStage({})
-
-    console.log('===============', this.filtrationStage);
-
-    console.log('Pressing Stage Create and Edit component created');
-  }
-
-
 
 }
 
@@ -60,10 +44,10 @@ export default {
 
   <!-- Etapa: Filtración -->
   <create-and-edit
-      :entity="filtrationStage"
+      :entity="item"
       :edit="edit"
       :visible="visible"
-      :entity-name="filtrationStage.stage || 'Filtración'"
+      :entity-name="item.stage || 'Filtración'"
       @canceled-shared="onCancelRequested"
       @saved-shared="onSaveRequested($event)"
   >
@@ -80,8 +64,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="registeredBy"
-              v-model="filtrationStage.registeredBy"
-              :class="{ 'p-invalid': submitted && !filtrationStage.registeredBy }"
+              v-model="item.registeredBy"
+              :class="{ 'p-invalid': submitted && !item.registeredBy }"
           />
         </pv-float-label>
 
@@ -90,10 +74,10 @@ export default {
           <pv-calendar
               class="w-full"
               id="startDate"
-              v-model="filtrationStage.startDate"
+              v-model="item.startDate"
               date-format="yy-mm-dd"
               show-icon
-              :class="{ 'p-invalid': submitted && !filtrationStage.startDate }"
+              :class="{ 'p-invalid': submitted && !item.startDate }"
           />
         </pv-float-label>
 
@@ -102,10 +86,10 @@ export default {
           <pv-calendar
               class="w-full"
               id="endDate"
-              v-model="filtrationStage.endDate"
+              v-model="item.endDate"
               date-format="yy-mm-dd"
               show-icon
-              :class="{ 'p-invalid': submitted && !filtrationStage.endDate }"
+              :class="{ 'p-invalid': submitted && !item.endDate }"
           />
         </pv-float-label>
 
@@ -114,8 +98,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="filtrationType"
-              v-model="filtrationStage.filtrationType"
-              :class="{ 'p-invalid': submitted && !filtrationStage.filtrationType }"
+              v-model="item.filtrationType"
+              :class="{ 'p-invalid': submitted && !item.filtrationType }"
           />
         </pv-float-label>
 
@@ -124,8 +108,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="filterMedia"
-              v-model="filtrationStage.filterMedia"
-              :class="{ 'p-invalid': submitted && !filtrationStage.filterMedia }"
+              v-model="item.filterMedia"
+              :class="{ 'p-invalid': submitted && !item.filterMedia }"
           />
         </pv-float-label>
 
@@ -134,8 +118,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="poreMicrons"
-              v-model.number="filtrationStage.poreMicrons"
-              :class="{ 'p-invalid': submitted && !filtrationStage.poreMicrons }"
+              v-model.number="item.poreMicrons"
+              :class="{ 'p-invalid': submitted && !item.poreMicrons }"
           />
         </pv-float-label>
 
@@ -144,8 +128,8 @@ export default {
           <pv-input-number
               class="w-full"
               id="turbidityBefore"
-              v-model.number="filtrationStage.turbidityBefore"
-              :class="{ 'p-invalid': submitted && !filtrationStage.turbidityBefore }"
+              v-model.number="item.turbidityBefore"
+              :class="{ 'p-invalid': submitted && !item.turbidityBefore }"
           />
         </pv-float-label>
 
@@ -154,8 +138,8 @@ export default {
           <pv-input-number
               class="w-full"
               id="turbidityAfter"
-              v-model.number="filtrationStage.turbidityAfter"
-              :class="{ 'p-invalid': submitted && !filtrationStage.turbidityAfter }"
+              v-model.number="item.turbidityAfter"
+              :class="{ 'p-invalid': submitted && !item.turbidityAfter }"
           />
         </pv-float-label>
 
@@ -164,8 +148,8 @@ export default {
           <pv-input-number
               class="w-full"
               id="temperature"
-              v-model.number="filtrationStage.temperature"
-              :class="{ 'p-invalid': submitted && !filtrationStage.temperature }"
+              v-model.number="item.temperature"
+              :class="{ 'p-invalid': submitted && !item.temperature }"
           />
         </pv-float-label>
 
@@ -174,8 +158,8 @@ export default {
           <pv-input-number
               class="w-full"
               id="pressureBars"
-              v-model.number="filtrationStage.pressureBars"
-              :class="{ 'p-invalid': submitted && !filtrationStage.pressureBars }"
+              v-model.number="item.pressureBars"
+              :class="{ 'p-invalid': submitted && !item.pressureBars }"
           />
         </pv-float-label>
 
@@ -184,15 +168,15 @@ export default {
           <pv-input-number
               class="w-full"
               id="filteredVolumeLiters"
-              v-model.number="filtrationStage.filteredVolumeLiters"
-              :class="{ 'p-invalid': submitted && !filtrationStage.filteredVolumeLiters }"
+              v-model.number="item.filteredVolumeLiters"
+              :class="{ 'p-invalid': submitted && !item.filteredVolumeLiters }"
           />
         </pv-float-label>
 
         <div class="field-checkbox mt-4 w-full">
           <pv-checkbox
               input-id="isSterile"
-              v-model="filtrationStage.isSterile"
+              v-model="item.isSterile"
               :binary="true"
           />
           <label for="isSterile">Filtración estéril</label>
@@ -201,7 +185,7 @@ export default {
         <div class="field-checkbox mt-4 w-full">
           <pv-checkbox
               input-id="filterChanged"
-              v-model="filtrationStage.filterChanged"
+              v-model="item.filterChanged"
               :binary="true"
           />
           <label for="filterChanged">Filtro cambiado</label>
@@ -212,8 +196,8 @@ export default {
           <pv-input-text
               class="w-full"
               id="changeReason"
-              v-model="filtrationStage.changeReason"
-              :class="{ 'p-invalid': submitted && !filtrationStage.changeReason }"
+              v-model="item.changeReason"
+              :class="{ 'p-invalid': submitted && !item.changeReason }"
           />
         </pv-float-label>
 
@@ -222,15 +206,15 @@ export default {
           <pv-input-textarea
               class="w-full"
               id="comments"
-              v-model="filtrationStage.comments"
-              :class="{ 'p-invalid': submitted && !filtrationStage.comments }"
+              v-model="item.comments"
+              :class="{ 'p-invalid': submitted && !item.comments }"
           />
         </pv-float-label>
 
         <div class="field-checkbox mt-4 w-full">
           <pv-checkbox
               input-id="isCompleted"
-              v-model="filtrationStage.isCompleted"
+              v-model="item.isCompleted"
               :binary="true"
           />
           <label for="isCompleted">Completado</label>

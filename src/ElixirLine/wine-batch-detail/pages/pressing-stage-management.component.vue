@@ -7,6 +7,10 @@ import {StagesApiService} from "../services/stages-api.service.js";
 import {PressingStage} from "../model/pressingStage.entity.js";
 import FermentationStageCreateAndEdit from "../components/fermentation-stage-create-and-edit.component.vue";
 import PressingStageCreateAndEdit from "../components/pressing-stage-create-and-edit.component.vue";
+import {FermentationStage} from "../model/fermentationStage.entity.js";
+import {CreatePressingStage} from "../model/create-pressing-stage.entity.js";
+import {PressingStageApiService} from "../services/pressing-stage-api.service.js";
+import {FermentationStageApiService} from "../services/fermentation-stage-api.service.js";
 
 export default {
   name: 'pressing-stage-management',
@@ -15,31 +19,44 @@ export default {
     PressingStageCreateAndEdit,
     FermentationStageCreateAndEdit, CorrectionStageCreateAndEdit, ReceptionStageCreateAndEdit},
 
-  props:{
-    item: null,
-    canAddStage: false
+  props: {
+    item: {
+      type: Object,
+      default: () => ({})
+    },
   },
+
 
   data() {
     return {
       title: { singular: 'Etapa de Fermentación', plural: 'Etapa de Fermentación' },
-      itemObject: new Stages({}),
+
+      batchId: null,
+
       pressingStage: new PressingStage({}),
+      fermentationStage : new FermentationStage({}),
+
+      createPressingStage: new CreatePressingStage({}),
+
       pressingStageApiService: null,
+      fermentationStageApiService: null,
+
       createAndEditDialogIsVisible: false,
+
+
       isEdit: false,
+
       submitted: false,
-      stageExist: false, // Assuming you want to check if a stage exists
+
     }
   },
 
   computed: {
     canAddStage() {
-      return this.item &&
-          this.item.fermentationStage &&
-          this.item.fermentationStage.isCompleted === true
+      return this.fermentationStage && this.fermentationStage.completionStatus === 'COMPLETED';
     }
   },
+
 
 
 
@@ -53,8 +70,8 @@ export default {
 
     //#region Event Handlers
     onNewItem() {
-      this.itemObject = new Stages({});
-      console.log('======================= NEW ITEM MANAGEMENT', this.itemObject);
+      this.pressingStage = new PressingStage({});
+      console.log('======================= NEW ITEM MANAGEMENT', this.pressingStage);
       this.isEdit = false;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
@@ -62,15 +79,10 @@ export default {
 
     onEditItem(item) {
       console.log('======================= EDIT ITEM MANAGEMENT', item);
-      this.itemObject = new Stages(item);
+      this.pressingStage = new PressingStage(item);
       this.isEdit = true;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
-    },
-
-    onDeleteItem(item) {
-      this.itemObject = new Stages(item);
-      this.deleteBatch();
     },
 
     onCancelRequested() {
@@ -98,27 +110,75 @@ export default {
 
     //#region CRUD Operations
     create() {
-      this.pressingStageApiService.create(this.itemObject).then(response => {
 
-        this.pressingStage = new PressingStage(response.data.pressingStage);
-        this.itemObject = new Stages(response.data);
+      this.pressingStageApiService.create(this.batchId, this.pressingStage).then(response => {
+
+        this.pressingStage = new PressingStage(response.data);
 
         this.notifySuccessfulAction('Stage created successfully');
       }).catch(error => {
         console.error("Error creating a Stage",error);
+        console.error('🔴 Message:', error.message);
+        console.error('🔴 Status:', error.response?.status);
+        console.error('🔴 Details:', error.response?.data);
       });
     },
 
     update() {
-      this.pressingStageApiService.update(this.itemObject.id, this.itemObject).then(response => {
 
-        this.pressingStage = new PressingStage(response.data.pressingStage);
-        this.itemObject= new Stages(response.data);
+      this.pressingStageApiService.patch(this.batchId, this.pressingStage).then(response => {
+
+        this.pressingStage = new PressingStage(response.data);
 
         this.notifySuccessfulAction('Stage updated successfully');
       }).catch(error => {
         console.error("Error updating a Stage",error);
+        console.error('🔴 Message:', error.message);
+        console.error('🔴 Status:', error.response?.status);
+        console.error('🔴 Details:', error.response?.data);
       });
+    },
+
+
+    getPressingStage() {
+      this.pressingStageApiService.getPressingStageByBatchId(this.batchId)
+          .then(response => {
+
+            this.pressingStage = new PressingStage(response.data);
+            // Asegurarse de que el rendimiento del mosto sea un número
+
+            console.log("=== ETAPA DE PRENSADO RECUPERADO: ===",response.data);
+
+          })
+          .catch(error => {
+            console.error('❌ Error al obtener la etapa de prensado:', error);
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo obtener la etapa de prensado.',
+              life: 3000
+            });
+          });
+    },
+
+    getFermentationStage() {
+      this.fermentationStageApiService.getFermentationStageByBatchId(this.batchId)
+          .then(response => {
+
+            this.fermentationStage = new FermentationStage(response.data);
+
+            console.log("=== ETAPA DE FERMENTACIÓN RECUPERADO: ===",response.data);
+
+          })
+          .catch(error => {
+            console.error('❌ Error al obtener la etapa de fermentación:', error);
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo obtener la etapa de fermentación.',
+              life: 3000
+            });
+          });
     },
 
     //#endregion
@@ -151,17 +211,16 @@ export default {
 
 
     completarEtapa() {
-      this.itemObject.pressingStage.isCompleted = true
+      this.pressingStage.completionStatus = 'COMPLETED'
 
-      this.pressingStageApiService.update(this.itemObject.id, this.itemObject)
+      this.pressingStageApiService.patch(this.pressingStage.batchId, this.pressingStage)
           .then(response => {
-            this.pressingStage = new PressingStage(response.data.pressingStage)
-            this.itemObject = new Stages(response.data)
+            this.pressingStage = new PressingStage(response.data)
             this.notifySuccessfulAction('Etapa completada correctamente')
+            console.log("== ETAPA DE RECEPCIÓN COMPLETADA ==", this.pressingStage)
           })
           .catch(error => {
-            this.pressingStage.isCompleted = false
-            this.itemObject.pressingStage.isCompleted = false
+            this.pressingStage.completionStatus = 'NOT_COMPLETED'
 
             console.error('❌ Error al completar la etapa:', error)
             this.$toast.add({
@@ -171,10 +230,7 @@ export default {
               life: 3000
             })
           })
-    }
-
-
-
+    },
 
 
 
@@ -183,23 +239,18 @@ export default {
 
   //#region Lifecycle Hooks
   created() {
-    this.pressingStageApiService = new StagesApiService ('/stages');
+    this.batchId = this.item.id;
 
-    if (!this.item || !this.item.pressingStage) {
+    this.pressingStageApiService = new PressingStageApiService('/batches');
+    this.fermentationStageApiService = new FermentationStageApiService('/batches');
 
-      this.stageExist = false;
 
-    } else {
+    // Cargar la etapa de prensado y fermentación al crear el componente
+    this.getPressingStage();
+    this.getFermentationStage();
 
-      this.itemObject = this.item;
-      this.stageExist = true;
-      this.pressingStage = this.item.pressingStage;
+    console.log("= ESTAMOS EN PRESSING-STAGE-MANAGEMENT ==> BatchId: ", this.batchId);
 
-    }
-
-    console.log('RECEPTION STAGE ===================== ', this.pressingStage);
-
-    console.log("🔍 Reception Stage Management created with item:", this.item);
   },
 
   //#endregion
@@ -225,17 +276,17 @@ export default {
         <pv-button
             label="Nueva Etapa"
             icon="pi pi-plus"
-            @click="onNewItem()"
+            @click="onNewItem"
             class="p-button-success"
-            v-if="!stageExist && canAddStage"
+            v-if="!pressingStage.id"
         />
 
         <pv-button
             label="Editar"
             icon="pi pi-pencil"
-            @click="onEditItem(itemObject)"
+            @click="onEditItem(pressingStage)"
             class="p-button-warning"
-            v-if="stageExist  && canAddStage /*&& !pressingStage.isCompleted*/"
+            v-if="pressingStage.id  && pressingStage.completionStatus !== 'COMPLETED'"
         />
 
         <pv-button
@@ -243,77 +294,83 @@ export default {
             icon="pi pi-check"
             class="p-button-success"
             @click="confirmarCompletarEtapa"
-            v-show="stageExist && !pressingStage.isCompleted"
+            v-if="pressingStage.id  && pressingStage.completionStatus !== 'COMPLETED'"
         />
       </div>
-    </div>
 
-    <!-- Mensaje de aviso si no se puede agregar una nueva etapa -->
-    <div v-if="!canAddStage" class="p-3 bg-yellow-100 text-yellow-800 border-round">
-      <i class="pi pi-exclamation-triangle"></i>
-      <span> No se puede agregar una nueva etapa de PRENSADO hasta que se complete la etapa de FERMENTACIÓN. </span>
-    </div>
+      <!-- Mensaje de aviso si no se puede agregar una nueva etapa -->
+      <div v-if="!canAddStage" class="p-3 bg-yellow-100 text-yellow-800 border-round">
+        <i class="pi pi-exclamation-triangle"></i>
+        <span> No se puede agregar una nueva etapa de PRENSADO hasta que se complete la etapa de FERMNETACIÓN. </span>
+      </div>
+
+      <!-- Mensaje de aviso si no hay una etapa de corrección -->
+      <div v-if="canAddStage && !pressingStage.id "
+           class="p-3 bg-red-100 text-red-800 border-round">
+        <i class="pi pi-exclamation-triangle"></i>
+        <span> No hay una etapa de PRENSADO registrada para este lote. </span>
+      </div>
 
 
-    <!-- Contenido de la etapa -->
-    <pv-card v-if="pressingStage.stage && canAddStage">
-      <template #header>
-        <h4 class="m-0">Detalles de la etapa de añejamiento</h4>
-      </template>
 
       <!-- contenido de la tarjeta -->
-      <template #content>
+      <pv-card v-if="pressingStage && pressingStage.id && canAddStage === true">
 
-        <div class="flex align-items-center gap-2">
-          <i class="pi pi-user text-lg"></i>
-          <p><strong>Registrado por:</strong> {{ pressingStage.registeredBy }}</p>
-        </div>
+        <template #content>
 
-        <div class="grid p-2">
-          <div class="col-12 md:col-6">
-            <p><strong>Fecha de inicio:</strong> {{ pressingStage.startDate }}</p>
-            <p><strong>Fecha de finalización:</strong> {{ pressingStage.endDate }}</p>
-            <p><strong>Tipo de prensa:</strong> {{ pressingStage.pressType }}</p>
-          </div>
-          <div class="col-12 md:col-6">
-            <p><strong>Presión de la prensa (Bares):</strong> {{ pressingStage.pressPressureBars }}</p>
-            <p><strong>Duración (minutos):</strong> {{ pressingStage.durationMinutes }}</p>
-            <p><strong>Pomace (kg):</strong> {{ pressingStage.pomaceKg }}</p>
-          </div>
-          <div class="col-12 md:col-6">
-            <p><strong>Rendimiento (litros):</strong> {{ pressingStage.yieldLiters }}</p>
-            <p><strong>Uso del mosto:</strong> {{ pressingStage.mustUsage }}</p>
-            <p><strong>Comentarios:</strong> {{ pressingStage.comments }}</p>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-user text-lg"></i>
+            <p><strong>Registrado por:</strong> {{ pressingStage.employee }}</p>
           </div>
 
-        </div>
+          <div class="grid p-2">
+            <div class="col-12 md:col-6">
+              <p><strong>Fecha Inicio:</strong> {{ pressingStage.startDate }}</p>
+              <p><strong>Tipo de Prensa:</strong> {{ pressingStage.pressType }}</p>
+              <p><strong>Presión (bar):</strong> {{ pressingStage.pressure }}</p>
+              <p><strong>Duración (min):</strong> {{ pressingStage.duration }}</p>
+            </div>
+            <div class="col-12 md:col-6">
+              <p><strong>Fecha Fin:</strong> {{ pressingStage.endDate }}</p>
+              <p><strong>Peso de la Poma (kg):</strong> {{ pressingStage.pomadeWeight }}</p>
+              <p><strong>Rendimiento (Litros):</strong> {{ pressingStage.yield}}</p>
+              <p><strong>Uso del Mosto:</strong> {{ pressingStage.mustUsage }}</p>
+            </div>
 
-        <!-- Estado de finalización -->
-        <div class="flex align-items-center gap-2 mt-4">
-          <i class="pi text-xl" :class="pressingStage.isCompleted ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"></i>
-          <span class="text-lg font-medium">{{ pressingStage.isCompleted ? 'Etapa completada' : 'Etapa no completada' }} </span>
-        </div>
+          </div>
 
-      </template>
+          <!-- Comentario -->
+          <div class="mt-4 w-full">
+            <p><strong>Comentario:</strong></p>
+            <p class="text-gray-700 ">{{ pressingStage.comment || 'No hay comentarios.' }}</p>
+          </div>
 
-    </pv-card>
+          <!-- Visualización de estado -->
+          <div class="flex align-items-center gap-2 mt-4">
+            <i
+                class="pi text-xl"
+                :class="pressingStage.completionStatus === 'COMPLETED' ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"
+            ></i>
+            <span class="text-lg font-medium">
+            {{ pressingStage.completionStatus === 'COMPLETED' ? 'Etapa completada' : 'Etapa no completada' }}
+          </span>
+          </div>
 
-    <!-- Diálogo para crear o editar etapa -->
-    <pressing-stage-create-and-edit
-        :edit="isEdit"
-        :item-entity="itemObject"
-        :visible="createAndEditDialogIsVisible"
-        @cancel-requested="onCancelRequested"
-        @save-requested="onSaveRequested($event)"
-    />
+        </template>
 
+      </pv-card>
+
+      <!-- Diálogo para crear o editar etapa -->
+      <pressing-stage-create-and-edit
+          :edit="isEdit"
+          :item="pressingStage"
+          :visible="createAndEditDialogIsVisible"
+          @cancel-requested="onCancelRequested"
+          @save-requested="onSaveRequested($event)"
+      />
+
+    </div>
   </div>
-
-
-
-
-
-
 
 </template>
 

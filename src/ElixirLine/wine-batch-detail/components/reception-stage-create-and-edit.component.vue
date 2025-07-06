@@ -9,14 +9,13 @@ export default {
   components: {CreateAndEdit, BasePageLayout},
 
   props: {
-    itemEntity: null,
+    item: null,
     edit : Boolean,
     visible: Boolean,
   },
 
   data() {
     return {
-      receptionStage: new ReceptionStage({}),
       submitted: false
     }
   },
@@ -28,28 +27,15 @@ export default {
       this.$emit('cancel-requested');
     },
 
-    onSaveRequested(newItem) {
+    onSaveRequested() {
       this.submitted = true;
 
-      newItem.stage = "Recepción"; // Assuming the stage is always "Recepción" for this component
+      console.log('batches-create-and-edit onSaveRequested',this.item);
 
-      this.itemEntity.receptionStage = newItem;
-
-      console.log('batches-create-and-edit onSaveRequested',this.itemEntity);
-
-      this.$emit('save-requested', this.itemEntity);
+      this.$emit('save-requested', this.item);
     }
   },
 
-
-  created() {
-
-    this.receptionStage = this.itemEntity?.receptionStage || new ReceptionStage({});
-
-    console.log('===============', this.receptionStage);
-
-    console.log('Reception Stage Detail component created');
-  }
 }
 
 </script>
@@ -58,122 +44,108 @@ export default {
 
 
   <create-and-edit
-      :entity="receptionStage"
+      :entity="item"
       :edit="edit"
       :visible="visible"
-      :entity-name="receptionStage.stage || 'Recepción'"
+      :entity-name='"Recepción"'
       @canceled-shared="onCancelRequested"
       @saved-shared="onSaveRequested($event)"
   >
     <template #content>
+
       <div class="field">
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="registeredBy">Registrado por</label>
+        <pv-float-label  class="field mt-5">
+          <label for="employee">Registrado por</label>
           <pv-input-text
               class="w-full"
-              id="registeredBy"
-              v-model="receptionStage.registeredBy"
-              :class="{ 'p-invalid': submitted && !receptionStage.registeredBy }"
+              id="employee"
+              v-model="item.employee"
+              :class="{ 'p-invalid': submitted && !item.employee }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="startDate">Fecha de inicio</label>
+        <pv-float-label  class="field mt-5">
+          <label for="startDate">Fecha de Inicio</label>
           <pv-calendar
               class="w-full"
               id="startDate"
-              v-model="receptionStage.startDate"
-              date-format="yy-mm-dd"
-              show-icon
-              :class="{ 'p-invalid': submitted && !receptionStage.startDate }"
+              v-model="item.startDate"
+              type="date"
+              :class="{ 'p-invalid': submitted && !item.startDate }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="endDate">Fecha de fin</label>
+        <pv-float-label  class="field mt-5">
+          <label for="endDate">Fecha de Fin</label>
           <pv-calendar
               class="w-full"
               id="endDate"
-              v-model="receptionStage.endDate"
-              date-format="yy-mm-dd"
-              show-icon
-              :class="{ 'p-invalid': submitted && !receptionStage.endDate }"
+              v-model="item.endDate"
+              type="date"
+              :class="{ 'p-invalid': submitted && !item.endDate }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full" >
-          <label for="sugarLevelBrix">Nivel de azúcar (Brix)</label>
-          <pv-input-number
+        <pv-float-label  class="field mt-5">
+          <label for="sugarLevel">Nivel de Azúcar (%)</label>
+          <pv-input-text
               class="w-full"
-              id="sugarLevelBrix"
-              v-model="receptionStage.sugarLevelBrix"
-              input-id="sugarLevelBrix"
-              :class="{ 'p-invalid': submitted && receptionStage.sugarLevelBrix == null }"
-              :step="0.1"
-              mode="decimal"
+              id="sugarLevel"
+              v-model="item.sugarLevel"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.sugarLevel }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="pH">pH</label>
-          <pv-input-number
+
+        <pv-float-label  class="field mt-5">
+          <label for="pHLevel">Nivel de pH</label>
+          <pv-input-text
               class="w-full"
-              id="pH"
-              v-model="receptionStage.pH"
-              input-id="pH"
-              :class="{ 'p-invalid': submitted && receptionStage.pH == null }"
-              :step="0.1"
-              mode="decimal"
+              id="pHLevel"
+              v-model="item.pHLevel"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.pHLevel }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <pv-float-label  class="field mt-5">
           <label for="temperature">Temperatura (°C)</label>
-          <pv-input-number
+          <pv-input-text
               class="w-full"
               id="temperature"
-              v-model="receptionStage.temperature"
-              input-id="temperature"
-              :class="{ 'p-invalid': submitted && receptionStage.temperature == null }"
-              :step="0.1"
-              mode="decimal"
+              v-model="item.temperature"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.temperature }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="quantityKg">Cantidad (kg)</label>
-          <pv-input-number
+        <pv-float-label  class="field mt-5">
+          <label for="quantityKg">Cantidad (Kg)</label>
+          <pv-input-text
               class="w-full"
               id="quantityKg"
-              v-model="receptionStage.quantityKg"
-              input-id="quantityKg"
-              :class="{ 'p-invalid': submitted && receptionStage.quantityKg == null }"
-              :step="0.1"
-              mode="decimal"
+              v-model="item.quantityKg"
+              type="number"
+              step="0.01"
+              :class="{ 'p-invalid': submitted && !item.quantityKg }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="comments">Comentarios</label>
+        <pv-float-label  class="field mt-5">
+          <label for="comment">Comentario</label>
           <pv-textarea
               class="w-full"
-              id="comments"
-              v-model="receptionStage.comments"
-              rows="3"
-              :class="{ 'p-invalid': submitted && !receptionStage.comments }"
-              auto-resize
+              id="comment"
+              v-model="item.comment"
+              :class="{ 'p-invalid': submitted && !item.comment }"
           />
         </pv-float-label>
 
-        <div class="field-checkbox mt-4 w-full">
-          <pv-checkbox
-              input-id="isCompleted"
-              v-model="receptionStage.isCompleted"
-              :binary="true"
-          />
-          <label for="isCompleted">Completado</label>
-        </div>
 
       </div>
     </template>

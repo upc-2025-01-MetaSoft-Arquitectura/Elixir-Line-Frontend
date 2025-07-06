@@ -1,18 +1,4 @@
 
-/*
-{
-  "id": 1,
-  "name": "Campaña 2023",
-  "year": "2023",
-  "winegrowerId": 5,
-  "batches": 10,
-  "status": "EN_PROCESO",
-  "startDate": "2023-01-01",
-  "endDate": "2023-12-31"
-}
- */
-
-
 export class Campaign {
 
     constructor(

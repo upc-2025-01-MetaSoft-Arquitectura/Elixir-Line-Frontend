@@ -145,6 +145,13 @@ export default {
 
         <slot name="custom-columns-manager"></slot>
 
+        <template #empty>
+          <div class="p-4 text-center text-gray-600">
+              <i class="pi pi-inbox text-2xl text-blue-400"></i>
+              <p class="text-base">Aún no se han agregado datos.</p>
+          </div>
+        </template>
+
         <pv-column
             v-if="dynamic"
             v-for="column in columns"
