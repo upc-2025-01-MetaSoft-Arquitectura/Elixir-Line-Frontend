@@ -64,7 +64,7 @@ export default {
 
     //#region Event Handlers
     onNewItem() {
-      this.fermentationStage = this.item;
+      this.fermentationStage = new FermentationStage({});
       console.log('======================= NEW ITEM MANAGEMENT', this.fermentationStage);
       this.isEdit = false;
       this.submitted = false;
@@ -104,6 +104,21 @@ export default {
 
     //#region CRUD Operations
     create() {
+
+      this.createFermentationStage.employee = this.fermentationStage.employee;
+      this.createFermentationStage.startDate = this.fermentationStage.startDate ? this.fermentationStage.startDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+      this.createFermentationStage.endDate = this.fermentationStage.endDate ? this.fermentationStage.endDate.toISOString().split('T')[0] : null;
+      this.createFermentationStage.yeastUsed = this.fermentationStage.yeastUsed ? parseFloat(this.fermentationStage.yeastUsed) : 0;
+      this.createFermentationStage.fermentationType = this.fermentationStage.fermentationType;
+      this.createFermentationStage.initialSugarLevel = this.fermentationStage.initialSugarLevel ? parseFloat(this.fermentationStage.initialSugarLevel) : 0;
+      this.createFermentationStage.finalSugarLevel = this.fermentationStage.finalSugarLevel ? parseFloat(this.fermentationStage.finalSugarLevel) : 0;
+      this.createFermentationStage.initialPH = this.fermentationStage.initialPH ? parseFloat(this.fermentationStage.initialPH) : 0;
+      this.createFermentationStage.finalPH = this.fermentationStage.finalPH ? parseFloat(this.fermentationStage.finalPH) : 0;
+      this.createFermentationStage.maxTemperature = this.fermentationStage.maxTemperature ? parseFloat(this.fermentationStage.maxTemperature) : 0;
+      this.createFermentationStage.minTemperature = this.fermentationStage.minTemperature ? parseFloat(this.fermentationStage.minTemperature) : 0;
+      this.createFermentationStage.tankCode = this.fermentationStage.tankCode ? this.fermentationStage.tankCode : '';
+      this.createFermentationStage.comment = this.fermentationStage.comment ? this.fermentationStage.comment : '';
+
 
       this.fermentationStageApiService.create(this.batchId, this.fermentationStage).then(response => {
 

@@ -96,14 +96,14 @@ export default {
     create() {
       console.log('== CREANDO RECEPTION: ==', this.receptionStage);
 
-      this.createReceptionStage.employee = this.receptionStage.employee;
-      this.createReceptionStage.startDate = this.receptionStage.startDate;
-      this.createReceptionStage.endDate = this.receptionStage.endDate;
-      this.createReceptionStage.temperature = this.receptionStage.temperature;
-      this.createReceptionStage.pHLevel = this.receptionStage.pHLevel;
-      this.createReceptionStage.sugarLevel = this.receptionStage.sugarLevel;
-      this.createReceptionStage.quantityKg = this.receptionStage.quantityKg;
-      this.createReceptionStage.comment = this.receptionStage.comment;
+      this.createReceptionStage.employee = this.receptionStage.employee ? this.receptionStage.employee : ''; // Asignar cadena vacía si no está definida
+      this.createReceptionStage.startDate = this.receptionStage.startDate ? this.receptionStage.startDate : new Date().toISOString().split('T')[0]; // Asignar fecha actual si no está definida
+      this.createReceptionStage.endDate = this.receptionStage.endDate ? this.receptionStage.endDate : null; // Asignar null si no está definida
+      this.createReceptionStage.temperature = this.receptionStage.temperature ? parseFloat(this.receptionStage.temperature) : 0.0; // Asignar 0.0 si no está definida
+      this.createReceptionStage.pHLevel = this.receptionStage.pHLevel ? parseFloat(this.receptionStage.pHLevel) : 0.0; // Asignar 0.0 si no está definida
+      this.createReceptionStage.sugarLevel = this.receptionStage.sugarLevel ? parseFloat(this.receptionStage.sugarLevel) : 0.0; // Asignar 0.0 si no está definida
+      this.createReceptionStage.quantityKg = this.receptionStage.quantityKg ? parseFloat(this.receptionStage.quantityKg) : 0.0; // Asignar 0.0 si no está definida
+      this.createReceptionStage.comment = this.receptionStage.comment ? this.receptionStage.comment : ''; // Asignar cadena vacía si no está definida
 
       this.receptionStageApiService.create(this.batchId, this.createReceptionStage).then(response => {
 
@@ -119,7 +119,7 @@ export default {
     },
 
     update() {
-      this.receptionStageApiService.patch(this.receptionStage.id, this.receptionStage).then(response => {
+      this.receptionStageApiService.patch(this.batchId, this.receptionStage).then(response => {
 
         this.receptionStage = new ReceptionStage(response.data);
 

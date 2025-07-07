@@ -56,7 +56,7 @@ export default {
 
     //#region Event Handlers
     onNewItem() {
-      this.correctionStage = this.item;
+      this.correctionStage = new CorrectionStage({});
       console.log('======================= NEW ITEM MANAGEMENT', this.correctionStage);
       this.isEdit = false;
       this.submitted = false;
@@ -64,8 +64,10 @@ export default {
     },
 
     onEditItem(item) {
-      console.log('======================= EDIT ITEM MANAGEMENT', item);
+
       this.correctionStage = new CorrectionStage(item);
+
+
       this.isEdit = true;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
@@ -96,7 +98,23 @@ export default {
 
     //#region CRUD Operations
     create() {
-      this.correctionStageApiService.create(this.batchId, this.correctionStage).then(response => {
+
+      this.createCorrectionStage.employee = this.correctionStage.employee;
+      this.createCorrectionStage.startDate = this.correctionStage.startDate ? this.correctionStage.startDate : new Date().toISOString().split('T')[0]; // Asignar fecha actual si no está definida
+      this.createCorrectionStage.endDate = this.correctionStage.endDate ? this.correctionStage.endDate : null; // Asignar null si no está definida
+      this.createCorrectionStage.initialSugarLevel = this.correctionStage.initialSugarLevel ? parseFloat(this.correctionStage.initialSugarLevel) : 0.0;
+      this.createCorrectionStage.finalSugarLevel = this.correctionStage.finalSugarLevel ? parseFloat(this.correctionStage.finalSugarLevel) : 0.0;
+      this.createCorrectionStage.addedSugar = this.correctionStage.addedSugar ? parseFloat(this.correctionStage.addedSugar) : 0.0;
+      this.createCorrectionStage.initialPH = this.correctionStage.initialPH ? parseFloat(this.correctionStage.initialPH) : 0.0;
+      this.createCorrectionStage.finalPH = this.correctionStage.finalPH ? parseFloat(this.correctionStage.finalPH) : 0.0;
+      this.createCorrectionStage.acidType = this.correctionStage.acidType ? this.correctionStage.acidType : null;
+      this.createCorrectionStage.addedAcid = this.correctionStage.addedAcid ? parseFloat(this.correctionStage.addedAcid) : 0.0;
+      this.createCorrectionStage.addedSulphites = this.correctionStage.addedSulphites ? parseFloat(this.correctionStage.addedSulphites) : 0.0;
+      this.createCorrectionStage.nutrients = this.correctionStage.nutrients && this.correctionStage.nutrients.length > 0 ? this.correctionStage.nutrients : [];
+      this.createCorrectionStage.justification = this.correctionStage.justification ? this.correctionStage.justification : ' ';
+      this.createCorrectionStage.comment = this.correctionStage.comment ? this.correctionStage.comment : ' ';
+
+      this.correctionStageApiService.create(this.batchId, this.createCorrectionStage).then(response => {
 
         this.correctionStage = new CorrectionStage(response.data);
 

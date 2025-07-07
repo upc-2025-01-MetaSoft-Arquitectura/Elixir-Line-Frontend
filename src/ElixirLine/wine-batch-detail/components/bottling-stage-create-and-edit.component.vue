@@ -91,11 +91,10 @@ export default {
         <!-- Campo: Fecha de inicio -->
         <pv-float-label class="field mt-5">
           <label for="startDate">Fecha de inicio</label>
-          <pv-input-text
+          <pv-calendar
               class="w-full"
               id="startDate"
               v-model="item.startDate"
-              type="date"
               :class="{ 'p-invalid': submitted && !item.startDate }"
           />
         </pv-float-label>
@@ -103,11 +102,10 @@ export default {
         <!-- Campo: Fecha de fin -->
         <pv-float-label class="field mt-5">
           <label for="endDate">Fecha de fin</label>
-          <pv-input-text
+          <pv-calendar
               class="w-full"
               id="endDate"
               v-model="item.endDate"
-              type="date"
               :class="{ 'p-invalid': submitted && !item.endDate }"
           />
         </pv-float-label>
@@ -198,42 +196,34 @@ export default {
 
 
         <!-- Campo: Filtrado previo al embotellado -->
-        <pv-float-label class="field mt-5">
-          <label for="filteredBeforeBottling">Filtrado previo al embotellado</label>
-          <pv-input-text
-              class="w-full"
-              id="filteredBeforeBottling"
+        <div class="field-checkbox mt-5">
+          <pv-checkbox
+              inputId="filteredBeforeBottling"
               v-model="item.filteredBeforeBottling"
-              type="checkbox"
-              :class="{ 'p-invalid': submitted && item.filteredBeforeBottling === null }"
+              :binary="true"
           />
-        </pv-float-label>
-
+          <label for="filteredBeforeBottling">Filtrado previo al embotellado</label>
+        </div>
 
         <!-- Campo: Etiquetas en esta etapa -->
-        <pv-float-label class="field mt-5">
-          <label for="labelsAtThisStage">Etiquetas en esta etapa</label>
-          <pv-input-text
-              class="w-full"
-              id="labelsAtThisStage"
+        <div class="field-checkbox mt-5">
+          <pv-checkbox
+              inputId="labelsAtThisStage"
               v-model="item.labelsAtThisStage"
-              type="checkbox"
-              :class="{ 'p-invalid': submitted && item.labelsAtThisStage === null }"
+              :binary="true"
           />
-        </pv-float-label>
+          <label for="labelsAtThisStage">Etiquetas en esta etapa</label>
+        </div>
 
         <!-- Campo: Aplicación de cápsula o sello -->
-        <pv-float-label class="field mt-5">
-          <label for="capsuleOrSealApplication">Aplicación de cápsula o sello</label>
-          <pv-input-text
-              class="w-full"
-              id="capsuleOrSealApplication"
+        <div class="field-checkbox mt-5">
+          <pv-checkbox
+              inputId="capsuleOrSealApplication"
               v-model="item.capsuleOrSealApplication"
-              type="checkbox"
-              :class="{ 'p-invalid': submitted && item.capsuleOrSealApplication === null }"
+              :binary="true"
           />
-        </pv-float-label>
-
+          <label for="capsuleOrSealApplication">Aplicación de cápsula o sello</label>
+        </div>
 
         <!-- Campo: Comentario -->
         <pv-float-label class="field mt-5">

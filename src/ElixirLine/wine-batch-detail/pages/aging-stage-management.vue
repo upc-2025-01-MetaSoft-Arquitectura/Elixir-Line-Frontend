@@ -101,6 +101,29 @@ export default {
     //#region CRUD Operations
     create() {
 
+      this.createAgingStage.employee = this.agingStage.employee;
+      // formato de fecha yyyy-mm-dd
+      // Para startDate, en caso sea nulo se asigna la fecha actual.
+      this.createAgingStage.startDate = this.agingStage.endDate ? this.agingStage.endDate : new Date().toISOString().split('T')[0];
+      // formato de fecha yyyy-mm-dd
+      // Para endDate, asignar la fecha de inicio más un día si es nulo.
+      this.createAgingStage.endDate = this.agingStage.endDate ? this.agingStage.endDate : new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
+
+      this.createAgingStage.containerType = this.agingStage.containerType;
+      this.createAgingStage.material = this.agingStage.material;
+      this.createAgingStage.containerCode = this.agingStage.containerCode;
+      // Asignar el volumen, asegurando que sea un número
+      this.createAgingStage.averageTemperature = this.agingStage.averageTemperature ? parseFloat(this.agingStage.averageTemperature) : 0.0;
+      this.createAgingStage.volume = this.agingStage.volume ? parseFloat(this.agingStage.volume) : 0.0;
+      this.createAgingStage.duration = this.agingStage.duration ? parseInt(this.agingStage.duration) : 0;
+      this.createAgingStage.frequency = this.agingStage.frequency ? parseInt(this.agingStage.frequency) : 0;
+      this.createAgingStage.batonnage = this.agingStage.batonnage ? parseFloat(this.agingStage.batonnage) : 0.0;
+      this.createAgingStage.refills = this.agingStage.refills ? parseInt(this.agingStage.refills) : 0;
+      this.createAgingStage.rackings = this.agingStage.rackings ? parseInt(this.agingStage.rackings) : 0;
+      this.createAgingStage.purpose = this.agingStage.purpose;
+      this.createAgingStage.comment = this.agingStage.comment;
+
+
       this.agingStageApiService.create(this.batchId, this.agingStage).then(response => {
 
         this.agingStage = new AgingStage(response.data);

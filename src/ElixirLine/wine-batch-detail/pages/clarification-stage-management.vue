@@ -26,7 +26,6 @@ export default {
     },
   },
 
-
   data() {
     return {
       title: { singular: 'Etapa de Fermentación', plural: 'Etapa de Fermentación' },
@@ -53,7 +52,6 @@ export default {
 
     }
   },
-
 
   computed: {
     canAddStage() {
@@ -111,7 +109,32 @@ export default {
     //#region CRUD Operations
     create() {
 
-      this.clarificationStageApiService.create(this.batchId, this.clarificationStage).then(response => {
+      // Formatear en los tipos de datos correctos
+      this.createClarificationStage.employee = this.clarificationStage.employee;
+      // formato de fecha yyyy-mm-dd
+      // Para startDate, en caso sea nulo se asigna la fecha actual.
+      this.createClarificationStage.startDate = this.clarificationStage.endDate ? this.clarificationStage.endDate : new Date().toISOString().split('T')[0];
+      // formato de fecha yyyy-mm-dd
+      // Para endDate, asignar la fecha de inicio más un día si es nulo.
+      this.createClarificationStage.endDate = this.clarificationStage.endDate ? this.clarificationStage.endDate : new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
+      this.createClarificationStage.methodUsed = this.clarificationStage.methodUsed;
+      // Asegurarse de que initialTurbidity sea un número
+      this.createClarificationStage.initialTurbidity = this.clarificationStage.initialTurbidity ? parseFloat(this.clarificationStage.initialTurbidity) : 0.0;
+      // Asegurarse de que finalTurbidity sea un número
+      this.createClarificationStage.finalTurbidity = this.clarificationStage.finalTurbidity ? parseFloat(this.clarificationStage.finalTurbidity) : 0.0;
+      // Asegurarse de que volume sea un número
+      this.createClarificationStage.volume = this.clarificationStage.volume ? parseFloat(this.clarificationStage.volume) : 0.0;
+      // Asegurarse de que temperature sea un número
+      this.createClarificationStage.temperature = this.clarificationStage.temperature ? parseFloat(this.clarificationStage.temperature) : 0.0;
+      // Asegurarse de que duration sea un número
+      this.createClarificationStage.duration = this.clarificationStage.duration ? parseInt(this.clarificationStage.duration) : 1;
+      // Asegurarse de que clarifyingAgents sea un objeto
+      this.createClarificationStage.clarifyingAgents = this.clarificationStage.clarifyingAgents;
+      // Asegurarse de que comment sea una cadena
+      this.createClarificationStage.comment = this.clarificationStage.comment;
+
+
+      this.clarificationStageApiService.create(this.batchId, this.createClarificationStage).then(response => {
 
         this.clarificationStage = new ClarificationStage(response.data);
 

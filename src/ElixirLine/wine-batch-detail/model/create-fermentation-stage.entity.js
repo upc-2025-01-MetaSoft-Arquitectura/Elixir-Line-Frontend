@@ -31,8 +31,8 @@ export class CreateFermentationStage {
         finalPH = 0.1, // Default to 0.1
         maxTemperature = 0.1, // Default to 0.1°C
         minTemperature = 0.1, // Default to 0.1°C
-        tankCode = null,
-        comment = null
+        tankCode = '',
+        comment = ''
     }) {
         this.employee = employee;
         this.startDate = startDate;

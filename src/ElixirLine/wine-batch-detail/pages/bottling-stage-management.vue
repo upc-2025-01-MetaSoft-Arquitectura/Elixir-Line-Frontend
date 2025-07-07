@@ -103,6 +103,47 @@ export default {
     //#region CRUD Operations
     create() {
 
+      /*
+       employee = null,
+        startDate = null,
+        endDate = null,
+        bottlingLine = null,
+        filledBottles = 0,
+        bottleVolume = 750, // Default to 750ml
+        totalVolume = 0, // Calculated as filledBottles * bottleVolume
+        sealingType = null,
+        vineyardCode = null,
+        temperature = null,
+        filteredBeforeBottling = false,
+        labelsAtThisStage = false,
+        capsuleOrSealApplication = false,
+        comment = null
+       */
+
+
+      this.createBottlingStage.employee = this.bottlingStage.employee;
+      // formato de fecha yyyy-mm-dd
+      // Para startDate, en caso sea nulo se asigna la fecha actual.
+      this.createBottlingStage.startDate = this.bottlingStage.endDate ? this.bottlingStage.endDate : new Date().toISOString().split('T')[0];
+      // formato de fecha yyyy-mm-dd
+      // Para endDate, asignar la fecha de inicio más un día si es nulo.
+      this.createBottlingStage.endDate = this.bottlingStage.endDate ? this.bottlingStage.endDate : new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
+      this.createBottlingStage.bottlingLine = this.bottlingStage.bottlingLine;
+      // Asegurarse de que sea un número | formatear a numero
+      this.createBottlingStage.filledBottles =  this.bottlingStage.endDate ? parseInt(this.bottlingStage.filledBottles) : 0;
+      this.createBottlingStage.bottleVolume = this.bottlingStage.bottleVolume ? parseInt(this.bottlingStage.bottleVolume) : 750; // Default to 750ml
+      this.createBottlingStage.totalVolume = this.bottlingStage.totalVolume ? parseInt(this.bottlingStage.totalVolume) : this.createBottlingStage.filledBottles * this.createBottlingStage.bottleVolume;
+      this.createBottlingStage.sealingType = this.bottlingStage.sealingType;
+      this.createBottlingStage.vineyardCode = this.bottlingStage.vineyardCode;
+      this.createBottlingStage.temperature = this.bottlingStage.temperature ? parseFloat(this.bottlingStage.temperature) : null;
+      this.createBottlingStage.filteredBeforeBottling = this.bottlingStage.filteredBeforeBottling;
+      this.createBottlingStage.labelsAtThisStage = this.bottlingStage.labelsAtThisStage;
+      this.createBottlingStage.capsuleOrSealApplication = this.bottlingStage.capsuleOrSealApplication;
+      this.createBottlingStage.comment = this.bottlingStage.comment;
+
+
+
+
       this.bottlingStageApiService.create(this.batchId, this.bottlingStage).then(response => {
 
         this.bottlingStage = new BottlingStage(response.data);

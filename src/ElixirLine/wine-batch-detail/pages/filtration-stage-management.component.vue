@@ -104,6 +104,56 @@ export default {
     //#region CRUD Operations
     create() {
 
+
+      /*
+            employee = null,
+            startDate = null,
+            endDate = null,
+            filterType = null,
+            filterMedium = null,
+            porosity = 0.0,
+            initialTurbidity = 0.0,
+            finalTurbidity = 0.0,
+            temperature = 0.0,
+            pressure = 0.0,
+            filteredVolume = 0.0,
+            sterileFiltration = false,
+            changedFiltration = false,
+            changeReason = null,
+            comment = null
+       */
+
+      this.createFiltrationStage.employee = this.filtrationStage.employee;
+      // formato de fecha yyyy-mm-dd
+      // Para startDate, en caso sea nulo se asigna la fecha actual.
+      this.createFiltrationStage.startDate = this.filtrationStage.endDate ? this.filtrationStage.endDate : new Date().toISOString().split('T')[0];
+      // formato de fecha yyyy-mm-dd
+      // Para endDate, asignar la fecha de inicio más un día si es nulo.
+      this.createFiltrationStage.endDate = this.filtrationStage.endDate ? this.filtrationStage.endDate : new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
+      this.createFiltrationStage.filterType = this.filtrationStage.filterType;
+      this.createFiltrationStage.filterMedium = this.filtrationStage.filterMedium;
+      // Asegurarse de que sea un número
+      this.createFiltrationStage.porosity = this.filtrationStage.porosity ? parseFloat(this.filtrationStage.porosity) : 0.0;
+      // Asegurarse de que sea un número
+      this.createFiltrationStage.initialTurbidity = this.filtrationStage.initialTurbidity ? parseFloat(this.filtrationStage.initialTurbidity) : 0.0;
+      // Asegurarse de que sea un número
+      this.createFiltrationStage.finalTurbidity = this.filtrationStage.finalTurbidity ? parseFloat(this.filtrationStage.finalTurbidity) : 0.0;
+      // Asegurarse de que sea un número
+      this.createFiltrationStage.temperature = this.filtrationStage.temperature ? parseFloat(this.filtrationStage.temperature) : 0.0;
+      // Asegurarse de que sea un número
+      this.createFiltrationStage.pressure = this.filtrationStage.pressure ? parseFloat(this.filtrationStage.pressure) : 0.0;
+      // Asegurarse de que sea un número
+      this.createFiltrationStage.filteredVolume = this.filtrationStage.filteredVolume ? parseFloat(this.filtrationStage.filteredVolume) : 0.0;
+      this.createFiltrationStage.sterileFiltration = this.filtrationStage.sterileFiltration;
+      this.createFiltrationStage.changedFiltration = this.filtrationStage.changedFiltration;
+      this.createFiltrationStage.changeReason = this.filtrationStage.changeReason;
+      this.createFiltrationStage.comment = this.filtrationStage.comment;
+
+
+
+
+
+
       this.filtrationStageApiService.create(this.batchId, this.filtrationStage).then(response => {
 
         this.filtrationStage = new FiltrationStage(response.data);

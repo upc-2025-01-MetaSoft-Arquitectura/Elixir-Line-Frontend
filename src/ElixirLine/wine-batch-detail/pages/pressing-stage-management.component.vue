@@ -111,6 +111,36 @@ export default {
     //#region CRUD Operations
     create() {
 
+      /*
+            employee = null,
+            startDate = null,
+            endDate = null,
+            pressType = null,
+            pressure = 0.0,
+            duration = 0, // Duration in seconds
+            pomadeWeight = 0.0, // Weight of the pomace in kg
+            mustYield = 0.0, // Yield percentage
+            mustUsage = null, // Usage of the must
+            comment = null
+       */
+
+      this.createPressingStage.employee = this.fermentationStage.employee;
+      // formato de fecha yyyy-mm-dd
+      // Para startDate, en caso sea nulo se asigna la fecha actual.
+      this.createPressingStage.startDate = this.fermentationStage.endDate ? this.fermentationStage.endDate : new Date().toISOString().split('T')[0];
+      // formato de fecha yyyy-mm-dd
+      // Para endDate, asignar la fecha de inicio más un día si es nulo.
+      this.createPressingStage.endDate = this.fermentationStage.endDate ? this.fermentationStage.endDate : new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
+      this.createPressingStage.pressType = this.fermentationStage.pressType;
+      //formatear float
+      this.createPressingStage.pressure = this.fermentationStage.pressure ? parseFloat(this.fermentationStage.pressure.toFixed(2)) : 0.0;
+      this.createPressingStage.duration = this.fermentationStage.duration ? parseInt(this.fermentationStage.duration) : 0;
+      this.createPressingStage.pomadeWeight = this.fermentationStage.pomadeWeight ? parseFloat(this.fermentationStage.pomadeWeight.toFixed(2)) : 0.0;
+      this.createPressingStage.yield = this.fermentationStage.yield ? parseFloat(this.fermentationStage.yield.toFixed(2)) : 0.0;
+      this.createPressingStage.mustUsage = this.fermentationStage.mustUsage;
+      this.createPressingStage.comment = this.fermentationStage.comment;
+
+
       this.pressingStageApiService.create(this.batchId, this.pressingStage).then(response => {
 
         this.pressingStage = new PressingStage(response.data);
@@ -337,25 +367,25 @@ export default {
               <p><strong>Uso del Mosto:</strong> {{ pressingStage.mustUsage }}</p>
             </div>
 
-          </div>
 
-          <!-- Comentario -->
-          <div class="mt-4 w-full">
-            <p><strong>Comentario:</strong></p>
-            <p class="text-gray-700 ">{{ pressingStage.comment || 'No hay comentarios.' }}</p>
-          </div>
+            <!-- Comentario -->
+            <div class="mt-4 w-full">
+              <p><strong>Comentario:</strong></p>
+              <p class="text-gray-700 ">{{ pressingStage.comment || 'No hay comentarios.' }}</p>
+            </div>
 
-          <!-- Visualización de estado -->
-          <div class="flex align-items-center gap-2 mt-4">
-            <i
-                class="pi text-xl"
-                :class="pressingStage.completionStatus === 'COMPLETED' ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"
-            ></i>
-            <span class="text-lg font-medium">
+            <!-- Visualización de estado -->
+            <div class="flex align-items-center gap-2 mt-4">
+              <i
+                  class="pi text-xl"
+                  :class="pressingStage.completionStatus === 'COMPLETED' ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"
+              ></i>
+              <span class="text-lg font-medium">
             {{ pressingStage.completionStatus === 'COMPLETED' ? 'Etapa completada' : 'Etapa no completada' }}
             </span>
-          </div>
+            </div>
 
+          </div>
         </template>
 
       </pv-card>

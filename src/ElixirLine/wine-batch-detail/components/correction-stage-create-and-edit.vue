@@ -2,7 +2,6 @@
 
 import CreateAndEdit from "../../../shared/components/create-and-edit.component.vue";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
-import {CorrectionStage} from "../model/correctionStage.entity.js";
 
 export default {
   name: 'correction-stage-create-and-edit',
@@ -51,28 +50,6 @@ export default {
       @canceled-shared="onCancelRequested"
       @saved-shared="onSaveRequested($event)"
   >
-
-    <!-- Content slot for additional fields or information
-    {
-      "employee": "string",
-      "startDate": "2025-07-06",
-      "endDate": "2025-07-06",
-      "initialSugarLevel": 0.1,
-      "finalSugarLevel": 0.1,
-      "addedSugar": 0.1,
-      "initialPH": 0.1,
-      "finalPH": 0.1,
-      "acidType": "string",
-      "addedAcid": 0.1,
-      "addedSulphites": 0.1,
-      "nutrients": [
-        "string"
-      ],
-      "justification": "string",
-      "comment": "string",
-      "completionStatus": "COMPLETED"
-    }
-    -->
 
     <template #content>
 

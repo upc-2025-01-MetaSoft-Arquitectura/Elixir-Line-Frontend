@@ -93,7 +93,6 @@ export default {
               class="w-full"
               id="startDate"
               v-model="item.startDate"
-              :show-time="true"
               :class="{ 'p-invalid': submitted && !item.startDate }"
           />
         </pv-float-label>
@@ -105,7 +104,6 @@ export default {
               class="w-full"
               id="endDate"
               v-model="item.endDate"
-              :show-time="true"
               :class="{ 'p-invalid': submitted && !item.endDate }"
           />
         </pv-float-label>
