@@ -2,8 +2,8 @@
 /*
 {
   "employee": "string",
-  "startDate": "2025-07-03",
-  "endDate": "2025-07-03",
+  "startDate": "2025-07-07",
+  "endDate": "2025-07-07",
   "filterType": "string",
   "filterMedium": "string",
   "porosity": 0.1,
@@ -15,31 +15,31 @@
   "sterileFiltration": true,
   "changedFiltration": true,
   "changeReason": "string",
-  "comment": "string",
-  "completionStatus": "COMPLETED"
+  "comment": "string"
 }
- */
+*/
 
-export class UpdateFiltrationStageEntity {
+
+
+export class CreateFiltrationStage {
 
     constructor(
         {
-            employee,
-            startDate,
-            endDate,
-            filterType,
-            filterMedium,
-            porosity,
-            initialTurbidity,
-            finalTurbidity,
-            temperature,
-            pressure,
-            filteredVolume,
-            sterileFiltration,
-            changedFiltration,
-            changeReason,
-            comment,
-            completionStatus
+            employee = null,
+            startDate = null,
+            endDate = null,
+            filterType = null,
+            filterMedium = null,
+            porosity = 0.0,
+            initialTurbidity = 0.0,
+            finalTurbidity = 0.0,
+            temperature = 0.0,
+            pressure = 0.0,
+            filteredVolume = 0.0,
+            sterileFiltration = false,
+            changedFiltration = false,
+            changeReason = null,
+            comment = null
         }
     ) {
         this.employee = employee;
@@ -57,7 +57,6 @@ export class UpdateFiltrationStageEntity {
         this.changedFiltration = changedFiltration;
         this.changeReason = changeReason;
         this.comment = comment;
-        this.completionStatus = completionStatus;
     }
 
 }

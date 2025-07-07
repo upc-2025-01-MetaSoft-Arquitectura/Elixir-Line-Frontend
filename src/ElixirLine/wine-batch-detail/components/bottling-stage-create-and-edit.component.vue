@@ -1,7 +1,6 @@
 <script>
 
 import CreateAndEdit from "../../../shared/components/create-and-edit.component.vue";
-import {BottlingStage} from "../model/bottlingStage.entity.js";
 
 export default {
 
@@ -50,52 +49,71 @@ export default {
       :entity="item"
       :edit="edit"
       :visible="visible"
-      :entity-name="item.stage || 'Embotellado'"
+      :entity-name="'Embotellado'"
       @canceled-shared="onCancelRequested"
       @saved-shared="onSaveRequested($event)"
   >
 
-    <!-- Content slot for the form fields -->
+    <!-- Content slot for the form fields
+    {
+      "employee": "string",
+      "startDate": "2025-07-07",
+      "endDate": "2025-07-07",
+      "bottlingLine": "string",
+      "filledBottles": 1073741824,
+      "bottleVolume": 0.1,
+      "totalVolume": 0.1,
+      "sealingType": "string",
+      "vineyardCode": "string",
+      "temperature": 0.1,
+      "filteredBeforeBottling": true,
+      "labelsAtThisStage": true,
+      "capsuleOrSealApplication": true,
+      "comment": "string"
+    }
+    -->
 
     <template #content>
 
       <div class="field">
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="registeredBy">Registrado por</label>
+        <!-- Campo: Registrado por -->
+        <pv-float-label class="field mt-5">
+          <label for="employee">Registrado por</label>
           <pv-input-text
               class="w-full"
-              id="registeredBy"
-              v-model="item.registeredBy"
-              :class="{ 'p-invalid': submitted && !item.registeredBy }"
+              id="employee"
+              v-model="item.employee"
+              :class="{ 'p-invalid': submitted && !item.employee }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <!-- Campo: Fecha de inicio -->
+        <pv-float-label class="field mt-5">
           <label for="startDate">Fecha de inicio</label>
-          <pv-calendar
+          <pv-input-text
               class="w-full"
               id="startDate"
               v-model="item.startDate"
-              date-format="yy-mm-dd"
-              show-icon
+              type="date"
               :class="{ 'p-invalid': submitted && !item.startDate }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <!-- Campo: Fecha de fin -->
+        <pv-float-label class="field mt-5">
           <label for="endDate">Fecha de fin</label>
-          <pv-calendar
+          <pv-input-text
               class="w-full"
               id="endDate"
               v-model="item.endDate"
-              date-format="yy-mm-dd"
-              show-icon
+              type="date"
               :class="{ 'p-invalid': submitted && !item.endDate }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <!-- Campo: Línea de embotellado -->
+        <pv-float-label class="field mt-5">
           <label for="bottlingLine">Línea de embotellado</label>
           <pv-input-text
               class="w-full"
@@ -105,119 +123,130 @@ export default {
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="bottlesFilled">Botellas llenas</label>
+        <!-- Campo: Botellas llenas -->
+        <pv-float-label class="field mt-5">
+          <label for="filledBottles">Botellas llenas</label>
           <pv-input-text
               class="w-full"
-              id="bottlesFilled"
-              v-model.number="item.bottlesFilled"
-              :class="{ 'p-invalid': submitted && !item.bottlesFilled }"
+              id="filledBottles"
+              v-model.number="item.filledBottles"
+              type="number"
+              :class="{ 'p-invalid': submitted && !item.filledBottles }"
+          />
+        </pv-float-label>
+
+        <!-- Campo: Volumen de botella -->
+        <pv-float-label class="field mt-5">
+          <label for="bottleVolume">Volumen de botella (L)</label>
+          <pv-input-text
+              class="w-full"
+              id="bottleVolume"
+              v-model.number="item.bottleVolume"
+              type="number"
+              :class="{ 'p-invalid': submitted && !item.bottleVolume }"
           />
         </pv-float-label>
 
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="bottleVolumeMl">Volumen de botella (ml)</label>
+        <!-- Campo: Volumen total -->
+        <pv-float-label class="field mt-5">
+          <label for="totalVolume">Volumen total (L)</label>
           <pv-input-text
               class="w-full"
-              id="bottleVolumeMl"
-              v-model.number="item.bottleVolumeMl"
-              :class="{ 'p-invalid': submitted && !item.bottleVolumeMl }"
+              id="totalVolume"
+              v-model.number="item.totalVolume"
+              type="number"
+              :class="{ 'p-invalid': submitted && !item.totalVolume }"
           />
         </pv-float-label>
 
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="totalVolumeLiters">Volumen total (litros)</label>
+        <!-- Campo: Tipo de sellado -->
+        <pv-float-label class="field mt-5">
+          <label for="sealingType">Tipo de sellado</label>
           <pv-input-text
               class="w-full"
-              id="totalVolumeLiters"
-              v-model.number="item.totalVolumeLiters"
-              :class="{ 'p-invalid': submitted && !item.totalVolumeLiters }"
+              id="sealingType"
+              v-model="item.sealingType"
+              :class="{ 'p-invalid': submitted && !item.sealingType }"
+          />
+        </pv-float-label>
+
+        <!-- Campo: Código de viñedo -->
+        <pv-float-label class="field mt-5">
+          <label for="vineyardCode">Código de viñedo</label>
+          <pv-input-text
+              class="w-full"
+              id="vineyardCode"
+              v-model="item.vineyardCode"
+              :class="{ 'p-invalid': submitted && !item.vineyardCode }"
           />
         </pv-float-label>
 
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="sealType">Tipo de sello</label>
-          <pv-input-text
-              class="w-full"
-              id="sealType"
-              v-model="item.sealType"
-              :class="{ 'p-invalid': submitted && !item.sealType }"
-          />
-        </pv-float-label>
-
-
-        <pv-float-label class="field mt-4 w-full">
-          <label for="code">Código</label>
-          <pv-input-text
-              class="w-full"
-              id="code"
-              v-model="item.code"
-              :class="{ 'p-invalid': submitted && !item.code }"
-          />
-        </pv-float-label>
-
-
-        <pv-float-label class="field mt-4 w-full">
+        <!-- Campo: Temperatura (°C) -->
+        <pv-float-label class="field mt-5">
           <label for="temperature">Temperatura (°C)</label>
           <pv-input-text
               class="w-full"
               id="temperature"
               v-model.number="item.temperature"
-              :class="{ 'p-invalid': submitted && !item.temperature }"
+              type="number"
+              :class="{ 'p-invalid': submitted && item.temperature === null }"
           />
         </pv-float-label>
 
-        <div class="field-checkbox mt-4 w-full">
-          <pv-checkbox
-              id="wasFiltered"
-              v-model="item.wasFiltered"
-              :class="{ 'p-invalid': submitted && !item.wasFiltered }"
-              inputId="wasFiltered"
-              label="¿Fue filtrado?"
-          />
-        </div>
 
-        <div class="field-checkbox mt-4 w-full">
-          <pv-checkbox
-              id="wereLabelsApplied"
-              v-model="item.wereLabelsApplied"
-              :class="{ 'p-invalid': submitted && !item.wereLabelsApplied }"
-              inputId="wereLabelsApplied"
-              label="¿Se aplicaron etiquetas?"
-          />
-        </div>
-
-        <div class="field-checkbox mt-4 w-full">
-          <pv-checkbox
-              id="wereCapsulesApplied"
-              v-model="item.wereCapsulesApplied"
-              :class="{ 'p-invalid': submitted && !item.wereCapsulesApplied }"
-              inputId="wereCapsulesApplied"
-              label="¿Se aplicaron cápsulas?"
-          />
-        </div>
-
-        <pv-float-label class="field mt-4 w-full">
-          <label for="comments">Comentarios</label>
-          <pv-input-textarea
+        <!-- Campo: Filtrado previo al embotellado -->
+        <pv-float-label class="field mt-5">
+          <label for="filteredBeforeBottling">Filtrado previo al embotellado</label>
+          <pv-input-text
               class="w-full"
-              id="comments"
-              v-model="item.comments"
-              :class="{ 'p-invalid': submitted && !item.comments }"
+              id="filteredBeforeBottling"
+              v-model="item.filteredBeforeBottling"
+              type="checkbox"
+              :class="{ 'p-invalid': submitted && item.filteredBeforeBottling === null }"
           />
         </pv-float-label>
 
-        <div class="field-checkbox mt-4 w-full">
-          <pv-checkbox
-              input-id="isCompleted"
-              v-model="item.isCompleted"
-              :binary="true"
+
+        <!-- Campo: Etiquetas en esta etapa -->
+        <pv-float-label class="field mt-5">
+          <label for="labelsAtThisStage">Etiquetas en esta etapa</label>
+          <pv-input-text
+              class="w-full"
+              id="labelsAtThisStage"
+              v-model="item.labelsAtThisStage"
+              type="checkbox"
+              :class="{ 'p-invalid': submitted && item.labelsAtThisStage === null }"
           />
-          <label for="isCompleted">Completado</label>
-        </div>
+        </pv-float-label>
+
+        <!-- Campo: Aplicación de cápsula o sello -->
+        <pv-float-label class="field mt-5">
+          <label for="capsuleOrSealApplication">Aplicación de cápsula o sello</label>
+          <pv-input-text
+              class="w-full"
+              id="capsuleOrSealApplication"
+              v-model="item.capsuleOrSealApplication"
+              type="checkbox"
+              :class="{ 'p-invalid': submitted && item.capsuleOrSealApplication === null }"
+          />
+        </pv-float-label>
+
+
+        <!-- Campo: Comentario -->
+        <pv-float-label class="field mt-5">
+          <label for="comment">Comentario</label>
+          <pv-input-text
+              class="w-full"
+              id="comment"
+              v-model="item.comment"
+              :class="{ 'p-invalid': submitted && !item.comment }"
+          />
+        </pv-float-label>
+
+
 
       </div>
 

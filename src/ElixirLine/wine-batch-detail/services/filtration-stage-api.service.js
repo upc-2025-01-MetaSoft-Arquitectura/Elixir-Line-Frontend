@@ -1,13 +1,13 @@
 import http from "../../../shared/services/http-common.js";
 
-export class CorrectionStageApiService {
+export class FiltrationStageApiService {
     constructor(_resourceEndpoint) {
         this.resourceEndpoint = _resourceEndpoint;
     }
 
 
     // Retorna la etapa de corrección de un lote específico
-    getCorrectionStageByBatchId(batchId) {
+    getFiltrationStageByBatchId(batchId) {
         return http.get(`${this.resourceEndpoint}/${batchId}/filtration-stage`);
     }
 

@@ -1,11 +1,7 @@
 <script>
 
-import {Stages} from "../model/stages.entity.js";
-import {StagesApiService} from "../services/stages-api.service.js";
 import {CorrectionStage} from "../model/correctionStage.entity.js";
-import ReceptionStageCreateAndEdit from "../components/reception-stage-create-and-edit.component.vue";
 import CorrectionStageCreateAndEdit from "../components/correction-stage-create-and-edit.vue";
-import {CreateReceptionStage} from "../model/create-reception-stage.entity.js";
 import {ReceptionStageApiService} from "../services/reception-stage-api.service.js";
 import {ReceptionStage} from "../model/receptionStage.entity.js";
 import {CorrectionStageApiService} from "../services/correction-stage-api.service.js";

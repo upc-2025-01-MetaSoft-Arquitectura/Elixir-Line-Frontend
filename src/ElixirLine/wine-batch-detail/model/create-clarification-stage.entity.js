@@ -2,8 +2,8 @@
 /*
 {
   "employee": "string",
-  "startDate": "2025-07-03",
-  "endDate": "2025-07-03",
+  "startDate": "2025-07-07",
+  "endDate": "2025-07-07",
   "methodUsed": "string",
   "initialTurbidity": 0.1,
   "finalTurbidity": 0.1,
@@ -15,29 +15,24 @@
     "additionalProp2": 0.1,
     "additionalProp3": 0.1
   },
-  "comment": "string",
-  "completionStatus": "COMPLETED"
+  "comment": "string"
 }
  */
+export class CreateClarificationStage {
 
-export class UpdateClarificationStageEntity{
-
-    constructor(
-        {
-            employee,
-            startDate,
-            endDate,
-            methodUsed,
-            initialTurbidity,
-            finalTurbidity,
-            volume,
-            temperature,
-            duration,
-            clarifyingAgents,
-            comment,
-            completionStatus
-        }
-    ) {
+    constructor({
+        employee = null,
+        startDate = null,
+        endDate = null,
+        methodUsed = null,
+        initialTurbidity = 0.0,
+        finalTurbidity = 0.0,
+        volume = 0.0,
+        temperature = 0.0,
+        duration = 0,
+        clarifyingAgents = {},
+        comment = null
+    }) {
         this.employee = employee;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -47,9 +42,7 @@ export class UpdateClarificationStageEntity{
         this.volume = volume;
         this.temperature = temperature;
         this.duration = duration;
-        this.clarifyingAgents = clarifyingAgents;
+        this.clarifyingAgents = clarifyingAgents; // Object with agent names and their quantities
         this.comment = comment;
-        this.completionStatus = completionStatus;
     }
-
 }

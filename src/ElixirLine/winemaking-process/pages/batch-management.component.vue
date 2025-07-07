@@ -127,8 +127,10 @@ export default {
       this.createItem.vineyardOrigin = this.batch.vineyardOrigin;
       this.createItem.grapeVariety = this.batch.grapeVariety;
       this.createItem.harvestCampaign = this.batch.harvestCampaign;
-      this.createItem.initialGrapeQuantityKg = this.batch.initialGrapeQuantityKg;
-      this.createItem.receptionDate = this.batch.receptionDate;
+      // Asegurarse de que initialGrapeQuantityKg sea un número
+      this.createItem.initialGrapeQuantityKg = this.batch.initialGrapeQuantityKg ? parseFloat(this.batch.initialGrapeQuantityKg) : 0;
+      // formato YYYY-MM-DD
+      this.createItem.receptionDate = this.batch.receptionDate ? this.batch.receptionDate.toISOString().split('T')[0] : null;
       this.createItem.createdBy = this.batch.createdBy;
 
       console.log('=========== Creating batch with data: ===========', this.createItem);

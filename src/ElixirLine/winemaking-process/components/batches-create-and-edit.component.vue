@@ -1,12 +1,12 @@
 <script>
 
 import CreateAndEdit from "../../../shared/components/create-and-edit.component.vue";
-import {Calendar as PvCalendar} from "primevue";
+
 
 export default {
   name: "batches-create-and-edit",
 
-  components: {PvCalendar, CreateAndEdit},
+  components: { CreateAndEdit},
 
   props: {
     itemEntity: null,
@@ -80,7 +80,8 @@ export default {
 
         <pv-float-label class="field mt-5">
           <label for="initialGrapeQuantityKg"> Initial Grape Quantity (Kg) </label>
-          <pv-input-text class="flex w-full" id="initialGrapeQuantityKg" v-model="itemEntity.initialGrapeQuantityKg" :class="{ 'p-invalid': submitted && !itemEntity.initialGrapeQuantityKg}" mode="decimal" minFractionDigits="2"/>
+          <pv-input-text class="flex w-full" id="initialGrapeQuantityKg" v-model="itemEntity.initialGrapeQuantityKg"
+                           :class="{ 'p-invalid': submitted && !itemEntity.initialGrapeQuantityKg}"/>
         </pv-float-label>
 
         <pv-float-label class="field mt-5">

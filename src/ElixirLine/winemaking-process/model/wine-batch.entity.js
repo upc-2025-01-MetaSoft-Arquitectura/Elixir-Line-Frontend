@@ -50,3 +50,5 @@ export class WineBatch {
         this.currentStage = currentStage;
     }
 }
+
+

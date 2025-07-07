@@ -2,7 +2,6 @@
 
 import CreateAndEdit from "../../../shared/components/create-and-edit.component.vue";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
-import {ClarificationStage} from "../model/clarificationStage.entity.js";
 
 export default {
 
@@ -18,7 +17,27 @@ export default {
 
   data() {
     return {
-      submitted: false
+      submitted: false,
+      clarifyingChips: this.item?.clarifyingAgents
+          ? Object.entries(this.item.clarifyingAgents).map(([k, v]) => `${k}:${v}`)
+          : []
+    };
+  },
+
+  watch: {
+    clarifyingChips: {
+      handler(newChips) {
+        const parsed = {};
+        newChips.forEach((entry) => {
+          const [key, value] = entry.split(":");
+          if (key && !isNaN(parseFloat(value))) {
+            parsed[key.trim()] = parseFloat(value);
+          }
+        });
+        this.item.clarifyingAgents = parsed;
+      },
+      deep: true,
+      immediate: true
     }
   },
 
@@ -39,7 +58,6 @@ export default {
   },
 
 
-
 };
 
 </script>
@@ -52,7 +70,7 @@ export default {
       :entity="item"
       :edit="edit"
       :visible="visible"
-      :entity-name="item.stage || 'Clarificación'"
+      :entity-name="'Clarificación'"
       @canceled-shared="onCancelRequested"
       @saved-shared="onSaveRequested($event)"
   >
@@ -61,121 +79,146 @@ export default {
 
       <div class="field">
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="registeredBy">Registrado por</label>
+        <!-- Campos de la etapa de clarificación
+        {
+          "employee": "string",
+          "startDate": "2025-07-07",
+          "endDate": "2025-07-07",
+          "methodUsed": "string",
+          "initialTurbidity": 0.1,
+          "finalTurbidity": 0.1,
+          "volume": 0.1,
+          "temperature": 0.1,
+          "duration": 1073741824,
+          "clarifyingAgents": {
+            "additionalProp1": 0.1,
+            "additionalProp2": 0.1,
+            "additionalProp3": 0.1
+          },
+          "comment": "string"
+        }
+        -->
+
+        <pv-float-label class="field mt-5">
+          <label for="employee">Registrado por</label>
           <pv-input-text
               class="w-full"
-              id="registeredBy"
-              v-model="item.registeredBy"
-              :class="{ 'p-invalid': submitted && !item.registeredBy }"
+              id="employee"
+              v-model="item.employee"
+              :class="{ 'p-invalid': submitted && !item.employee }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <pv-float-label class="field mt-5">
           <label for="startDate">Fecha de inicio</label>
           <pv-calendar
               class="w-full"
               id="startDate"
               v-model="item.startDate"
-              date-format="yy-mm-dd"
-              show-icon
+              placeholder="Fecha de inicio"
               :class="{ 'p-invalid': submitted && !item.startDate }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+
+        <pv-float-label class="field mt-5">
           <label for="endDate">Fecha de fin</label>
           <pv-calendar
               class="w-full"
               id="endDate"
               v-model="item.endDate"
-              date-format="yy-mm-dd"
-              show-icon
+              placeholder="Fecha de fin"
               :class="{ 'p-invalid': submitted && !item.endDate }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="method">Método</label>
+        <pv-float-label class="field mt-5">
+          <label for="methodUsed">Método utilizado</label>
           <pv-input-text
               class="w-full"
-              id="method"
-              v-model="item.method"
-              :class="{ 'p-invalid': submitted && !item.method }"
+              id="methodUsed"
+              v-model="item.methodUsed"
+              placeholder="Método utilizado"
+              :class="{ 'p-invalid': submitted && !item.methodUsed }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="turbidityBeforeNTU">Turbidez antes (NTU)</label>
-          <pv-input-text
+        <pv-float-label class="field mt-5">
+          <label for="initialTurbidity">Turbidez inicial (NTU)</label>
+          <pv-input-number
               class="w-full"
-              id="turbidityBeforeNTU"
-              v-model="item.turbidityBeforeNTU"
-              :class="{ 'p-invalid': submitted && !item.turbidityBeforeNTU }"
+              id="initialTurbidity"
+              v-model.number="item.initialTurbidity"
+              placeholder="Turbidez inicial (NTU)"
+              :class="{ 'p-invalid': submitted && !item.initialTurbidity }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="turbidityAfterNTU">Turbidez después (NTU)</label>
-          <pv-input-text
+        <pv-float-label class="field mt-5">
+          <label for="finalTurbidity">Turbidez final (NTU)</label>
+          <pv-input-number
               class="w-full"
-              id="turbidityAfterNTU"
-              v-model="item.turbidityAfterNTU"
-              :class="{ 'p-invalid': submitted && !item.turbidityAfterNTU }"
+              id="finalTurbidity"
+              v-model.number="item.finalTurbidity"
+              placeholder="Turbidez final (NTU)"
+              :class="{ 'p-invalid': submitted && !item.finalTurbidity }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="volumeLiters">Volumen (litros)</label>
-          <pv-input-text
+        <pv-float-label class="field mt-5">
+          <label for="volume">Volumen (litros)</label>
+          <pv-input-number
               class="w-full"
-              id="volumeLiters"
-              v-model="item.volumeLiters"
-              :class="{ 'p-invalid': submitted && !item.volumeLiters }"
+              id="volume"
+              v-model.number="item.volume"
+              placeholder="Volumen (litros)"
+              :class="{ 'p-invalid': submitted && !item.volume }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <pv-float-label class="field mt-5">
           <label for="temperature">Temperatura (°C)</label>
-          <pv-input-text
+          <pv-input-number
               class="w-full"
               id="temperature"
-              v-model="item.temperature"
+              v-model.number="item.temperature"
+              placeholder="Temperatura (°C)"
               :class="{ 'p-invalid': submitted && !item.temperature }"
           />
         </pv-float-label>
 
-
-        <pv-float-label class="field mt-4 w-full">
-          <label for="durationHours">Duración (horas)</label>
-          <pv-input-text
+        <pv-float-label class="field mt-5">
+          <label for="duration">Duración (minutos)</label>
+          <pv-input-number
               class="w-full"
-              id="durationHours"
-              v-model="item.durationHours"
-              :class="{ 'p-invalid': submitted && !item.durationHours }"
+              id="duration"
+              v-model.number="item.duration"
+              placeholder="Duración (minutos)"
+              :class="{ 'p-invalid': submitted && !item.duration }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="comments">Comentarios</label>
+        <pv-float-label class="field mt-5">
+          <label for="clarifyingAgents">Agentes clarificantes (ej. bentonite:0.3)</label>
+          <pv-chips
+              id="clarifyingAgents"
+              v-model="clarifyingChips"
+              class="w-full"
+              separator=","
+              :class="{'p-invalid': submitted && (!clarifyingChips || clarifyingChips.length === 0)}"
+          />
+        </pv-float-label>
+
+        <pv-float-label class="field mt-5">
+          <label for="comment">Comentario</label>
           <pv-input-textarea
               class="w-full"
-              id="comments"
-              v-model="item.comments"
-              :class="{ 'p-invalid': submitted && !item.comments }"
+              id="comment"
+              v-model="item.comment"
+              placeholder="Comentario"
+              :class="{ 'p-invalid': submitted && !item.comment }"
           />
         </pv-float-label>
-
-
-        <div class="field-checkbox mt-4 w-full">
-          <pv-checkbox
-              input-id="isCompleted"
-              v-model="item.isCompleted"
-              :binary="true"
-          />
-          <label for="isCompleted">Completado</label>
-        </div>
-
 
 
       </div>

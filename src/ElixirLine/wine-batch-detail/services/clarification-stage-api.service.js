@@ -1,12 +1,12 @@
 import http from "../../../shared/services/http-common.js";
 
-export class CorrectionStageApiService {
+export class ClarificationStageApiService {
     constructor(_resourceEndpoint) {
         this.resourceEndpoint = _resourceEndpoint;
     }
 
     // Retorna la etapa de corrección de un lote específico
-    getCorrectionStageByBatchId(batchId) {
+    getClarificationStageByBatchId(batchId) {
         return http.get(`${this.resourceEndpoint}/${batchId}/clarification-stage`);
     }
 

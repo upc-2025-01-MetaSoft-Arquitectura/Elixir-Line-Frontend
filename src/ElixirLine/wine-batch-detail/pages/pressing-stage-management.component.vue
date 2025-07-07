@@ -2,8 +2,6 @@
 
 import CorrectionStageCreateAndEdit from "../components/correction-stage-create-and-edit.vue";
 import ReceptionStageCreateAndEdit from "../components/reception-stage-create-and-edit.component.vue";
-import {Stages} from "../model/stages.entity.js";
-import {StagesApiService} from "../services/stages-api.service.js";
 import {PressingStage} from "../model/pressingStage.entity.js";
 import FermentationStageCreateAndEdit from "../components/fermentation-stage-create-and-edit.component.vue";
 import PressingStageCreateAndEdit from "../components/pressing-stage-create-and-edit.component.vue";
@@ -38,8 +36,10 @@ export default {
 
       createPressingStage: new CreatePressingStage({}),
 
+      //
       pressingStageApiService: null,
       fermentationStageApiService: null,
+
 
       createAndEditDialogIsVisible: false,
 
@@ -353,7 +353,7 @@ export default {
             ></i>
             <span class="text-lg font-medium">
             {{ pressingStage.completionStatus === 'COMPLETED' ? 'Etapa completada' : 'Etapa no completada' }}
-          </span>
+            </span>
           </div>
 
         </template>

@@ -2,44 +2,57 @@
 
 import AgingStageDetailCreateAndEdit from "../components/aging-stage-create-and-edit.component.vue";
 import ClarificationStageCreateAndEdit from "../components/clarification-stage-create-and-edit.component.vue";
-import {Stages} from "../model/stages.entity.js";
-import {StagesApiService} from "../services/stages-api.service.js";
 import {FiltrationStage} from "../model/filtrationStage.entity.js";
 import FiltrationStageCreateAndEdit from "../components/filtration-stage-create-and-edit.component.vue";
+import {AgingStage} from "../model/agingStage.entity.js";
+import {CreateFiltrationStage} from "../model/create-filtration-stage.entity.js";
+import {FiltrationStageApiService} from "../services/filtration-stage-api.service.js";
+import {AgingStageApiService} from "../services/aging-stage-api.service.js";
 
 export default {
   name: 'filtration-stage-management',
 
   components: {FiltrationStageCreateAndEdit, AgingStageDetailCreateAndEdit, ClarificationStageCreateAndEdit},
 
-  props:{
-    item: null,
-    canAddStage: {
-      type: Boolean,
-      default: false // Default value for canAddStage
-    }
+  props: {
+    item: {
+      type: Object,
+      default: () => ({})
+    },
   },
+
 
   data() {
     return {
-      title: { singular: 'Etapa de Fermentación', plural: 'Etapa de Fermentación' },
-      itemObject: new Stages({}),
+      title: { singular: 'Etapa de Filtración', plural: 'Etapa de Filtración' },
+
+      batchId: null,
+
       filtrationStage: new FiltrationStage({}),
+      agingStage: new AgingStage({}),
+
+      createFiltrationStage: new CreateFiltrationStage({}),
+
       filtrationStageApiService: null,
+      agingStageApiService: null,
+
       createAndEditDialogIsVisible: false,
+
+
       isEdit: false,
+
+
       submitted: false,
-      stageExist: false, // Assuming you want to check if a stage exists
     }
   },
 
+
   computed: {
     canAddStage() {
-      return this.item &&
-          this.item.agingStage &&
-          this.item.agingStage.isCompleted === true
+      return this.agingStage && this.agingStage.completionStatus === 'COMPLETED';
     }
   },
+
 
   methods: {
 
@@ -50,8 +63,8 @@ export default {
 
     //#region Event Handlers
     onNewItem() {
-      this.itemObject = new Stages({});
-      console.log('======================= NEW ITEM MANAGEMENT', this.itemObject);
+      this.filtrationStage = new FiltrationStage({});
+      console.log('======================= NEW ITEM MANAGEMENT', this.filtrationStage);
       this.isEdit = false;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
@@ -59,15 +72,10 @@ export default {
 
     onEditItem(item) {
       console.log('======================= EDIT ITEM MANAGEMENT', item);
-      this.itemObject = new Stages(item);
+      this.filtrationStage = new FiltrationStage(item);
       this.isEdit = true;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
-    },
-
-    onDeleteItem(item) {
-      this.itemObject = new Stages(item);
-      this.deleteBatch();
     },
 
     onCancelRequested() {
@@ -95,27 +103,73 @@ export default {
 
     //#region CRUD Operations
     create() {
-      this.filtrationStageApiService.create(this.itemObject).then(response => {
 
-        this.filtrationStage = new FiltrationStage(response.data.filtrationStage);
-        this.itemObject = new Stages(response.data);
+      this.filtrationStageApiService.create(this.batchId, this.filtrationStage).then(response => {
+
+        this.filtrationStage = new FiltrationStage(response.data);
 
         this.notifySuccessfulAction('Stage created successfully');
       }).catch(error => {
-        console.error("Error creating a Stage", error);
+        console.error("Error creating a Stage",error);
+        console.error('🔴 Message:', error.message);
+        console.error('🔴 Status:', error.response?.status);
+        console.error('🔴 Details:', error.response?.data);
       });
     },
 
     update() {
-      this.filtrationStageApiService.update(this.itemObject.id, this.itemObject).then(response => {
 
-        this.filtrationStage = new FiltrationStage(response.data.filtrationStage);
-        this.itemObject = new Stages(response.data);
+      this.filtrationStageApiService.patch(this.batchId, this.filtrationStage).then(response => {
+
+        this.filtrationStage = new FiltrationStage(response.data);
 
         this.notifySuccessfulAction('Stage updated successfully');
       }).catch(error => {
-        console.error("Error updating a Stage", error);
+        console.error("Error updating a Stage",error);
+        console.error('🔴 Message:', error.message);
+        console.error('🔴 Status:', error.response?.status);
+        console.error('🔴 Details:', error.response?.data);
       });
+    },
+
+    getFiltrationStage() {
+      this.filtrationStageApiService.getFiltrationStageByBatchId(this.batchId)
+          .then(response => {
+
+            this.filtrationStage = new FiltrationStage(response.data);
+
+            console.log("=== ETAPA DE FILTRACIÓN RECUPERADA: ===", response.data);
+
+          })
+          .catch(error => {
+            console.error('❌ Error al obtener la etapa de filtración:', error);
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo obtener la etapa de filtración.',
+              life: 3000
+            });
+          });
+    },
+
+    getAgingStage() {
+      this.agingStageApiService.getAgingStageByBatchId(this.batchId)
+          .then(response => {
+
+            this.agingStage = new AgingStage(response.data);
+
+            console.log("=== ETAPA DE AÑEJAMIENTO RECUPERADA: ===", response.data);
+
+          })
+          .catch(error => {
+            console.error('❌ Error al obtener la etapa de añejamiento:', error);
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo obtener la etapa de añejamiento.',
+              life: 3000
+            });
+          });
     },
 
     //#endregion
@@ -148,17 +202,16 @@ export default {
 
 
     completarEtapa() {
-      this.itemObject.filtrationStage.isCompleted = true
+      this.filtrationStage.completionStatus = 'COMPLETED'
 
-      this.filtrationStageApiService.update(this.itemObject.id, this.itemObject)
+      this.filtrationStageApiService.patch(this.filtrationStage.batchId, this.filtrationStage)
           .then(response => {
-            this.filtrationStage = new FiltrationStage(response.data.filtrationStage)
-            this.itemObject = new Stages(response.data)
+            this.filtrationStage = new FiltrationStage(response.data)
             this.notifySuccessfulAction('Etapa completada correctamente')
+            console.log("== ETAPA DE RECEPCIÓN COMPLETADA ==", this.filtrationStage)
           })
           .catch(error => {
-            this.filtrationStage.isCompleted = false
-            this.itemObject.filtrationStage.isCompleted = false
+            this.filtrationStage.completionStatus = 'NOT_COMPLETED'
 
             console.error('❌ Error al completar la etapa:', error)
             this.$toast.add({
@@ -168,34 +221,27 @@ export default {
               life: 3000
             })
           })
-    }
-
-
-
+    },
 
   },
 
   //#region Lifecycle Hooks
   created() {
-    this.filtrationStageApiService = new StagesApiService ('/stages');
+    this.batchId = this.item.id;
+    // Inicializar servicios
+    this.filtrationStageApiService = new FiltrationStageApiService('/batches');
+    this.agingStageApiService = new AgingStageApiService('/batches');
+
+    // Obtener la etapa de filtración al crear el componente
+    this.getFiltrationStage();
+    this.getAgingStage();
+
+    console.log("= ESTAMOS EN FILTRATION-STAGE-MANAGEMENT = ");
 
 
-    if (!this.item || !this.item.filtrationStage) {
-
-      this.stageExist = false;
-
-    } else {
-
-      this.itemObject = this.item;
-      this.stageExist = true;
-      this.filtrationStage = this.item.filtrationStage;
-
-    }
-
-    console.log('RECEPTION STAGE ===================== ', this.filtrationStage);
-
-    console.log("🔍 Reception Stage Management created with item:", this.item);
   },
+
+
 }
 
 </script>
@@ -222,17 +268,17 @@ export default {
         <pv-button
             label="Nueva Etapa"
             icon="pi pi-plus"
-            @click="onNewItem()"
+            @click="onNewItem"
             class="p-button-success"
-            v-if="!stageExist && canAddStage"
+            v-if="!filtrationStage.id"
         />
 
         <pv-button
             label="Editar"
             icon="pi pi-pencil"
-            @click="onEditItem(itemObject)"
+            @click="onEditItem(filtrationStage)"
             class="p-button-warning"
-            v-if="stageExist  && canAddStage /*&& !filtrationStage.isCompleted*/"
+            v-if="filtrationStage.id  && filtrationStage.completionStatus !== 'COMPLETED'"
         />
 
         <pv-button
@@ -240,8 +286,9 @@ export default {
             icon="pi pi-check"
             class="p-button-success"
             @click="confirmarCompletarEtapa"
-            v-show="stageExist && !filtrationStage.isCompleted"
+            v-if="filtrationStage.id  && filtrationStage.completionStatus !== 'COMPLETED'"
         />
+
       </div>
     </div>
 
@@ -249,65 +296,88 @@ export default {
     <!-- Mensaje de aviso si no se puede agregar una nueva etapa -->
     <div v-if="!canAddStage" class="p-3 bg-yellow-100 text-yellow-800 border-round">
       <i class="pi pi-exclamation-triangle"></i>
-      <span> No se puede agregar una nueva etapa de FILTRACIÓN hasta que se complete la etapa de AÑEJAMIENTO. </span>
+      <span> No se puede agregar una nueva etapa de AÑEJAMIENTO hasta que se complete la etapa de CLARIFICACIÓN.
+      </span>
     </div>
 
+    <!-- Mensaje de aviso si no hay una etapa de corrección -->
+    <div v-if="canAddStage && !filtrationStage.id "
+         class="p-3 bg-red-100 text-red-800 border-round">
+      <i class="pi pi-exclamation-triangle"></i>
+      <span> No hay una etapa de AÑEJAMIENTO registrada para este lote. </span>
+    </div>
 
     <!-- Contenido de la etapa -->
-    <pv-card v-if="filtrationStage.stage && canAddStage">
+    <pv-card v-if="filtrationStage && filtrationStage.id && canAddStage === true">
       <template #header>
         <h4 class="m-0">Detalles de la etapa de filtración</h4>
       </template>
 
-      <!-- contenido de la tarjeta-->
+      <!-- contenido de la tarjeta
+      {
+        "pressure": 1.5,
+        "filteredVolume": 1000,
+        "sterileFiltration": true,
+        "changedFiltration": false,
+        "changeReason": null,
+        "comment": "Filtración realizada con éxito.",
+        "completionStatus": "NOT_COMPLETED",
+        "currentStage": "FILTRATION",
+        "completedAt": null,
+        "dataHash": null
+      }
+      -->
       <template #content>
 
         <!-- Registrado por -->
         <div class="flex align-items-center gap-2">
           <i class="pi pi-user text-lg"></i>
-          <p><strong>Registrado por:</strong> {{ filtrationStage.registeredBy }}</p>
+          <p><strong>Registrado por:</strong> {{ filtrationStage.employee }}</p>
         </div>
 
         <!-- Datos técnicos -->
         <div class="grid p-2">
-          <!-- Fila 1 -->
+
+
           <div class="col-12 md:col-6">
             <p><strong>Fecha de inicio:</strong> {{ filtrationStage.startDate }}</p>
-            <p><strong>Fecha de finalización:</strong> {{ filtrationStage.endDate }}</p>
-            <p><strong>Tipo de filtración:</strong> {{ filtrationStage.filtrationType }}</p>
-          </div>
-          <div class="col-12 md:col-6">
-            <p><strong>Medio filtrante:</strong> {{ filtrationStage.filterMedia }}</p>
-            <p><strong>Tamaño de poro (micrones):</strong> {{ filtrationStage.poreMicrons }}</p>
-            <p><strong>Temperatura (°C):</strong> {{ filtrationStage.temperature }}</p>
+            <p><strong>Tipo de filtro:</strong> {{ filtrationStage.filterType || 'No especificado' }}</p>
+            <p><strong>Turbidez inicial:</strong> {{ filtrationStage.initialTurbidity || 'No especificado' }} NTU</p>
+            <p><strong>Porosidad:</strong> {{ filtrationStage.porosity || 'No especificado' }} μm</p>
+            <p><strong>Presión:</strong> {{ filtrationStage.pressure || 'No especificado' }} bar</p>
+            <p><strong>Filtración estéril:</strong> {{ filtrationStage.sterileFiltration ? 'Sí' : 'No' }}</p>
           </div>
 
-          <!-- Fila 2 -->
           <div class="col-12 md:col-6">
-            <p><strong>Turbidez antes:</strong> {{ filtrationStage.turbidityBefore }} NTU</p>
-            <p><strong>Turbidez después:</strong> {{ filtrationStage.turbidityAfter }} NTU</p>
-            <p><strong>Presión (Bares):</strong> {{ filtrationStage.pressureBars }}</p>
-          </div>
-          <div class="col-12 md:col-6">
-            <p><strong>Volumen filtrado (litros):</strong> {{ filtrationStage.filteredVolumeLiters }}</p>
-            <p><strong>¿Es estéril?</strong> {{ filtrationStage.isSterile ? 'Sí' : 'No' }}</p>
-            <p><strong>¿Se cambió el filtro?</strong> {{ filtrationStage.filterChanged ? 'Sí' : 'No' }}</p>
+            <p><strong>Fecha de finalización:</strong> {{ filtrationStage.endDate || 'No finalizada' }}</p>
+            <p><strong>Medio filtrante:</strong> {{ filtrationStage.filterMedium || 'No especificado' }}</p>
+            <p><strong>Turbidez final:</strong> {{ filtrationStage.finalTurbidity || 'No especificado' }} NTU</p>
+            <p><strong>Temperatura:</strong> {{ filtrationStage.temperature || 'No especificado' }} °C</p>
+            <p><strong>Volumen filtrado:</strong> {{ filtrationStage.filteredVolume || 'No especificado' }} L</p>
+            <p><strong>Filtro cambiada:</strong> {{ filtrationStage.changedFiltration ? 'Sí' : 'No' }}</p>
+            <p v-if="filtrationStage.changedFiltration"><strong>Motivo del cambio:</strong> {{ filtrationStage.changeReason || 'No especificado' }}</p>
           </div>
 
-          <!-- Fila 3 -->
-          <div class="col-12 md:col-6" v-if="filtrationStage.filterChanged">
-            <p><strong>Razón del cambio:</strong> {{ filtrationStage.changeReason }}</p>
-          </div>
-
-          <div v-if="filtrationStage.comments">
-            <p><strong>Comentarios:</strong> {{ filtrationStage.comments }}</p>
-          </div>
         </div>
 
-        <!-- Estado de finalización -->
+
+
+        <!-- Comentario -->
+        <div class="mt-4 w-full">
+          <p><strong>Comentario:</strong></p>
+          <p class="text-gray-700 ">{{ filtrationStage.comment || 'No hay comentarios.' }}</p>
+        </div>
+
+
+        <!-- Visualización de estado -->
         <div class="flex align-items-center gap-2 mt-4">
-          <i class="pi text-xl" :class="filtrationStage.isCompleted ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"></i>
-          <span class="text-lg font-medium">{{ filtrationStage.isCompleted ? 'Etapa completada' : 'Etapa no completada' }}</span>
+          <i
+              class="pi text-xl"
+              :class="filtrationStage.completionStatus === 'COMPLETED' ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"
+          ></i>
+          <span class="text-lg font-medium">
+              {{ filtrationStage.completionStatus === 'COMPLETED' ? 'Etapa completada' : 'Etapa no completada' }}
+            </span>
         </div>
 
       </template>
@@ -316,7 +386,7 @@ export default {
     <!-- Diálogo para crear o editar etapa -->
     <filtration-stage-create-and-edit
         :edit="isEdit"
-        :item-entity="itemObject"
+        :item="filtrationStage"
         :visible="createAndEditDialogIsVisible"
         @cancel-requested="onCancelRequested"
         @save-requested="onSaveRequested($event)"

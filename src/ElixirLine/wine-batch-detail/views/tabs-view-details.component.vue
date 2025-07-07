@@ -7,7 +7,6 @@ import ProfileManagement from "../../profile/pages/profile-management.component.
 import BatchViewDetails from "../pages/bacth-view-detail.component.vue";
 import TasksByBatch from "../pages/tasks-by-batch.component.vue";
 import SuppliesByBatch from "../pages/supplies-by-batch.component.vue";
-import StagesByBatchManagementComponent from "./stages-by-batch-management.component.vue";
 import StagesByBatchManagement from "./stages-by-batch-management.component.vue";
 
 export default {

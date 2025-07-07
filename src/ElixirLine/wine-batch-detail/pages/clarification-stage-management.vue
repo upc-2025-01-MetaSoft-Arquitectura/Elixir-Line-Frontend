@@ -4,11 +4,12 @@ import PressingStageCreateAndEdit from "../components/pressing-stage-create-and-
 import FermentationStageCreateAndEdit from "../components/fermentation-stage-create-and-edit.component.vue";
 import CorrectionStageCreateAndEdit from "../components/correction-stage-create-and-edit.vue";
 import ReceptionStageCreateAndEdit from "../components/reception-stage-create-and-edit.component.vue";
-import {Stages} from "../model/stages.entity.js";
 import {PressingStage} from "../model/pressingStage.entity.js";
-import {StagesApiService} from "../services/stages-api.service.js";
 import {ClarificationStage} from "../model/clarificationStage.entity.js";
 import ClarificationStageCreateAndEdit from "../components/clarification-stage-create-and-edit.component.vue";
+import {CreateClarificationStage} from "../model/create-clarification-stage.entity.js";
+import {PressingStageApiService} from "../services/pressing-stage-api.service.js";
+import {ClarificationStageApiService} from "../services/clarification-stage-api.service.js";
 
 export default {
   name:'clarification-stage-management',
@@ -18,30 +19,45 @@ export default {
     PressingStageCreateAndEdit,
     FermentationStageCreateAndEdit, CorrectionStageCreateAndEdit, ReceptionStageCreateAndEdit},
 
-  props:{
-    item: null,
-    canAddStage: false
+  props: {
+    item: {
+      type: Object,
+      default: () => ({})
+    },
   },
+
 
   data() {
     return {
       title: { singular: 'Etapa de Fermentación', plural: 'Etapa de Fermentación' },
-      itemObject: new Stages({}),
+
+      batchId: null,
+
+      // Objeto de la etapa de clarificación y prensado
       clarificationStage: new PressingStage({}),
+      pressingStage: new PressingStage({}),
+
+      // Objeto para crear una nueva etapa de clarificación
+      createClarificationStage : new CreateClarificationStage({}),
+
+      // Servicios de la etapa de clarificación y prensado
       clarificationStageApiService: null,
+      pressingStageApiService: null,
+
+
       createAndEditDialogIsVisible: false,
+
       isEdit: false,
+
       submitted: false,
-      stageExist: false, // Assuming you want to check if a stage exists
 
     }
   },
 
+
   computed: {
     canAddStage() {
-      return this.item &&
-          this.item.pressingStage &&
-          this.item.pressingStage.isCompleted === true
+      return this.pressingStage && this.pressingStage.completionStatus === 'COMPLETED';
     }
   },
 
@@ -52,11 +68,10 @@ export default {
       this.$toast.add({severity: 'success', summary: 'Success', detail: message, life: 3000});
     },
 
-
     //#region Event Handlers
     onNewItem() {
-      this.itemObject = new Stages({});
-      console.log('======================= NEW ITEM MANAGEMENT', this.itemObject);
+      this.clarificationStage = new ClarificationStage({});
+      console.log('======================= NEW ITEM MANAGEMENT', this.clarificationStage);
       this.isEdit = false;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
@@ -64,15 +79,10 @@ export default {
 
     onEditItem(item) {
       console.log('======================= EDIT ITEM MANAGEMENT', item);
-      this.itemObject = new Stages(item);
+      this.clarificationStage = new ClarificationStage(item);
       this.isEdit = true;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
-    },
-
-    onDeleteItem(item) {
-      this.itemObject = new Stages(item);
-      this.deleteBatch();
     },
 
     onCancelRequested() {
@@ -100,31 +110,77 @@ export default {
 
     //#region CRUD Operations
     create() {
-      this.clarificationStageApiService.create(this.itemObject).then(response => {
 
-        this.clarificationStage = new ClarificationStage(response.data.clarificationStage);
-        this.itemObject = new Stages(response.data);
+      this.clarificationStageApiService.create(this.batchId, this.clarificationStage).then(response => {
+
+        this.clarificationStage = new ClarificationStage(response.data);
 
         this.notifySuccessfulAction('Stage created successfully');
       }).catch(error => {
         console.error("Error creating a Stage",error);
+        console.error('🔴 Message:', error.message);
+        console.error('🔴 Status:', error.response?.status);
+        console.error('🔴 Details:', error.response?.data);
       });
     },
 
     update() {
-      this.clarificationStageApiService.update(this.itemObject.id, this.itemObject).then(response => {
 
-        this.clarificationStage = new ClarificationStage(response.data.clarificationStage);
-        this.itemObject= new Stages(response.data);
+      this.clarificationStageApiService.patch(this.batchId, this.clarificationStage).then(response => {
+
+        this.clarificationStage = new ClarificationStage(response.data);
 
         this.notifySuccessfulAction('Stage updated successfully');
       }).catch(error => {
         console.error("Error updating a Stage",error);
+        console.error('🔴 Message:', error.message);
+        console.error('🔴 Status:', error.response?.status);
+        console.error('🔴 Details:', error.response?.data);
       });
     },
 
-    //#endregion
+    getClarificationStage() {
+      this.clarificationStageApiService.getClarificationStageByBatchId(this.batchId)
+          .then(response => {
 
+            this.clarificationStage = new ClarificationStage(response.data);
+            // Asegurarse de que el rendimiento del mosto sea un número
+
+            console.log("=== ETAPA DE CLARIFICACIÓN RECUPERADA: ===",response.data);
+
+          })
+          .catch(error => {
+            console.error('❌ Error al obtener la etapa de clarificación:', error);
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo obtener la etapa de clarificación.',
+              life: 3000
+            });
+          });
+    },
+
+    getPressingStage() {
+      this.pressingStageApiService.getPressingStageByBatchId(this.batchId)
+          .then(response => {
+
+            this.pressingStage = new PressingStage(response.data);
+            // Asegurarse de que el rendimiento del mosto sea un número
+
+            console.log("=== ETAPA DE PRENSADO RECUPERADO: ===",response.data);
+
+          })
+          .catch(error => {
+            console.error('❌ Error al obtener la etapa de prensado:', error);
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo obtener la etapa de prensado.',
+              life: 3000
+            });
+          });
+    },
+    //#endregion
 
     // Confirmar y cerrar al confirmar
     confirmarCompletarEtapa() {
@@ -153,17 +209,16 @@ export default {
 
 
     completarEtapa() {
-      this.itemObject.clarificationStage.isCompleted = true
+      this.clarificationStage.completionStatus = 'COMPLETED'
 
-      this.clarificationStageApiService.update(this.itemObject.id, this.itemObject)
+      this.clarificationStageApiService.patch(this.clarificationStage.batchId, this.clarificationStage)
           .then(response => {
-            this.clarificationStage = new ClarificationStage(response.data.clarificationStage)
-            this.itemObject = new Stages(response.data)
+            this.clarificationStage = new ClarificationStage(response.data)
             this.notifySuccessfulAction('Etapa completada correctamente')
+            console.log("== ETAPA DE RECEPCIÓN COMPLETADA ==", this.clarificationStage)
           })
           .catch(error => {
-            this.clarificationStage.isCompleted = false
-            this.itemObject.clarificationStage.isCompleted = false
+            this.clarificationStage.completionStatus = 'NOT_COMPLETED'
 
             console.error('❌ Error al completar la etapa:', error)
             this.$toast.add({
@@ -173,36 +228,20 @@ export default {
               life: 3000
             })
           })
-    }
-
-
-
-
-
+    },
 
   },
 
 
   //#region Lifecycle Hooks
   created() {
-    this.clarificationStageApiService = new StagesApiService ('/stages');
+    this.batchId = this.item.id;
+    this.clarificationStageApiService = new ClarificationStageApiService('/batches');
+    this.pressingStageApiService = new PressingStageApiService('/batches');
 
+    this.getClarificationStage();
+    this.getPressingStage();
 
-    if (!this.item || !this.item.clarificationStage) {
-
-      this.stageExist = false;
-
-    } else {
-
-      this.itemObject = this.item;
-      this.stageExist = true;
-      this.clarificationStage = this.item.clarificationStage;
-
-    }
-
-    console.log('RECEPTION STAGE ===================== ', this.clarificationStage);
-
-    console.log("🔍 Reception Stage Management created with item:", this.item);
   },
 
   //#endregion
@@ -229,17 +268,17 @@ export default {
         <pv-button
             label="Nueva Etapa"
             icon="pi pi-plus"
-            @click="onNewItem()"
+            @click="onNewItem"
             class="p-button-success"
-            v-if="!stageExist && canAddStage"
+            v-if="!clarificationStage.id"
         />
 
         <pv-button
             label="Editar"
             icon="pi pi-pencil"
-            @click="onEditItem(itemObject)"
+            @click="onEditItem(clarificationStage)"
             class="p-button-warning"
-            v-if="stageExist  && canAddStage /*&& !clarificationStage.isCompleted*/"
+            v-if="clarificationStage.id  && clarificationStage.completionStatus !== 'COMPLETED'"
         />
 
         <pv-button
@@ -247,8 +286,9 @@ export default {
             icon="pi pi-check"
             class="p-button-success"
             @click="confirmarCompletarEtapa"
-            v-show="stageExist && !clarificationStage.isCompleted"
+            v-if="clarificationStage.id  && clarificationStage.completionStatus !== 'COMPLETED'"
         />
+
       </div>
     </div>
 
@@ -259,55 +299,80 @@ export default {
       </span>
     </div>
 
+    <!-- Mensaje de aviso si no hay una etapa de corrección -->
+    <div v-if="canAddStage && !clarificationStage.id "
+         class="p-3 bg-red-100 text-red-800 border-round">
+      <i class="pi pi-exclamation-triangle"></i>
+      <span> No hay una etapa de PRENSADO registrada para este lote. </span>
+    </div>
 
-    <!-- Contenido de la etapa -->
-    <pv-card v-if="clarificationStage.stage && canAddStage">
-      <template #header>
-        <h4 class="m-0">Detalles de la etapa de clarificación</h4>
-      </template>
+    <!-- contenido de la tarjeta -->
+    <pv-card v-if="clarificationStage && clarificationStage.id && canAddStage === true">
+      <!-- contenido de la tarjeta
+      {
 
-      <!-- contenido de la tarjeta -->
+
+
+        "duration": 2,
+        "clarifyingAgents": {
+          "Bentonite": 5,
+          "Gelatin": 2
+        },
+        "comment": "Clarificación realizada con éxito.",
+      }
+      -->
       <template #content>
 
         <div class="flex align-items-center gap-2">
           <i class="pi pi-user text-lg"></i>
-          <p><strong>Registrado por:</strong> {{ clarificationStage.registeredBy }}</p>
+          <p><strong>Registrado por:</strong> {{ clarificationStage.employee }}</p>
         </div>
 
         <div class="grid p-2">
-          <div class="col-12 md:col-6">
-            <p><strong>Fecha de inicio:</strong> {{ clarificationStage.startDate }}</p>
-            <p><strong>Fecha de finalización:</strong> {{ clarificationStage.endDate }}</p>
-            <p><strong>Método:</strong> {{ clarificationStage.method }}</p>
-          </div>
-          <div class="col-12 md:col-6">
-            <p><strong>Temperatura (°C):</strong> {{ clarificationStage.temperature }}</p>
-            <p><strong>Duración (horas):</strong> {{ clarificationStage.durationHours }}</p>
-            <p><strong>Volumen (litros):</strong> {{ clarificationStage.volumeLiters }}</p>
-          </div>
-          <div class="col-12 md:col-6">
-            <p><strong>Agentes clarificantes:</strong></p>
-            <ul>
-              <li v-for="agent in clarificationStage.clarifyingAgents" :key="agent.name">
-                {{ agent.name }} ({{ agent.dose }} g/hL)
-              </li>
-            </ul>
-          </div>
-          <div class="col-12 md:col-6">
-            <p><strong>Turbidez antes (NTU):</strong> {{ clarificationStage.turbidityBeforeNTU }}</p>
-            <p><strong>Turbidez después (NTU):</strong> {{ clarificationStage.turbidityAfterNTU }}</p>
-          </div>
-        </div>
 
-        <div>
-          <p><strong>Comentarios:</strong> {{ clarificationStage.comments }}</p>
-        </div>
+          <div class="col-12 md:col-6">
+            <p><strong>Fecha de inicio: </strong> {{ clarificationStage.startDate }}</p>
+            <p><strong>Turbidez inicial: </strong> {{ clarificationStage.initialTurbidity }} NTU</p>
+            <p><strong>Método usado: </strong>  {{ clarificationStage.methodUsed }}</p>
+            <p><strong>Temperatura: </strong> {{ clarificationStage.temperature }} °C</p>
+          </div>
+
+          <div class="col-12 md:col-6">
+            <p><strong>Fecha fin:</strong> {{ clarificationStage.endDate }}</p>
+            <p><strong>Turbidez final:</strong> {{ clarificationStage.finalTurbidity }} NTU</p>
+            <p><strong>Volumen tratado:</strong> {{ clarificationStage.volume }} L</p>
+            <p><strong>Duración:</strong> {{ clarificationStage.duration }} horas</p>
+          </div>
+
+          <!-- Agentes clarificantes en linea separado por comas-->
+          <div class="col-12">
+            <p>
+              <strong>Agentes clarificantes: </strong>
+              <span v-if="clarificationStage.clarifyingAgents && Object.keys(clarificationStage.clarifyingAgents).length > 0">
+                {{ Object.entries(clarificationStage.clarifyingAgents).map(([key, value]) => `${key}: ${value} g`).join(', ') }}
+              </span>
+            </p>
+
+          </div>
+
+          <!-- Comentario -->
+          <div class="mt-4 w-full">
+            <p><strong>Comentario:</strong></p>
+            <p class="text-gray-700 ">{{ clarificationStage.comment || 'No hay comentarios.' }}</p>
+          </div>
+
+          <!-- Visualización de estado -->
+          <div class="flex align-items-center gap-2 mt-4">
+            <i
+                class="pi text-xl"
+                :class="clarificationStage.completionStatus === 'COMPLETED' ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"
+            ></i>
+            <span class="text-lg font-medium">
+              {{ clarificationStage.completionStatus === 'COMPLETED' ? 'Etapa completada' : 'Etapa no completada' }}
+            </span>
+          </div>
 
 
-        <!-- Estado de finalización -->
-        <div class="flex align-items-center gap-2 mt-4">
-          <i class="pi text-xl" :class="clarificationStage.isCompleted ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"></i>
-          <span class="text-lg font-medium">{{ clarificationStage.isCompleted ? 'Etapa completada' : 'Etapa no completada' }} </span>
         </div>
 
       </template>
@@ -317,7 +382,7 @@ export default {
     <!-- Diálogo para crear o editar etapa -->
     <clarification-stage-create-and-edit
         :edit="isEdit"
-        :item-entity="itemObject"
+        :item="clarificationStage"
         :visible="createAndEditDialogIsVisible"
         @cancel-requested="onCancelRequested"
         @save-requested="onSaveRequested($event)"

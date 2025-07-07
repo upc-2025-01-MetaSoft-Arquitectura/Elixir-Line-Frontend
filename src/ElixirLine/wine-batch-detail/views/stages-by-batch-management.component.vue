@@ -1,17 +1,7 @@
 <script>
 
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
-import {StagesApiService} from "../services/stages-api.service.js";
-import {ReceptionStage} from "../model/receptionStage.entity.js";
-import {CorrectionStage} from "../model/correctionStage.entity.js";
-import {PressingStage} from "../model/pressingStage.entity.js";
-import {FermentationStage} from "../model/fermentationStage.entity.js";
-import {ClarificationStage} from "../model/clarificationStage.entity.js";
-import {AgingStage} from "../model/agingStage.entity.js";
-import {FiltrationStage} from "../model/filtrationStage.entity.js";
-import {BottlingStage} from "../model/bottlingStage.entity.js";
 import ReceptionStageManagement from "../pages/reception-stage-management.component.vue";
-import {Stages} from "../model/stages.entity.js";
 import CorrectionStageManagement from "../pages/correction-stage-management.component.vue";
 import FermentationStageManagement from "../pages/fermentation-stage-management.component.vue";
 import PressingStageManagement from "../pages/pressing-stage-management.component.vue";
@@ -167,7 +157,8 @@ export default {
     </div>
 
     <!-- ETAPA DE CRIANZA  ====================================================================== -->
-    <div v-else-if="selectedItem && selectedItem.name === 'Crianza'" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
+    <div v-else-if="selectedItem && selectedItem.name === 'Añejamiento'"
+         class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
         <aging-stage-management :item="itemBatch"  />
     </div>
 
@@ -181,16 +172,6 @@ export default {
       <bottling-stage-management :item="itemBatch" />
     </div>
 
-    <!-- Mensaje en caso de no haber etapas registradas -->
-    <div v-else-if="!stagesByBatch || Object.keys(stagesByBatch).length === 0" class="p-2 w-full h-full flex-1 flex
-    flex-column overflow-hidden">
-      <p class="text-center">No hay etapas registradas para este lote.</p>
-    </div>
-
-    <!-- Mensaje si no hay etapa seleccionada -->
-    <div v-else-if="!selectedItem" class="p-2 w-full h-full flex-1 flex flex-column overflow-hidden">
-      <p class="text-center">Selecciona una etapa para ver los detalles.</p>
-    </div>
 
     <!-- Mensaje si no hay  -->
 

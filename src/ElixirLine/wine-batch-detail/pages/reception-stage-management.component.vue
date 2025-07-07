@@ -2,8 +2,6 @@
 
 import CampaignCreateAndEdit from "../../winemaking-process/components/campaign-create-and-edit.vue";
 import DataManager from "../../../shared/components/data-manager.component.vue";
-import {StagesApiService} from "../services/stages-api.service.js";
-import {Stages} from "../model/stages.entity.js";
 import ReceptionStageCreateAndEdit from "../components/reception-stage-create-and-edit.component.vue";
 import {ReceptionStage} from "../model/receptionStage.entity.js";
 import {ReceptionStageApiService} from "../services/reception-stage-api.service.js";
