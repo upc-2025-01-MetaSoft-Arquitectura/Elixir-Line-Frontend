@@ -1,12 +1,14 @@
 <script>
-import axios from 'axios';
 import Card from 'primevue/card';
 import PvButton from "primevue/button";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
+import { useAuthenticationStore } from "../../security/services/authentication.store.js";
+import { TaskApiService } from "../../task-management/services/task-api.service.js";
+import { batchAndCampaignApiService } from "../../winemaking-process/services/batch-and-campaign-api.service.js";
 
 export default {
   name: "dashboard-component",
-  components: {BasePageLayout, PvButton, 'pv-card': Card },
+  components: { BasePageLayout, PvButton, 'pv-card': Card },
   data() {
     return {
       title: { singular: 'Dashboard' },
@@ -15,135 +17,162 @@ export default {
       campaigns: [],
       wineBatches: 0,
       loading: true
-    }
+    };
   },
-
   async mounted() {
     this.loading = true;
     try {
-      const tasksRes = await axios.get('http://localhost:3000/tasks');
-      const tasks = tasksRes.data ?? [];
-      console.log('Tareas recibidas:', tasks);
+      const authStore = useAuthenticationStore();
+      const userId = authStore.currentUserId;
+      const token = authStore.currentToken;
 
-      // Filtrar tareas con estado pendiente o en proceso
-      this.pendingTasks = tasks.filter(t =>
-          ['InProcess', 'Pending'].includes(t.status)
-      );
-      console.log('Tareas pendientes:', this.pendingTasks);
+      if (!token || !userId) {
+        throw new Error("Token o userId no disponibles");
+      }
 
-      const campaignsRes = await axios.get('http://localhost:3000/campaigns');
-      this.campaigns = campaignsRes.data ?? [];
+      const config = { headers: { Authorization: `Bearer ${token}` } };
 
-      // Filtrar tareas que vencen en los próximos 3 días
+      // Obtener datos del vinicultor desde la API usando userId
+      const winegrowerRes = await fetch(`https://elixirline-service-28111382458.us-west1.run.app/api/v1/winegrowers/${userId}`, config).then(res => res.json());
+      const winegrowerId = winegrowerRes.id;
+
+      // Instanciar servicios
+      const taskService = new TaskApiService();
+      const campaignService = new batchAndCampaignApiService('campaigns');
+      const batchService = new batchAndCampaignApiService('batches');
+
+      // Obtener tareas
+      let tasks = [];
+      try {
+        const tasksRes = await taskService.getByWinegrowerId(winegrowerId);
+        tasks = Array.isArray(tasksRes.data) ? tasksRes.data : tasksRes.data.items || [];
+      } catch (err) {
+        if (err.response && err.response.status === 404) {
+          tasks = []; // Si no hay tareas, se devuelve lista vacía
+        } else {
+          throw err; // Otros errores se propagan
+        }
+      }
+
+      this.pendingTasks = tasks.filter(t => ['InProcess', 'Pending'].includes(t.status));
+
       const now = new Date();
       const in30days = new Date(now);
       in30days.setDate(now.getDate() + 30);
-
       this.upcomingTasks = tasks.filter(t => {
         if (!t.dueDate) return false;
         const due = new Date(t.dueDate);
         return due > now && due <= in30days;
       });
-      console.log('Tareas próximas a vencer:', this.upcomingTasks);
 
-      this.wineBatches = 0; // Ajustable si tienes lógica para esto
+      // Obtener campañas y lotes
+      const [campaignsRes, batchesRes] = await Promise.all([
+        campaignService.getAllResources(),
+        batchService.getAllResources()
+      ]);
+
+      const campaigns = Array.isArray(campaignsRes.data) ? campaignsRes.data : campaignsRes.data.items || [];
+      const batches = Array.isArray(batchesRes.data) ? batchesRes.data : batchesRes.data.items || [];
+
+      campaigns.forEach(campaign => {
+        campaign.batchesQuantity = batches.filter(b => b.campaignId === campaign.id).length;
+      });
+
+      this.campaigns = campaigns;
     } catch (e) {
+      console.log('winegrowerId usado para tasks:', winegrowerId);
+      const tasksRes = await taskService.getByWinegrowerId(winegrowerId);
+      console.log('Respuesta de tasks:', tasksRes);
       console.error('Error al cargar datos del dashboard', e);
+      alert('Error al cargar datos del dashboard');
     } finally {
       this.loading = false;
     }
   }
-}
+};
 </script>
 
 <template>
-<base-page-layout>
+  <base-page-layout>
+    <template #header>
+      <div class="header">
+        <h1>{{ title.singular }}</h1>
+      </div>
+    </template>
 
-  <template #header>
-  <div class="header">
-    <h1>{{ title.singular }}</h1>
-  </div>
-  </template>
+    <div class="dashboard-grid">
+      <!-- Columna izquierda -->
+      <div class="left-column">
+        <pv-card v-if="!loading">
+          <template #title>
+            <router-link to="/vinicultor/tasks" style="text-decoration: none; display: block;">
+              <pv-button style="width: 100%; justify-content: space-between;" class="card-btn">
+                TAREAS PENDIENTES <span class="arrow-icon">&gt;</span>
+              </pv-button>
+            </router-link>
+          </template>
+          <template #content>
+            <ul class="task-list">
+              <li v-for="(task, index) in pendingTasks" :key="task.id || index" class="task-item">
+                <span class="task-title">{{ task.title || 'Sin título' }}</span>
+                <span class="task-status">({{ task.status || 'Sin estado' }})</span>
+              </li>
+              <li v-if="pendingTasks.length === 0" class="task-empty">No hay tareas pendientes</li>
+            </ul>
+          </template>
+        </pv-card>
 
-  <div class="dashboard-grid">
-    <!-- Columna izquierda -->
-    <div class="left-column">
-      <pv-card v-if="!loading">
-        <template #title>
-          <router-link to="/vinicultor/tasks" style="text-decoration: none; display: block;">
-            <pv-button style="width: 100%; justify-content: space-between;" class="card-btn">
-              TAREAS PENDIENTES
-              <span class="arrow-icon">&gt;</span>
-            </pv-button>
-          </router-link>
-        </template>
-        <template #content>
-          <ul class="task-list">
-            <li v-for="(task, index) in pendingTasks" :key="task.id || index" class="task-item">
-              <span class="task-title">{{ task.title || 'Sin título' }}</span>
-              <span class="task-status">({{ task.status || 'Sin estado' }})</span>
-            </li>
-            <li v-if="pendingTasks.length === 0" class="task-empty">No hay tareas pendientes</li>
-          </ul>
-        </template>
-      </pv-card>
+        <pv-card v-if="!loading">
+          <template #title>
+            <router-link to="/vinicultor/tasks" style="text-decoration: none; display: block;">
+              <pv-button style="width: 100%; justify-content: space-between;" class="card-btn">
+                TAREAS PRONTAS A VENCER <span class="arrow-icon">&gt;</span>
+              </pv-button>
+            </router-link>
+          </template>
+          <template #content>
+            <ul class="task-list">
+              <li v-for="(task, index) in upcomingTasks" :key="task.id || index" class="task-item">
+                <span class="task-icon">⏰</span>
+                <span class="task-title">{{ task.title || 'Sin título' }}</span>
+                <span class="task-status">(Vence: {{ new Date(task.dueDate).toLocaleDateString() || 'Sin fecha' }})</span>
+              </li>
+              <li v-if="upcomingTasks.length === 0" class="task-empty">No hay tareas próximas a vencer</li>
+            </ul>
+          </template>
+        </pv-card>
+      </div>
 
-      <pv-card v-if="!loading">
-        <template #title>
-          <router-link to="/vinicultor/tasks" style="text-decoration: none; display: block;">
-            <pv-button style="width: 100%; justify-content: space-between;" class="card-btn">
-              TAREAS PRONTAS A VENCER
-              <span class="arrow-icon">&gt;</span>
-            </pv-button>
-          </router-link>
-        </template>
-        <template #content>
-          <ul class="task-list">
-            <li v-for="(task, index) in upcomingTasks" :key="task.id || index" class="task-item">
-              <span class="task-icon">⏰</span>
-              <span class="task-title">{{ task.title || 'Sin título' }}</span>
-              <span class="task-status">(Vence: {{ new Date(task.dueDate).toLocaleDateString() || 'Sin fecha' }})</span>
-            </li>
-            <li v-if="upcomingTasks.length === 0" class="task-empty">No hay tareas próximas a vencer</li>
-          </ul>
-        </template>
-      </pv-card>
+      <!-- Columna derecha -->
+      <div class="right-column">
+        <pv-card v-if="!loading">
+          <template #title>
+            <router-link to="/vinicultor/winemaking" style="text-decoration: none; display: block;">
+              <pv-button style="width: 100%; justify-content: space-between;" class="card-btn">
+                CANTIDAD DE LOTES DE VINO POR CAMPAÑA <span class="arrow-icon">&gt;</span>
+              </pv-button>
+            </router-link>
+          </template>
+          <template #content>
+            <table class="campaign-table">
+              <thead>
+              <tr><th>Campaña</th><th>Lotes</th></tr>
+              </thead>
+              <tbody>
+              <tr v-for="(campaign, index) in campaigns" :key="campaign.id || index">
+                <td>{{ campaign.name || 'Sin nombre' }}</td>
+                <td>{{ campaign.batchesQuantity ?? 0 }}</td>
+              </tr>
+              <tr v-if="campaigns.length === 0">
+                <td colspan="2">No hay campañas registradas</td>
+              </tr>
+              </tbody>
+            </table>
+          </template>
+        </pv-card>
+      </div>
     </div>
-
-    <!-- Columna derecha -->
-    <div class="right-column">
-      <pv-card v-if="!loading">
-        <template #title>
-          <router-link to="/vinicultor/winemaking" style="text-decoration: none;  display: block;">
-            <pv-button style="width: 100%; justify-content: space-between;" class="card-btn">
-              CANTIDAD DE LOTES DE VINO POR CAMPAÑA
-              <span class="arrow-icon">&gt;</span>
-            </pv-button>
-          </router-link>
-        </template>
-        <template #content>
-          <table class="campaign-table">
-            <thead>
-            <tr>
-              <th>Campaña</th>
-              <th>Lotes</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(campaign, index) in campaigns" :key="campaign.id || index">
-              <td>{{ campaign.name || 'Sin nombre' }}</td>
-              <td>{{ campaign.batchesQuantity ?? 0 }}</td>
-            </tr>
-            <tr v-if="campaigns.length === 0">
-              <td colspan="2">No hay campañas registradas</td>
-            </tr>
-            </tbody>
-          </table>
-        </template>
-      </pv-card>
-    </div>
-  </div>
-</base-page-layout>
+  </base-page-layout>
 </template>
 
 <style scoped>

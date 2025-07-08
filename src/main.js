@@ -41,7 +41,7 @@ import Toolbar from "primevue/toolbar";
 import TabList from "primevue/tablist";
 import Tab from "primevue/tab";
 import TabPanel from "primevue/tabpanel";
-import Calendar from "primevue/calendar";
+
 
 import Toast from "primevue/toast";
 
@@ -56,11 +56,12 @@ import {
     AccordionContent,
     AccordionHeader,
     AccordionPanel,
-    Badge,
-    Paginator,
+    AutoComplete,
+    Badge, Calendar, Chips, Dropdown, InputSwitch, ProgressBar,
     SplitButton,
     TabPanels
 } from "primevue";
+import {createPinia} from "pinia";
 
 
 
@@ -78,6 +79,14 @@ app.use(i18n)
 // Use Router
 app.use(router);
 
+// Use Pinia
+const pinia = createPinia();
+app.use(pinia);
+
+import { useAuthenticationStore } from "./ElixirLine/security/services/authentication.store.js"; // ajusta el path
+
+const authStore = useAuthenticationStore();
+authStore.initialize();
 
 // Use PrimeVue
 app.use(PrimeVue, { theme: { preset: Aura }, ripple: true })
@@ -122,9 +131,14 @@ app.component('pv-button', Button)
     .component('pv-accordion-content',AccordionContent)
     .component('pv-badge', Badge)
     .component('pv-split-button', SplitButton)
-    .component('pv-paginator', Paginator)
-    .component('pv-calendar', Calendar);
+    .component('pv-auto-complete', AutoComplete)
+    .component('pv-dropdown', Dropdown)
+    .component('pv-progress-bar', ProgressBar)
+    .component('pv-calendar', Calendar)
+    .component('pv-input-textarea', Textarea)
+    .component('pv-input-switch', InputSwitch)
+    .component('pv-confirm-dialog', ConfirmDialog)
+    .component('pv-chips', Chips)
+    .component('pv-file-upload', FileUpload);
 
 app.mount('#app')
-export default class PvInputText {
-}
