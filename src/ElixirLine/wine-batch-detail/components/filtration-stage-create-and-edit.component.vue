@@ -1,7 +1,6 @@
 <script>
 
 import CreateAndEdit from "../../../shared/components/create-and-edit.component.vue";
-import {FiltrationStage} from "../model/filtrationStage.entity.js";
 
 export default {
   name: 'filtration-stage-create-and-edit',
@@ -9,14 +8,14 @@ export default {
   components: {CreateAndEdit},
 
   props: {
-    itemEntity: null,
+    item: null,
     edit : Boolean,
     visible: Boolean,
   },
 
   data() {
     return {
-      filtrationStage: new FiltrationStage({}),     submitted: false
+      submitted: false
     }
   },
 
@@ -27,30 +26,14 @@ export default {
       this.$emit('cancel-requested');
     },
 
-    onSaveRequested(newItem) {
+    onSaveRequested() {
       this.submitted = true;
 
-      newItem.stage = "Filtración"; // Assuming the stage is always "Filtración" for this component
+      console.log('batches-create-and-edit onSaveRequested',this.item);
 
-      this.itemEntity.filtrationStage = newItem;
-
-      console.log('batches-create-and-edit onSaveRequested',this.itemEntity);
-
-      this.$emit('save-requested', this.itemEntity);
+      this.$emit('save-requested', this.item);
     }
   },
-
-
-  created() {
-
-    this.filtrationStage =  this.itemEntity?.filtrationStage || new FiltrationStage({})
-
-    console.log('===============', this.filtrationStage);
-
-    console.log('Pressing Stage Create and Edit component created');
-  }
-
-
 
 }
 
@@ -60,186 +43,199 @@ export default {
 
   <!-- Etapa: Filtración -->
   <create-and-edit
-      :entity="filtrationStage"
+      :entity="item"
       :edit="edit"
       :visible="visible"
-      :entity-name="filtrationStage.stage || 'Filtración'"
+      :entity-name="'Filtración'"
       @canceled-shared="onCancelRequested"
       @saved-shared="onSaveRequested($event)"
   >
 
 
-    <!-- Content of the create and edit dialog -->
+    <!-- Datos usados para el formulario de filtración
+ {
+   "employee": "string",
+   "startDate": "2025-07-07",
+   "endDate": "2025-07-07",
+   "filterType": "string",
+   "filterMedium": "string",
+   "porosity": 0.1,
+   "initialTurbidity": 0.1,
+   "finalTurbidity": 0.1,
+   "temperature": 0.1,
+   "pressure": 0.1,
+   "filteredVolume": 0.1,
+   "sterileFiltration": true,
+   "changedFiltration": true,
+   "changeReason": "string",
+   "comment": "string"
+ }
+ -->
 
     <template #content>
-
       <div class="field">
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="registeredBy">Registrado por</label>
+        <!-- Campo: Registrado por -->
+        <pv-float-label class="field mt-5">
+          <label for="employee">Registrado por</label>
           <pv-input-text
               class="w-full"
-              id="registeredBy"
-              v-model="filtrationStage.registeredBy"
-              :class="{ 'p-invalid': submitted && !filtrationStage.registeredBy }"
+              id="employee"
+              v-model="item.employee"
+              :class="{ 'p-invalid': submitted && !item.employee }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <!-- Fecha de inicio -->
+        <pv-float-label class="field mt-5">
           <label for="startDate">Fecha de inicio</label>
           <pv-calendar
               class="w-full"
               id="startDate"
-              v-model="filtrationStage.startDate"
-              date-format="yy-mm-dd"
-              show-icon
-              :class="{ 'p-invalid': submitted && !filtrationStage.startDate }"
+              v-model="item.startDate"
+              :class="{ 'p-invalid': submitted && !item.startDate }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <!-- Fecha de fin -->
+        <pv-float-label class="field mt-5">
           <label for="endDate">Fecha de fin</label>
           <pv-calendar
               class="w-full"
               id="endDate"
-              v-model="filtrationStage.endDate"
-              date-format="yy-mm-dd"
-              show-icon
-              :class="{ 'p-invalid': submitted && !filtrationStage.endDate }"
+              v-model="item.endDate"
+              :class="{ 'p-invalid': submitted && !item.endDate }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="filtrationType">Tipo de filtración</label>
+        <!-- Tipo de filtro -->
+        <pv-float-label class="field mt-5">
+          <label for="filterType">Tipo de filtro</label>
           <pv-input-text
               class="w-full"
-              id="filtrationType"
-              v-model="filtrationStage.filtrationType"
-              :class="{ 'p-invalid': submitted && !filtrationStage.filtrationType }"
+              id="filterType"
+              v-model="item.filterType"
+              :class="{ 'p-invalid': submitted && !item.filterType }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="filterMedia">Medio filtrante</label>
+        <!-- Medio filtrante -->
+        <pv-float-label class="field mt-5">
+          <label for="filterMedium">Medio filtrante</label>
           <pv-input-text
               class="w-full"
-              id="filterMedia"
-              v-model="filtrationStage.filterMedia"
-              :class="{ 'p-invalid': submitted && !filtrationStage.filterMedia }"
+              id="filterMedium"
+              v-model="item.filterMedium"
+              :class="{ 'p-invalid': submitted && !item.filterMedium }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="poreMicrons">Porosidad (micrones)</label>
+        <!-- Porosidad -->
+        <pv-float-label class="field mt-5">
+          <label for="porosity">Porosidad</label>
           <pv-input-text
               class="w-full"
-              id="poreMicrons"
-              v-model.number="filtrationStage.poreMicrons"
-              :class="{ 'p-invalid': submitted && !filtrationStage.poreMicrons }"
+              id="porosity"
+              v-model.number="item.porosity"
+              :class="{ 'p-invalid': submitted && item.porosity === null }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="turbidityBefore">Turbidez antes (NTU)</label>
-          <pv-input-number
+        <!-- Turbidez inicial -->
+        <pv-float-label class="field mt-5">
+          <label for="initialTurbidity">Turbidez inicial</label>
+          <pv-input-text
               class="w-full"
-              id="turbidityBefore"
-              v-model.number="filtrationStage.turbidityBefore"
-              :class="{ 'p-invalid': submitted && !filtrationStage.turbidityBefore }"
+              id="initialTurbidity"
+              v-model.number="item.initialTurbidity"
+              :class="{ 'p-invalid': submitted && item.initialTurbidity === null }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="turbidityAfter">Turbidez después (NTU)</label>
-          <pv-input-number
+        <!-- Turbidez final -->
+        <pv-float-label class="field mt-5">
+          <label for="finalTurbidity">Turbidez final</label>
+          <pv-input-text
               class="w-full"
-              id="turbidityAfter"
-              v-model.number="filtrationStage.turbidityAfter"
-              :class="{ 'p-invalid': submitted && !filtrationStage.turbidityAfter }"
+              id="finalTurbidity"
+              v-model.number="item.finalTurbidity"
+              :class="{ 'p-invalid': submitted && item.finalTurbidity === null }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <!-- Temperatura -->
+        <pv-float-label class="field mt-5">
           <label for="temperature">Temperatura (°C)</label>
-          <pv-input-number
+          <pv-input-text
               class="w-full"
               id="temperature"
-              v-model.number="filtrationStage.temperature"
-              :class="{ 'p-invalid': submitted && !filtrationStage.temperature }"
+              v-model.number="item.temperature"
+              :class="{ 'p-invalid': submitted && item.temperature === null }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="pressureBars">Presión (bares)</label>
-          <pv-input-number
+        <!-- Presión -->
+        <pv-float-label class="field mt-5">
+          <label for="pressure">Presión (bar)</label>
+          <pv-input-text
               class="w-full"
-              id="pressureBars"
-              v-model.number="filtrationStage.pressureBars"
-              :class="{ 'p-invalid': submitted && !filtrationStage.pressureBars }"
+              id="pressure"
+              v-model.number="item.pressure"
+              :class="{ 'p-invalid': submitted && item.pressure === null }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="filteredVolumeLiters">Volumen filtrado (litros)</label>
-          <pv-input-number
+        <!-- Volumen filtrado -->
+        <pv-float-label class="field mt-5">
+          <label for="filteredVolume">Volumen filtrado (litros)</label>
+          <pv-input-text
               class="w-full"
-              id="filteredVolumeLiters"
-              v-model.number="filtrationStage.filteredVolumeLiters"
-              :class="{ 'p-invalid': submitted && !filtrationStage.filteredVolumeLiters }"
+              id="filteredVolume"
+              v-model.number="item.filteredVolume"
+              :class="{ 'p-invalid': submitted && item.filteredVolume === null }"
           />
         </pv-float-label>
 
-        <div class="field-checkbox mt-4 w-full">
-          <pv-checkbox
-              input-id="isSterile"
-              v-model="filtrationStage.isSterile"
-              :binary="true"
+        <!-- Filtración estéril -->
+        <div class="field mt-5">
+          <label for="sterileFiltration" class="block mb-2">Filtración estéril</label>
+          <pv-input-switch
+              id="sterileFiltration"
+              v-model="item.sterileFiltration"
           />
-          <label for="isSterile">Filtración estéril</label>
         </div>
 
-        <div class="field-checkbox mt-4 w-full">
-          <pv-checkbox
-              input-id="filterChanged"
-              v-model="filtrationStage.filterChanged"
-              :binary="true"
+        <!-- Cambio de filtración -->
+        <div class="field mt-5">
+          <label for="changedFiltration" class="block mb-2">Cambio de filtración</label>
+          <pv-input-switch
+              id="changedFiltration"
+              v-model="item.changedFiltration"
           />
-          <label for="filterChanged">Filtro cambiado</label>
         </div>
 
-        <pv-float-label class="field mt-4 w-full">
+        <!-- Motivo del cambio -->
+        <pv-float-label class="field mt-5">
           <label for="changeReason">Motivo del cambio</label>
           <pv-input-text
               class="w-full"
               id="changeReason"
-              v-model="filtrationStage.changeReason"
-              :class="{ 'p-invalid': submitted && !filtrationStage.changeReason }"
+              v-model="item.changeReason"
+              :class="{ 'p-invalid': submitted && item.changedFiltration && !item.changeReason }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="comments">Comentarios</label>
+        <!-- Comentario -->
+        <pv-float-label class="field mt-5">
+          <label for="comment">Comentario</label>
           <pv-input-textarea
               class="w-full"
-              id="comments"
-              v-model="filtrationStage.comments"
-              :class="{ 'p-invalid': submitted && !filtrationStage.comments }"
+              id="comment"
+              v-model="item.comment"
           />
         </pv-float-label>
 
-        <div class="field-checkbox mt-4 w-full">
-          <pv-checkbox
-              input-id="isCompleted"
-              v-model="filtrationStage.isCompleted"
-              :binary="true"
-          />
-          <label for="isCompleted">Completado</label>
-        </div>
-
-
-
       </div>
-
     </template>
 
   </create-and-edit>

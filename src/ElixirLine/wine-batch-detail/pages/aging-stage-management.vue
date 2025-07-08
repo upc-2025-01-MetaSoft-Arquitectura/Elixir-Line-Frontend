@@ -1,43 +1,52 @@
 <script>
 
-import {Stages} from "../model/stages.entity.js";
 import {AgingStage} from "../model/agingStage.entity.js";
-import {StagesApiService} from "../services/stages-api.service.js";
 import ClarificationStageCreateAndEdit from "../components/clarification-stage-create-and-edit.component.vue";
 import AgingStageDetailCreateAndEdit from "../components/aging-stage-create-and-edit.component.vue";
+import {ClarificationStage} from "../model/clarificationStage.entity.js";
+import {ClarificationStageApiService} from "../services/clarification-stage-api.service.js";
+import {AgingStageApiService} from "../services/aging-stage-api.service.js";
+import {CreateAgingStage} from "../model/create-aging-stage.entity.js";
 
 export default {
   name: 'aging-stage-management',
 
   components: {AgingStageDetailCreateAndEdit, ClarificationStageCreateAndEdit},
 
-  props:{
-    item: null,
-    canAddStage: {
-      type: Boolean,
-      default: false // Default value for canAddStage
-    }
-  },
-
-  computed: {
-    canAddStage() {
-      return this.item &&
-          this.item.clarificationStage &&
-          this.item.clarificationStage.isCompleted === true
-    }
+  props: {
+    item: {
+      type: Object,
+      default: () => ({})
+    },
   },
 
 
   data() {
     return {
-      title: { singular: 'Etapa de Fermentación', plural: 'Etapa de Fermentación' },
-      itemObject: new Stages({}),
+      title: { singular: 'Etapa de Añejamiento', plural: 'Etapa de Añejamiento' },
+
+      batchId: null,
+
       agingStage: new AgingStage({}),
+      clarificationStage: new ClarificationStage({}),
+
+      createAgingStage: new CreateAgingStage({}),
+
       agingStageApiService: null,
+      clarificationStageApiService: null,
+
       createAndEditDialogIsVisible: false,
+
       isEdit: false,
+
       submitted: false,
-      stageExist: false, // Assuming you want to check if a stage exists
+
+    }
+  },
+
+  computed: {
+    canAddStage() {
+      return this.clarificationStage && this.clarificationStage.completionStatus === 'COMPLETED';
     }
   },
 
@@ -51,8 +60,8 @@ export default {
 
     //#region Event Handlers
     onNewItem() {
-      this.itemObject = new Stages({});
-      console.log('======================= NEW ITEM MANAGEMENT', this.itemObject);
+      this.agingStage = new AgingStage({});
+      console.log('======================= NEW ITEM MANAGEMENT', this.agingStage);
       this.isEdit = false;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
@@ -60,15 +69,10 @@ export default {
 
     onEditItem(item) {
       console.log('======================= EDIT ITEM MANAGEMENT', item);
-      this.itemObject = new Stages(item);
+      this.agingStage = new AgingStage(item);
       this.isEdit = true;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
-    },
-
-    onDeleteItem(item) {
-      this.itemObject = new Stages(item);
-      this.deleteBatch();
     },
 
     onCancelRequested() {
@@ -96,31 +100,101 @@ export default {
 
     //#region CRUD Operations
     create() {
-      this.agingStageApiService.create(this.itemObject).then(response => {
 
-        this.agingStage = new AgingStage(response.data.agingStage);
-        this.itemObject = new Stages(response.data);
+      this.createAgingStage.employee = this.agingStage.employee;
+      // formato de fecha yyyy-mm-dd
+      // Para startDate, en caso sea nulo se asigna la fecha actual.
+      this.createAgingStage.startDate = this.agingStage.endDate ? this.agingStage.endDate : new Date().toISOString().split('T')[0];
+      // formato de fecha yyyy-mm-dd
+      // Para endDate, asignar la fecha de inicio más un día si es nulo.
+      this.createAgingStage.endDate = this.agingStage.endDate ? this.agingStage.endDate : new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
+
+      this.createAgingStage.containerType = this.agingStage.containerType;
+      this.createAgingStage.material = this.agingStage.material;
+      this.createAgingStage.containerCode = this.agingStage.containerCode;
+      // Asignar el volumen, asegurando que sea un número
+      this.createAgingStage.averageTemperature = this.agingStage.averageTemperature ? parseFloat(this.agingStage.averageTemperature) : 0.0;
+      this.createAgingStage.volume = this.agingStage.volume ? parseFloat(this.agingStage.volume) : 0.0;
+      this.createAgingStage.duration = this.agingStage.duration ? parseInt(this.agingStage.duration) : 0;
+      this.createAgingStage.frequency = this.agingStage.frequency ? parseInt(this.agingStage.frequency) : 0;
+      this.createAgingStage.batonnage = this.agingStage.batonnage ? parseFloat(this.agingStage.batonnage) : 0.0;
+      this.createAgingStage.refills = this.agingStage.refills ? parseInt(this.agingStage.refills) : 0;
+      this.createAgingStage.rackings = this.agingStage.rackings ? parseInt(this.agingStage.rackings) : 0;
+      this.createAgingStage.purpose = this.agingStage.purpose;
+      this.createAgingStage.comment = this.agingStage.comment;
+
+
+      this.agingStageApiService.create(this.batchId, this.agingStage).then(response => {
+
+        this.agingStage = new AgingStage(response.data);
 
         this.notifySuccessfulAction('Stage created successfully');
       }).catch(error => {
-        console.error("Error creating a Stage", error);
+        console.error("Error creating a Stage",error);
+        console.error('🔴 Message:', error.message);
+        console.error('🔴 Status:', error.response?.status);
+        console.error('🔴 Details:', error.response?.data);
       });
     },
 
     update() {
-      this.agingStageApiService.update(this.itemObject.id, this.itemObject).then(response => {
 
-        this.agingStage = new AgingStage(response.data.agingStage);
-        this.itemObject = new Stages(response.data);
+      this.agingStageApiService.patch(this.batchId, this.agingStage).then(response => {
+
+        this.agingStage = new AgingStage(response.data);
 
         this.notifySuccessfulAction('Stage updated successfully');
       }).catch(error => {
-        console.error("Error updating a Stage", error);
+        console.error("Error updating a Stage",error);
+        console.error('🔴 Message:', error.message);
+        console.error('🔴 Status:', error.response?.status);
+        console.error('🔴 Details:', error.response?.data);
       });
     },
 
-    //#endregion
 
+    getAgingStage() {
+      this.agingStageApiService.getAgingStageByBatchId(this.batchId)
+          .then(response => {
+
+            this.agingStage = new AgingStage(response.data);
+
+            console.log("=== ETAPA DE AÑEJAMIENTO RECUPERADA: ===", response.data);
+
+          })
+          .catch(error => {
+            console.error('❌ Error al obtener la etapa de añejamiento:', error);
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo obtener la etapa de añejamiento.',
+              life: 3000
+            });
+          });
+    },
+
+    getClarificationStage() {
+      this.clarificationStageApiService.getClarificationStageByBatchId(this.batchId)
+          .then(response => {
+
+            this.clarificationStage = new ClarificationStage(response.data);
+            // Asegurarse de que el rendimiento del mosto sea un número
+
+            console.log("=== ETAPA DE CLARIFICACIÓN RECUPERADA: ===",response.data);
+
+          })
+          .catch(error => {
+            console.error('❌ Error al obtener la etapa de clarificación:', error);
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo obtener la etapa de clarificación.',
+              life: 3000
+            });
+          });
+    },
+
+    //#endregion
 
 
     // Confirmar y cerrar al confirmar
@@ -148,19 +222,48 @@ export default {
       })
     },
 
+    isDataComplete() {
+
+      // Verifica que todos los campos requeridos estén completos
+      // los valores numerico no pueden ser menor que 0, las fechas no pueden ser nulas y los strings no pueden estar vacíos
+      return this.agingStage.employee.trim() !== '' &&
+          this.agingStage.startDate !== null &&
+          this.agingStage.containerType.trim() !== '' &&
+          this.agingStage.material.trim() !== '' &&
+          this.agingStage.containerCode.trim() !== '' &&
+          this.agingStage.averageTemperature >= 0 &&
+          this.agingStage.volume >= 0 &&
+          this.agingStage.duration >= 0 &&
+          this.agingStage.frequency >= 0 &&
+          this.agingStage.batonnage >= 0 &&
+          this.agingStage.refills >= 0 &&
+          this.agingStage.rackings >= 0 &&
+          this.agingStage.purpose.trim() !== '' &&
+          this.agingStage.comment.trim() !== '';
+    },
 
     completarEtapa() {
-      this.itemObject.agingStage.isCompleted = true
 
-      this.agingStageApiService.update(this.itemObject.id, this.itemObject)
+      if (!this.isDataComplete()) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Por favor, completa todos los campos requeridos antes de completar la etapa.',
+          life: 4000
+        });
+        return;
+      }
+
+      this.agingStage.completionStatus = 'COMPLETED'
+
+      this.agingStageApiService.patch(this.agingStage.batchId, this.agingStage)
           .then(response => {
-            this.agingStage = new AgingStage(response.data.agingStage)
-            this.itemObject = new Stages(response.data)
+            this.agingStage = new AgingStage(response.data)
             this.notifySuccessfulAction('Etapa completada correctamente')
+            console.log("== ETAPA DE RECEPCIÓN COMPLETADA ==", this.agingStage)
           })
           .catch(error => {
-            this.agingStage.isCompleted = false
-            this.itemObject.agingStage.isCompleted = false
+            this.agingStage.completionStatus = 'NOT_COMPLETED'
 
             console.error('❌ Error al completar la etapa:', error)
             this.$toast.add({
@@ -170,34 +273,22 @@ export default {
               life: 3000
             })
           })
-    }
-
-
-
+    },
 
 
   },
 
   //#region Lifecycle Hooks
   created() {
-    this.agingStageApiService = new StagesApiService ('/stages');
+    this.batchId = this.item.id;
+    this.agingStageApiService = new AgingStageApiService('/batches');
+    this.clarificationStageApiService = new ClarificationStageApiService('/batches');
 
-    if (!this.item || !this.item.agingStage) {
-      // Etapa actual (agingStage) NO existe
-      this.stageExist = false;
+    this.getAgingStage();
 
-    } else {
-      // Etapa actual (agingStage) YA existe
-      this.itemObject = this.item;
-      this.stageExist = true;
-      this.agingStage = this.item.agingStage;
-    }
+    this.getClarificationStage();
 
-    console.log('RECEPTION STAGE ===================== ', this.agingStage);
 
-    console.log('CAN STAGE ===================== ', this.canAddStage);
-
-    console.log("🔍 Reception Stage Management created with item:", this.item);
   },
 }
 
@@ -224,17 +315,17 @@ export default {
         <pv-button
             label="Nueva Etapa"
             icon="pi pi-plus"
-            @click="onNewItem()"
+            @click="onNewItem"
             class="p-button-success"
-            v-if="!stageExist && canAddStage"
+            v-if="!agingStage.id"
         />
 
         <pv-button
             label="Editar"
             icon="pi pi-pencil"
-            @click="onEditItem(itemObject)"
+            @click="onEditItem(agingStage)"
             class="p-button-warning"
-            v-if="stageExist  && canAddStage /*&& !agingStage.isCompleted*/"
+            v-if="agingStage.id  && agingStage.completionStatus !== 'COMPLETED'"
         />
 
         <pv-button
@@ -242,62 +333,87 @@ export default {
             icon="pi pi-check"
             class="p-button-success"
             @click="confirmarCompletarEtapa"
-            v-show="stageExist && !agingStage.isCompleted"
+            v-if="agingStage.id  && agingStage.completionStatus !== 'COMPLETED'"
         />
+
+
       </div>
     </div>
+
 
     <!-- Mensaje de aviso si no se puede agregar una nueva etapa -->
     <div v-if="!canAddStage" class="p-3 bg-yellow-100 text-yellow-800 border-round">
       <i class="pi pi-exclamation-triangle"></i>
-      <span> No se puede agregar una nueva etapa de AÑEJAMIENTO hasta que se complete la etapa de CLARIFICACIÓN. </span>
+      <span> No se puede agregar una nueva etapa de AÑEJAMIENTO hasta que se complete la etapa de CLARIFICACIÓN.
+      </span>
     </div>
 
+    <!-- Mensaje de aviso si no hay una etapa de corrección -->
+    <div v-if="canAddStage && !agingStage.id "
+         class="p-3 bg-red-100 text-red-800 border-round">
+      <i class="pi pi-exclamation-triangle"></i>
+      <span> No hay una etapa de AÑEJAMIENTO registrada para este lote. </span>
+    </div>
+
+
+
     <!-- Contenido de la etapa -->
-    <pv-card v-if="agingStage.stage && canAddStage">
+    <pv-card v-if="agingStage && agingStage.id && canAddStage === true">
       <template #header>
         <h4 class="m-0">Detalles de la etapa de clarificación</h4>
       </template>
 
-      <!-- contenido de la tarjeta-->
       <template #content>
 
         <div class="flex align-items-center gap-2">
           <i class="pi pi-user text-lg"></i>
-          <p><strong>Registrado por:</strong> {{ agingStage.registeredBy }}</p>
+          <p><strong>Registrado por:</strong> {{ agingStage.employee }}</p>
         </div>
 
         <div class="grid p-2">
+
           <div class="col-12 md:col-6">
             <p><strong>Fecha de inicio:</strong> {{ agingStage.startDate }}</p>
-            <p><strong>Fecha de finalización:</strong> {{ agingStage.endDate }}</p>
-            <p><strong>Tipo de contenedor:</strong> {{ agingStage.containerType }}</p>
+            <p><strong>Contenedor:</strong> {{ agingStage.containerType || 'No definido' }}</p>
+            <p><strong>Código del contenedor:</strong> {{ agingStage.containerCode || 'No definido' }}</p>
+            <p><strong>Volumen:</strong> {{ agingStage.volume || 'No definido' }} L</p>
+            <p><strong>Frecuencia de batonnage:</strong> {{ agingStage.frequency || 'No definida' }} días</p>
+            <p><strong>Recargas:</strong> {{ agingStage.refills || 'No definidas' }}</p>
           </div>
+
           <div class="col-12 md:col-6">
-            <p><strong>Material del contenedor:</strong> {{ agingStage.material }}</p>
-            <p><strong>Código del contenedor:</strong> {{ agingStage.containerCode }}</p>
-            <p><strong>Temperatura promedio (°C):</strong> {{ agingStage.avgTemperature }}</p>
+            <p><strong>Fecha de finalización:</strong> {{ agingStage.endDate || 'No definida' }}</p>
+            <p><strong>Material del contenedor:</strong> {{ agingStage.material || 'No definido' }}</p>
+            <p><strong>Temperatura promedio:</strong> {{ agingStage.averageTemperature || 'No definida' }} °C</p>
+            <p><strong>Duración:</strong> {{ agingStage.duration || 'No definida' }} meses</p>
+            <p><strong>Batonnage:</strong> {{ agingStage.batonnage || 'No definido' }} veces</p>
+            <p><strong>Trasiegos:</strong> {{ agingStage.rackings || 'No definidos' }}</p>
           </div>
-          <div class="col-12 md:col-6">
-            <p><strong>Volumen (litros):</strong> {{ agingStage.volumeLiters }}</p>
-            <p><strong>Duración (meses):</strong> {{ agingStage.durationMonths }}</p>
-            <p><strong>Frecuencia de revisión (días):</strong> {{ agingStage.frequencyDays || 'N/A' }}</p>
-          </div>
-          <div class="col-12 md:col-6">
-            <p><strong>Número de recargas:</strong> {{ agingStage.refilled }}</p>
-            <p><strong>Bâtonnage:</strong> {{ agingStage.batonnage || 0 }} veces</p>
-            <p><strong>Sacas:</strong> {{ agingStage.rackings || 0 }} veces</p>
-          </div>
-          <div class="col-12">
-            <p><strong>Propósito:</strong> {{ agingStage.purpose }}</p>
-            <p><strong>Comentarios:</strong> {{ agingStage.comments }}</p>
-          </div>
+
         </div>
 
-        <!-- Estado de finalización -->
+        <!-- Propósito -->
+        <div class="mt-4 w-full">
+          <p><strong>Propósito:</strong></p>
+          <p class="text-gray-700 ">{{ agingStage.purpose || 'No hay comentarios.' }}</p>
+        </div>
+
+
+        <!-- Comentario -->
+        <div class="mt-4 w-full">
+          <p><strong>Comentario:</strong></p>
+          <p class="text-gray-700 ">{{ agingStage.comment || 'No hay comentarios.' }}</p>
+        </div>
+
+        <!-- Visualización de estado -->
         <div class="flex align-items-center gap-2 mt-4">
-          <i class="pi text-xl" :class="agingStage.isCompleted ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"></i>
-          <span class="text-lg font-medium">{{ agingStage.isCompleted ? 'Etapa completada' : 'Etapa no completada' }} </span>
+          <i
+              class="pi text-xl"
+              :class="agingStage.completionStatus === 'COMPLETED' ? 'pi-check-circle text-green-500' : 'pi-times-circle text-red-500'"
+          ></i>
+          <span class="text-lg font-medium">
+              {{ agingStage.completionStatus === 'COMPLETED' ? 'Etapa completada' : 'Etapa no completada' }}
+            </span>
         </div>
 
       </template>
@@ -307,7 +423,7 @@ export default {
     <!-- Diálogo para crear o editar etapa -->
     <aging-stage-detail-create-and-edit
         :edit="isEdit"
-        :item-entity="itemObject"
+        :item="agingStage"
         :visible="createAndEditDialogIsVisible"
         @cancel-requested="onCancelRequested"
         @save-requested="onSaveRequested($event)"

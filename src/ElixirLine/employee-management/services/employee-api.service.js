@@ -1,11 +1,14 @@
-import axios from "axios";
+import http from "../../../shared/services/http-common.js";
 
-const http = axios.create({baseURL: "http://localhost:3000"});
 
 export class EmployeeApiService {
 
     constructor(_resourceEndpoint) {
         this.resourceEndpoint = _resourceEndpoint;
+    }
+
+    getAllEmployeesByUserId(userId) {
+        return http.get(`${this.resourceEndpoint}/user/${userId}`);
     }
 
     getAllResources() {

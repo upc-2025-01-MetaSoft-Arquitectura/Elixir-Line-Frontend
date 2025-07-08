@@ -56,10 +56,11 @@ import {
     AccordionHeader,
     AccordionPanel,
     AutoComplete,
-    Badge, Calendar, Dropdown, InputSwitch, ProgressBar,
+    Badge, Calendar, Chips, Dropdown, InputSwitch, ProgressBar,
     SplitButton,
     TabPanels
 } from "primevue";
+import {createPinia} from "pinia";
 
 
 
@@ -76,6 +77,10 @@ app.use(i18n)
 
 // Use Router
 app.use(router);
+
+// Use Pinia
+const pinia = createPinia();
+app.use(pinia);
 
 
 // Use PrimeVue
@@ -127,7 +132,9 @@ app.component('pv-button', Button)
     .component('pv-calendar', Calendar)
     .component('pv-input-textarea', Textarea)
     .component('pv-input-switch', InputSwitch)
-    .component('pv-confirm-dialog', ConfirmDialog);
+    .component('pv-confirm-dialog', ConfirmDialog)
+    .component('pv-chips', Chips)
+    .component('pv-file-upload', FileUpload);
 
 
 app.mount('#app')

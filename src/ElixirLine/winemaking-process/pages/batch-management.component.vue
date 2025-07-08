@@ -1,6 +1,4 @@
 <script>
-
-
 import {WineBatch} from "../model/wine-batch.entity.js";
 import BatchesCreateAndEdit from "../components/batches-create-and-edit.component.vue";
 import DataManager from "../../../shared/components/data-manager.component.vue";
@@ -9,6 +7,7 @@ import {Campaign} from "../model/campaign.entity.js";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
 import BatchViewDetails from "../../wine-batch-detail/pages/bacth-view-detail.component.vue";
 import TabsViewDetails from "../../wine-batch-detail/views/tabs-view-details.component.vue";
+import {CreateBatch} from "../model/create-batch.entity.js";
 
 export default {
   name: "batch-management",
@@ -31,6 +30,10 @@ export default {
       isEdit: false,
       submitted: false,
 
+      createItem: new CreateBatch({}),
+      campaignId: null,
+      winegrowerId: null,// ID de la campaña seleccionada
+
       // Para ver detalles de un lote
       isViewItem: false, // Para ver detalles de un lote
       viewDetailsDialogIsVisible: false,
@@ -47,7 +50,6 @@ export default {
 
 
   methods: {
-
     //#region Utility Methods
     notifySuccessfulAction(message) {
       this.$toast.add({severity: 'success', summary: 'Success', detail: message, life: 3000});
@@ -117,13 +119,31 @@ export default {
     //#endregion
 
     //#region CRUD Operations
-    createBatch() {
-      this.batchAndCampaignApiService.create(this.batch).then(response => {
+    createBatch: function () {
+
+      this.createItem.winegrowerId = this.winegrowerId; // ID del viticultor de la campaña seleccionada
+      this.createItem.campaignId = this.campaignId; // ID de la campaña seleccionada
+      this.createItem.vineyardCode = this.batch.vineyardCode;
+      this.createItem.vineyardOrigin = this.batch.vineyardOrigin;
+      this.createItem.grapeVariety = this.batch.grapeVariety;
+      this.createItem.harvestCampaign = this.batch.harvestCampaign;
+      // Asegurarse de que initialGrapeQuantityKg sea un número
+      this.createItem.initialGrapeQuantityKg = this.batch.initialGrapeQuantityKg ? parseFloat(this.batch.initialGrapeQuantityKg) : 0;
+      // formato YYYY-MM-DD
+      this.createItem.receptionDate = this.batch.receptionDate ? this.batch.receptionDate.toISOString().split('T')[0] : null;
+      this.createItem.createdBy = this.batch.createdBy;
+
+      console.log('=========== Creating batch with data: ===========', this.createItem);
+
+      this.batchAndCampaignApiService.create(this.createItem).then(response => {
         let newBatch = new WineBatch(response.data);
         this.batches.push(newBatch);
         this.notifySuccessfulAction('Batch created successfully');
       }).catch(error => {
-        console.error("Error creating a batch",error);
+        console.error("Error creating a batch", error);
+        console.error('🔴 Message:', error.message);
+        console.error('🔴 Status:', error.response?.status);
+        console.error('🔴 Details:', error.response?.data);
       });
     },
 
@@ -206,7 +226,9 @@ export default {
       console.log("🟢 Campaña seleccionada:", this.selectedItem);
 
       this.batches = []; // Limpiar lotes antes de cargar los nuevos
-      this.getBatchesByCampaign(this.selectedItem.id)
+      this.campaignId = this.selectedItem.id; // Guardar el ID de la campaña seleccionada
+      this.winegrowerId = this.selectedItem.winegrowerId; // Guardar el ID del viticultor de la campaña seleccionada
+      this.getBatchesByCampaign(this.campaignId)
     },
 
 
@@ -220,7 +242,7 @@ export default {
 
   //#region Lifecycle Hooks
   created() {
-    this.batchAndCampaignApiService = new batchAndCampaignApiService('/wine-batches');
+    this.batchAndCampaignApiService = new batchAndCampaignApiService('/batches');
     this.campaignApiService = new batchAndCampaignApiService('/campaigns');
 
     //this.getAllBatches();
@@ -270,8 +292,9 @@ export default {
 
     </template>
 
+    <!-- Mostrar solo i se ha seleccionado una campaña -->
 
-    <div v-if="batches && batches.length > 0" class="data-table-container p-2 h-full flex-1 overflow-hidden flex flex-column">
+    <div v-if="selectedItem" class="data-table-container p-2 h-full flex-1 overflow-hidden flex flex-column">
 
       <data-manager :title="title"
                     v-bind:items="batches"
@@ -283,23 +306,43 @@ export default {
                     v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)" >
 
         <template #custom-columns-manager >
-          <!--
-          <pv-column
-              :sortable="true"
-              field="id"
-              header="Id"
-          />
+
+
+          <!-- Aquí puedes agregar columnas personalizadas si es necesario
+           {
+            "id": 10,
+            "campaignId": 5,
+            "winegrowerId": 1,
+            "vineyardCode": "B2025-VINEYARD01",
+            "receptionDate": "2025-06-03",
+            "harvestCampaign": 2025,
+            "vineyardOrigin": "Valle de Ica",
+            "grapeVariety": "MALBEC",
+            "initialGrapeQuantityKg": 3200,
+            "createdBy": "Luis Carlos Prada Naez",
+            "progress": 0,
+            "status": "NOT_STARTED",
+            "currentStage": "RECEPTION"
+          }
           -->
+
+
           <pv-column
               :sortable="true"
-              field="internalCode"
-              header="Code"
+              field="receptionDate"
+              header="Reception Date"
+          />
+
+          <pv-column
+              :sortable="true"
+              field="vineyardCode"
+              header="Vineyard Code"
           />
 
           <pv-column
               :sortable="true"
               field="vineyardOrigin"
-              header="Vineyard"
+              header="Vineyard Origin"
           />
 
           <pv-column
@@ -310,26 +353,32 @@ export default {
 
           <pv-column
               :sortable="true"
-              field="initialGrapeQuantityKg"
-              header="Quantity Kg"
+              field="harvestCampaign"
+              header="Harvest Campaign"
           />
 
           <pv-column
               :sortable="true"
-              field="harvestCampaign"
-              header="Campaign"
+              field="initialGrapeQuantityKg"
+              header="Quantity (Kg)"
+          />
+
+          <pv-column
+              :sortable="true"
+              field="createdBy"
+              header="Created By"
           />
 
           <pv-column
               :sortable="true"
               field="currentStage"
               header="Stage"
-              class=""
           />
+
 
           <!--Quiero que el color de fondo de texto sea diferente de acuerdo al Estado del lote-->
           <pv-column :sortable="true"
-                     header="status">
+                     header="Progress">
 
               <template #body="slotProps">
                 <span :style="{ backgroundColor: slotProps.data.status === 'No iniciado' ? '#708090' :
@@ -342,8 +391,6 @@ export default {
                   {{ slotProps.data.status }}
                 </span>
               </template>
-
-
           </pv-column>
 
 
@@ -374,8 +421,8 @@ export default {
       </batches-create-and-edit>
 
       <tabs-view-details
-          :item-entity="batch"
-          :title="`${batch.internalCode} - ${batch.harvestCampaign}`"
+          :item-batch="batch"
+          :title="`${batch.vineyardCode} - ${batch.harvestCampaign}`"
           :visible="viewDetailsDialogIsVisible"
           v-on:close-tabs-view-details="onCloseDetails">
       </tabs-view-details>
@@ -383,10 +430,12 @@ export default {
     </div>
 
 
-    <!-- Mostrar mensaje si batches está vacío o nulo -->
+    <!-- Mensaje si no hay campañas seleccionadas -->
     <div v-else class="p-4 text-center text-gray-600">
-      {{ $t('winemaking.batches-not-found') }}
+      <i class="pi pi-info-circle text-4xl mb-2 text-blue-500"></i>
+      <p class="text-lg font-semibold"> Elige una campaña para añadir lotes, ver sus detalles o editarla. </p>
     </div>
+
 
   </base-page-layout>
 

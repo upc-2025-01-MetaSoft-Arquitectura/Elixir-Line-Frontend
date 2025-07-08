@@ -1,25 +1,37 @@
 <script>
 
+import {useAuthenticationStore} from "../../ElixirLine/security/services/authentication.store.js";
+
 export default {
   name: "navbar-elixir-line",
 
 
   data() {
     return {
-      user: null,
       drawer: true,
-      visible: true,
-      items: [
-        { label: 'navbar.title-dashboard-option', icon: 'pi pi-fw pi-home', to: '/dashboard' },
-        { label: 'navbar.title-batch-option', icon: 'pi pi-fw pi-table', to: '/vinicultor/winemaking' },
-        { label: 'navbar.title-tasks-option', icon: 'pi pi-fw pi-list-check', to: '/vinicultor/tasks' }, 
+      visible: true
+    };
+  },
 
-        { label: 'navbar.title-map-option', icon: 'pi pi-fw pi-map', to: '/map' },
-        { label: 'navbar.title-supplies-option', icon: 'pi pi-fw pi-box', to: '/vinicultor/supplies' },
-        { label: 'navbar.title-calendar-option', icon: 'pi pi-fw pi-calendar', to: '/vinicultor/calendar' },
-        { label: 'navbar.title-evidence-option', icon: 'pi pi-fw pi-image', to: '/vinicultor/evidence' },
-        { label: 'navbar.title-reports-option', icon: 'pi pi-fw pi-chart-bar', to: '/reports' }
-      ]
+  computed: {
+    // Obtiene el userId desde el store de autenticación
+    userId() {
+      return useAuthenticationStore().currentUserId;
+    },
+
+    // Construye la lista de ítems con rutas dinámicas usando userId
+    items() {
+      const basePath = `/elixir-line/${this.userId}`;
+
+      return [
+        { label: 'navbar.title-dashboard-option', icon: 'pi pi-fw pi-home', to: `${basePath}/dashboard` },
+        { label: 'navbar.title-batch-option', icon: 'pi pi-fw pi-table', to: `${basePath}/vinicultor/winemaking` },
+        { label: 'navbar.title-task-option', icon: 'pi pi-pen-to-square', to: `${basePath}/vinicultor/tasks` },
+        { label: 'navbar.title-map-option', icon: 'pi pi-fw pi-map', to: `${basePath}/map` },
+        { label: 'navbar.title-supplies-option', icon: 'pi pi-fw pi-box', to: `${basePath}/vinicultor/supplies` },
+        { label: 'navbar.title-calendar-option', icon: 'pi pi-fw pi-calendar', to: `${basePath}/calendar` },
+        { label: 'navbar.title-reports-option', icon: 'pi pi-fw pi-chart-bar', to: `${basePath}/reports` }
+      ];
     }
   },
 

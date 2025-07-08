@@ -1,40 +1,46 @@
 
-
-
 export class BottlingStage {
     constructor({
-                    stage = null,
-                    registeredBy = null,
+                    id = null,
+                    batchId = null,
+                    employee = null,
                     startDate = null,
                     endDate = null,
-                    bottlingLine = null, // Línea de embotellado
-                    bottlesFilled = 0,               // Total de botellas llenadas
-                    bottleVolumeMl = 0,             // Volumen por botella
-                    totalVolumeLiters = 0,       // Volumen total embotellado
-                    sealType = null,                         // Tipo de sellado (ej. 'Corcho natural')
-                    code = null,                                 // Código identificador del lote embotellado
-                    temperature = null,                   // Temperatura durante embotellado
-                    wasFiltered = false,
-                    wereLabelsApplied = false,
-                    wereCapsulesApplied = false,
-                    comments = null,
-                    isCompleted = false
+                    bottlingLine = null,
+                    filledBottles = 0,
+                    bottleVolume = 750, // Default to 750ml
+                    totalVolume = 0, // Calculated as filledBottles * bottleVolume
+                    sealingType = null,
+                    vineyardCode = null,
+                    temperature = null,
+                    filteredBeforeBottling = false,
+                    labelsAtThisStage = false,
+                    capsuleOrSealApplication = false,
+                    comment = null,
+                    completionStatus = 'NOT_COMPLETED', // Default status
+                    currentStage = 'BOTTLING', // Always 'BOTTLING' for this class
+                    completedAt = null,
+                    dataHash = null
                 }) {
-        this.stage = stage; // Siempre 'Embotellado'
-        this.registeredBy = registeredBy;
+        this.id = id;
+        this.batchId = batchId;
+        this.employee = employee;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.bottlingLine = bottlingLine;                 // Línea de embotellado
-        this.bottlesFilled = bottlesFilled;               // Total de botellas llenadas
-        this.bottleVolumeMl = bottleVolumeMl;             // Volumen por botella en ml
-        this.totalVolumeLiters = totalVolumeLiters;       // Volumen total embotellado
-        this.sealType = sealType;                         // Tipo de sellado (ej. 'Corcho natural')
-        this.code = code;                                 // Código identificador del lote embotellado
-        this.temperature = temperature;                   // Temperatura durante embotellado
-        this.wasFiltered = wasFiltered;
-        this.wereLabelsApplied = wereLabelsApplied;
-        this.wereCapsulesApplied = wereCapsulesApplied;
-        this.comments = comments;
-        this.isCompleted = isCompleted;
+        this.bottlingLine = bottlingLine;
+        this.filledBottles = filledBottles;
+        this.bottleVolume = bottleVolume;
+        this.totalVolume = totalVolume || (filledBottles * bottleVolume / 1000); // Convert to liters
+        this.sealingType = sealingType;
+        this.vineyardCode = vineyardCode;
+        this.temperature = temperature;
+        this.filteredBeforeBottling = filteredBeforeBottling;
+        this.labelsAtThisStage = labelsAtThisStage;
+        this.capsuleOrSealApplication = capsuleOrSealApplication;
+        this.comment = comment;
+        this.completionStatus = completionStatus;
+        this.currentStage = currentStage; // Always 'BOTTLING'
+        this.completedAt = completedAt;
+        this.dataHash = dataHash; // For integrity checks
     }
 }

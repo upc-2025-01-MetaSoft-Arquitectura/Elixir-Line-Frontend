@@ -1,22 +1,21 @@
 <script>
 
 import CreateAndEdit from "../../../shared/components/create-and-edit.component.vue";
-import {AgingStage} from "../model/agingStage.entity.js";
 
 export default {
   name: 'aging-stage-detail-create-and-edit',
 
-  components: {CreateAndEdit},
+  components: { CreateAndEdit},
 
   props: {
-    itemEntity: null,
+    item: null,
     edit : Boolean,
     visible: Boolean,
   },
 
   data() {
     return {
-      agingStage: new AgingStage({}),     submitted: false
+      submitted: false
     }
   },
 
@@ -27,28 +26,14 @@ export default {
       this.$emit('cancel-requested');
     },
 
-    onSaveRequested(newItem) {
+    onSaveRequested() {
       this.submitted = true;
 
-      newItem.stage = "Añejamiento"; // Assuming the stage is always "Envejecimiento" for this component
+      console.log('batches-create-and-edit onSaveRequested',this.item);
 
-      this.itemEntity.agingStage = newItem;
-
-      console.log('batches-create-and-edit onSaveRequested',this.agingStage);
-
-      this.$emit('save-requested', this.itemEntity);
+      this.$emit('save-requested', this.item);
     }
   },
-
-
-  created() {
-
-    this.agingStage = this.itemEntity?.agingStage ||  new AgingStage({})
-
-    console.log('===============', this.agingStage);
-
-    console.log('Pressing Stage Create and Edit component created');
-  }
 
 
 
@@ -59,10 +44,10 @@ export default {
 <template>
 
   <create-and-edit
-      :entity="agingStage"
+      :entity="item"
       :edit="edit"
       :visible="visible"
-      :entity-name="agingStage.stage || 'Añejamiento'"
+      :entity-name="'Añejamiento'"
       @canceled-shared="onCancelRequested"
       @saved-shared="onSaveRequested($event)"
   >
@@ -71,178 +56,186 @@ export default {
     <!-- Content of the create and edit dialog -->
     <template #content>
 
+      <!-- Example of the expected structure of the item object
+      {
+      "employee": "string",
+      "startDate": "2025-07-07",
+      "endDate": "2025-07-07",
+      "containerType": "string",
+      "material": "string",
+      "containerCode": "string",
+      "averageTemperature": 0.1,
+      "volume": 0.1,
+      "duration": 1073741824,
+      "frequency": 1073741824,
+      "batonnage": 0.1,
+      "refills": 1073741824,
+      "rackings": 1073741824,
+      "purpose": "string",
+      "comment": "string"
+      }
+      -->
+
       <div class="field">
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="registeredBy">Registrado por</label>
+        <pv-float-label class="field mt-5">
+          <label for="employee">Registrado por</label>
           <pv-input-text
               class="w-full"
-              id="registeredBy"
-              v-model="agingStage.registeredBy"
-              :class="{ 'p-invalid': submitted && !agingStage.registeredBy }"
+              id="employee"
+              v-model="item.employee"
+              :class="{ 'p-invalid': submitted && !item.employee }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <pv-float-label class="field mt-5">
           <label for="startDate">Fecha de inicio</label>
           <pv-calendar
               class="w-full"
               id="startDate"
-              v-model="agingStage.startDate"
-              date-format="yy-mm-dd"
-              show-icon
-              :class="{ 'p-invalid': submitted && !agingStage.startDate }"
+              v-model="item.startDate"
+              :class="{ 'p-invalid': submitted && !item.startDate }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <pv-float-label class="field mt-5">
           <label for="endDate">Fecha de fin</label>
           <pv-calendar
               class="w-full"
               id="endDate"
-              v-model="agingStage.endDate"
-              date-format="yy-mm-dd"
-              show-icon
-              :class="{ 'p-invalid': submitted && !agingStage.endDate }"
+              v-model="item.endDate"
+              :class="{ 'p-invalid': submitted && !item.endDate }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <pv-float-label class="field mt-5">
           <label for="containerType">Tipo de contenedor</label>
           <pv-input-text
               class="w-full"
               id="containerType"
-              v-model="agingStage.containerType"
-              :class="{ 'p-invalid': submitted && !agingStage.containerType }"
+              v-model="item.containerType"
+              :class="{ 'p-invalid': submitted && !item.containerType }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+
+        <pv-float-label class="field mt-5">
           <label for="material">Material</label>
           <pv-input-text
               class="w-full"
               id="material"
-              v-model="agingStage.material"
-              :class="{ 'p-invalid': submitted && !agingStage.material }"
+              v-model="item.material"
+              :class="{ 'p-invalid': submitted && !item.material }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <pv-float-label class="field mt-5">
           <label for="containerCode">Código del contenedor</label>
           <pv-input-text
               class="w-full"
               id="containerCode"
-              v-model="agingStage.containerCode"
-              :class="{ 'p-invalid': submitted && !agingStage.containerCode }"
+              v-model="item.containerCode"
+              :class="{ 'p-invalid': submitted && !item.containerCode }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="avgTemperature">Temperatura promedio (°C)</label>
-          <pv-input-text
+
+        <pv-float-label class="field mt-5">
+          <label for="averageTemperature">Temperatura promedio (°C)</label>
+          <pv-input-number
               class="w-full"
-              id="avgTemperature"
-              v-model.number="agingStage.avgTemperature"
-              :class="{ 'p-invalid': submitted && !agingStage.avgTemperature }"
+              id="averageTemperature"
+              v-model.number="item.averageTemperature"
+              :class="{ 'p-invalid': submitted && !item.averageTemperature }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="volumeLiters">Volumen (litros)</label>
-          <pv-input-text
+        <pv-float-label class="field mt-5">
+          <label for="volume">Volumen (litros)</label>
+          <pv-input-number
               class="w-full"
-              id="volumeLiters"
-              v-model.number="agingStage.volumeLiters"
-              :class="{ 'p-invalid': submitted && !agingStage.volumeLiters }"
+              id="volume"
+              v-model.number="item.volume"
+              :class="{ 'p-invalid': submitted && !item.volume }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="durationMonths">Duración (meses)</label>
-          <pv-input-text
+
+        <pv-float-label class="field mt-5">
+          <label for="duration">Duración (días)</label>
+          <pv-input-number
               class="w-full"
-              id="durationMonths"
-              v-model.number="agingStage.durationMonths"
-              :class="{ 'p-invalid': submitted && !agingStage.durationMonths }"
+              id="duration"
+              v-model.number="item.duration"
+              :class="{ 'p-invalid': submitted && !item.duration }"
           />
         </pv-float-label>
 
-        <!-- Frecuencia (días) -->
-        <pv-float-label class="field mt-4 w-full">
-          <label for="frequencyDays">Frecuencia (días)</label>
-          <pv-input-text
+
+        <pv-float-label class="field mt-5">
+          <label for="frequency">Frecuencia de batonnage (días)</label>
+          <pv-input-number
               class="w-full"
-              id="frequencyDays"
-              v-model.number="agingStage.frequencyDays"
-              @input="(e) => agingStage.frequencyDays = e.target.value === '' ? 0 : Number(e.target.value)"
-              :class="{ 'p-invalid': submitted && (agingStage.frequencyDays === null || agingStage.frequencyDays === undefined || agingStage.frequencyDays === '') }"
+              id="frequency"
+              v-model.number="item.frequency"
+              :class="{ 'p-invalid': submitted && !item.frequency }"
           />
         </pv-float-label>
 
-        <!-- Batonnage -->
-        <pv-float-label class="field mt-4 w-full">
-          <label for="batonnage">Batonnage (número de veces)</label>
-          <pv-input-text
+
+        <pv-float-label class="field mt-5">
+          <label for="batonnage">Batonnage (litros)</label>
+          <pv-input-number
               class="w-full"
               id="batonnage"
-              v-model.number="agingStage.batonnage"
-              @input="(e) => agingStage.batonnage = e.target.value === '' ? 0 : Number(e.target.value)"
-              :class="{ 'p-invalid': submitted && (agingStage.batonnage === null || agingStage.batonnage === undefined || agingStage.batonnage === '') }"
+              v-model.number="item.batonnage"
+              :class="{ 'p-invalid': submitted && !item.batonnage }"
           />
         </pv-float-label>
 
-        <!-- Recargas -->
-        <pv-float-label class="field mt-4 w-full">
-          <label for="refilled">Recargas</label>
-          <pv-input-text
+
+        <pv-float-label class="field mt-5">
+          <label for="refills">Rellenos</label>
+          <pv-input-number
               class="w-full"
-              id="refilled"
-              v-model.number="agingStage.refilled"
-              @input="(e) => agingStage.refilled = e.target.value === '' ? 0 : Number(e.target.value)"
-              :class="{ 'p-invalid': submitted && (agingStage.refilled === null || agingStage.refilled === undefined || agingStage.refilled === '') }"
+              id="refills"
+              v-model.number="item.refills"
+              :class="{ 'p-invalid': submitted && !item.refills }"
           />
         </pv-float-label>
 
-        <!-- Trasiegos -->
-        <pv-float-label class="field mt-4 w-full">
+
+        <pv-float-label class="field mt-5">
           <label for="rackings">Trasiegos</label>
-          <pv-input-text
+          <pv-input-number
               class="w-full"
               id="rackings"
-              v-model.number="agingStage.rackings"
-              @input="(e) => agingStage.rackings = e.target.value === '' ? 0 : Number(e.target.value)"
-              :class="{ 'p-invalid': submitted && (agingStage.rackings === null || agingStage.rackings === undefined || agingStage.rackings === '') }"
+              v-model.number="item.rackings"
+              :class="{ 'p-invalid': submitted && !item.rackings }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+
+        <pv-float-label class="field mt-5">
           <label for="purpose">Propósito</label>
           <pv-input-text
               class="w-full"
               id="purpose"
-              v-model="agingStage.purpose"
-              :class="{ 'p-invalid': submitted && !agingStage.purpose }"
+              v-model="item.purpose"
+              :class="{ 'p-invalid': submitted && !item.purpose }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="comments">Comentarios</label>
-          <pv-input-textarea
+
+        <pv-float-label class="field mt-5">
+          <label for="comment">Comentario</label>
+          <pv-input-text
               class="w-full"
-              id="comments"
-              v-model="agingStage.comments"
-              :class="{ 'p-invalid': submitted && !agingStage.comments }"
+              id="comment"
+              v-model="item.comment"
+              :class="{ 'p-invalid': submitted && !item.comment }"
           />
         </pv-float-label>
-
-        <div class="field-checkbox mt-4 w-full">
-          <pv-checkbox
-              input-id="isCompleted"
-              v-model="agingStage.isCompleted"
-              :binary="true"
-          />
-          <label for="isCompleted">Completado</label>
-        </div>
 
 
       </div>

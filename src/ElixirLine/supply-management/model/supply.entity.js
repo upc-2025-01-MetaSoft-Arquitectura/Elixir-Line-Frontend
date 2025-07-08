@@ -1,18 +1,24 @@
 
+
 export class Supply {
-  constructor(
-      {
-          id = '',
-          name = '',
-          quantity = '',
-          unidad = '',
-          image = ''
-      }
-  ) {
-    this.id = id;
-    this.name = name;
-    this.quantity = quantity;
-    this.unidad = unidad;
-    this.image = image;
-  }
+
+    constructor(
+        {
+            id = '',
+            userId = '',
+            name = '',
+            description = '',
+            quantity = '',
+            unit = '',
+            image = ''
+        }
+    ) {
+        this.id = id;
+        this.userId = userId;
+        this.name = name;
+        this.description = description;
+        this.quantity = quantity;
+        this.unit = unit;
+        this.image = image;
+    }
 }

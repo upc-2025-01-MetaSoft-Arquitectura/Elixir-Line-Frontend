@@ -9,6 +9,7 @@ export class ProfileApiServices {
         this.resourceEndpoint = _resourceEndpoint;
     }
 
+
     getAllResources() {
         return http.get(this.resourceEndpoint);
     }

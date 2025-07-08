@@ -1,26 +1,40 @@
 
+
+
 export class ReceptionStage {
-    constructor({
-                    stage = null,
-                    registeredBy = null,
-                    startDate = null,
-                    endDate = null,
-                    sugarLevelBrix = null,
-                    pH = null,
-                    temperature = null,
-                    quantityKg = null,
-                    comments = null,
-                    isCompleted = false
-                }) {
-        this.stage = stage;
-        this.registeredBy = registeredBy;
+
+    constructor(
+        {
+            id = '',
+            batchId = '',
+            employee = '',
+            startDate = '',
+            endDate = '',
+            sugarLevel = 0,
+            pHLevel = 0,
+            temperature = 0,
+            quantityKg = 0,
+            comment = '',
+            completionStatus = '',
+            currentStage = '',
+            completedAt = false,
+            dataHash = null
+        }
+    ) {
+        this.id = id;
+        this.batchId = batchId;
+        this.employee = employee;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.sugarLevelBrix = sugarLevelBrix;
-        this.pH = pH;
+        this.sugarLevel = sugarLevel;
+        this.pHLevel = pHLevel;
         this.temperature = temperature;
         this.quantityKg = quantityKg;
-        this.comments = comments;
-        this.isCompleted = isCompleted;
+        this.comment = comment;
+        this.completionStatus = completionStatus;
+        this.currentStage = currentStage;
+        this.completedAt = completedAt;
+        this.dataHash = dataHash;
     }
+
 }

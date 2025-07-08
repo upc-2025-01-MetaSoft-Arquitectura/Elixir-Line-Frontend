@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const http = axios.create({baseURL: "http://localhost:3000"});
+import http from "../../../shared/services/http-common.js";
 
 
 export class supplyApiService {

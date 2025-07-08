@@ -10,14 +10,14 @@ export default {
   components: {CreateAndEdit},
 
   props: {
-    itemEntity: null,
+    item: null,
     edit : Boolean,
     visible: Boolean,
   },
 
   data() {
     return {
-      pressingStage: new PressingStage({}),     submitted: false
+      submitted: false
     }
   },
 
@@ -28,32 +28,14 @@ export default {
       this.$emit('cancel-requested');
     },
 
-    onSaveRequested(newItem) {
+    onSaveRequested() {
       this.submitted = true;
 
-      newItem.stage = "Prensado"; // Assuming the stage is always "Prensado" for this component
+      console.log('batches-create-and-edit onSaveRequested',this.item);
 
-      this.itemEntity.pressingStage = newItem;
-
-      console.log('batches-create-and-edit onSaveRequested',this.itemEntity);
-
-      this.$emit('save-requested', this.itemEntity);
+      this.$emit('save-requested', this.item);
     }
   },
-
-
-  created() {
-
-    this.pressingStage =  this.itemEntity?.pressingStage || new PressingStage({})
-
-    console.log('===============', this.pressingStage);
-
-    console.log('Pressing Stage Create and Edit component created');
-  }
-
-
-
-
 
 };
 
@@ -62,10 +44,10 @@ export default {
 <template>
 
   <create-and-edit
-      :entity="pressingStage"
+      :entity="item"
       :edit="edit"
       :visible="visible"
-      :entity-name="pressingStage.stage || 'Prensado'"
+      :entity-name="'Prensado'"
       @canceled-shared="onCancelRequested"
       @saved-shared="onSaveRequested($event)"
   >
@@ -74,134 +56,115 @@ export default {
 
       <div class="field">
 
-        <pv-float-label class="field mt-4 w-full">
-          <label for="registeredBy">Registrado por</label>
+        <pv-float-label class="field mt-5">
+          <label for="employee">Registrado por</label>
           <pv-input-text
               class="w-full"
-              id="registeredBy"
-              v-model="pressingStage.registeredBy"
-              :class="{ 'p-invalid': submitted && !pressingStage.registeredBy }"
+              id="employee"
+              v-model="item.employee"
+              :class="{ 'p-invalid': submitted && !item.employee }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <pv-float-label class="field mt-5">
           <label for="startDate">Fecha de inicio</label>
           <pv-calendar
               class="w-full"
               id="startDate"
-              v-model="pressingStage.startDate"
-              date-format="yy-mm-dd"
-              show-icon
-              :class="{ 'p-invalid': submitted && !pressingStage.startDate }"
+              v-model="item.startDate"
+              placeholder="Fecha de inicio"
+              :class="{ 'p-invalid': submitted && !item.startDate }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <pv-float-label class="field mt-5">
           <label for="endDate">Fecha de fin</label>
           <pv-calendar
               class="w-full"
               id="endDate"
-              v-model="pressingStage.endDate"
-              date-format="yy-mm-dd"
-              show-icon
-              :class="{ 'p-invalid': submitted && !pressingStage.endDate }"
+              v-model="item.endDate"
+              placeholder="Fecha de fin"
+              :class="{ 'p-invalid': submitted && !item.endDate }"
           />
         </pv-float-label>
 
-        <pv-float-label class="field mt-4 w-full">
+        <pv-float-label class="field mt-5">
           <label for="pressType">Tipo de prensa</label>
           <pv-input-text
               class="w-full"
               id="pressType"
-              v-model="pressingStage.pressType"
-              :class="{ 'p-invalid': submitted && !pressingStage.pressType }"
+              v-model="item.pressType"
+              placeholder="Tipo de prensa"
+              :class="{ 'p-invalid': submitted && !item.pressType }"
           />
-
         </pv-float-label>
 
-
-        <pv-float-label class="field mt-4 w-full">
-          <label for="pressPressureBars">Presión de la prensa (Bares)</label>
+        <pv-float-label class="field mt-5">
+          <label for="pressure"> Presión (bar)</label>
           <pv-input-number
               class="w-full"
-              id="pressPressureBars"
-              v-model.number="pressingStage.pressPressureBars"
-              :min="0"
-              mode="decimal"
-              :class="{ 'p-invalid': submitted && !pressingStage.pressPressureBars }"
+              id="pressure"
+              v-model.number="item.pressure"
+              placeholder="Presión (bar)"
+              :class="{ 'p-invalid': submitted && !item.pressure }"
           />
         </pv-float-label>
 
-
-        <pv-float-label class="field mt-4 w-full">
-          <label for="durationMinutes">Duración (minutos)</label>
+        <pv-float-label class="field mt-5">
+          <label for="duration">Duración (minutos)</label>
           <pv-input-number
               class="w-full"
-              id="durationMinutes"
-              v-model.number="pressingStage.durationMinutes"
-              :min="0"
-              mode="decimal"
-              :class="{ 'p-invalid': submitted && !pressingStage.durationMinutes }"
+              id="duration"
+              v-model.number="item.duration"
+              placeholder="Duración (minutos)"
+              :class="{ 'p-invalid': submitted && !item.duration }"
           />
         </pv-float-label>
 
-
-        <pv-float-label class="field mt-4 w-full">
-          <label for="pomaceKg">Peso de orujo (kg)</label>
+        <pv-float-label class="field mt-5">
+          <label for="pomadeWeight"> Peso de la pasta (kg)</label>
           <pv-input-number
               class="w-full"
-              id="pomaceKg"
-              v-model.number="pressingStage.pomaceKg"
-              :min="0"
-              mode="decimal"
-              :class="{ 'p-invalid': submitted && !pressingStage.pomaceKg }"
+              id="pomadeWeight"
+              v-model.number="item.pomadeWeight"
+              placeholder="Peso de la pasta (kg) "
+              :class="{ 'p-invalid': submitted && !item.pomadeWeight }"
           />
         </pv-float-label>
 
-
-        <pv-float-label class="field mt-4 w-full">
-          <label for="yieldLiters">Rendimiento (litros)</label>
+        <pv-float-label class="field mt-5">
+          <label for="yield">Rendimiento (%)</label>
           <pv-input-number
               class="w-full"
-              id="yieldLiters"
-              v-model.number="pressingStage.yieldLiters"
-              :min="0"
-              mode="decimal"
-              :class="{ 'p-invalid': submitted && !pressingStage.yieldLiters }"
+              id="yield"
+              v-model.number="item.yield"
+              placeholder=" Rendimiento (%) "
+              :class="{ 'p-invalid': submitted && !item.yield }"
           />
         </pv-float-label>
 
-
-        <pv-float-label class="field mt-4 w-full">
+        <pv-float-label class="field mt-5">
           <label for="mustUsage">Uso del mosto</label>
           <pv-input-text
               class="w-full"
               id="mustUsage"
-              v-model="pressingStage.mustUsage"
-              :class="{ 'p-invalid': submitted && !pressingStage.mustUsage }"
+              v-model="item.mustUsage"
+              placeholder=" "
+              :class="{ 'p-invalid': submitted && !item.mustUsage }"
           />
         </pv-float-label>
 
-
-        <pv-float-label class="field mt-4 w-full">
-          <label for="comments">Comentarios</label>
-          <pv-textarea
+        <pv-float-label class="field mt-5">
+          <label for="comment">Comentario</label>
+          <pv-input-textarea
               class="w-full"
-              id="comments"
-              v-model="pressingStage.comments"
-              :class="{ 'p-invalid': submitted && !pressingStage.comments }"
+              id="comment"
+              v-model="item.comment"
+              placeholder=" "
+              :class="{ 'p-invalid': submitted && !item.comment }"
           />
         </pv-float-label>
 
-
-        <div class="field-checkbox mt-4 w-full">
-          <pv-checkbox
-              input-id="isCompleted"
-              v-model="pressingStage.isCompleted"
-              :binary="true"
-          />
-          <label for="isCompleted">Completado</label>
-        </div>
 
 
       </div>

@@ -7,17 +7,17 @@ import ProfileManagement from "../../profile/pages/profile-management.component.
 import BatchViewDetails from "../pages/bacth-view-detail.component.vue";
 import TasksByBatch from "../pages/tasks-by-batch.component.vue";
 import SuppliesByBatch from "../pages/supplies-by-batch.component.vue";
-import StagesByBatchManagementComponent from "./stages-by-batch-management.component.vue";
+import StagesByBatchManagement from "./stages-by-batch-management.component.vue";
 
 export default {
   name: "tabs-view-details",
   components: {
-    StagesByBatchManagement: StagesByBatchManagementComponent,
+    StagesByBatchManagement,
     SuppliesByBatch,
     TasksByBatch, BatchViewDetails, ProfileManagement, EmployeeManagement, CreateAndEdit, ViewDetails},
 
   props: {
-    itemEntity: null,
+    itemBatch: null,
     title: String,
     visible: Boolean
   },
@@ -52,7 +52,7 @@ export default {
 
 <template>
 
-  <view-details :entity="itemEntity" :visible="visible" entity-name="Batch"
+  <view-details :entity="itemBatch" :visible="visible" entity-name="Batch"
                 @close-shared="onClose">
 
 
@@ -70,7 +70,6 @@ export default {
             :class="{ 'active-tab': activeTab === tab.value }"
         />
 
-
       </div>
     </template>
 
@@ -81,19 +80,19 @@ export default {
 
         <!-- Contenido que cambia por tab -->
         <div v-if="activeTab === '0'" class="flex-1 flex-column w-full h-full overflow-hidden">
-          <batch-view-details :item-entity="itemEntity" :title="title" />
+          <batch-view-details :item-entity="itemBatch" :title="title" />
         </div>
 
         <div v-if="activeTab === '1'" class="flex-1 flex-column w-full h-full overflow-hidden">
-          <tasks-by-batch  :item-entity="itemEntity" :title="title" />
+          <tasks-by-batch  :item-entity="itemBatch" :title="title" />
         </div>
 
         <div v-if="activeTab === '2'" class="flex-1 flex-column w-full h-full overflow-hidden">
-          <stages-by-batch-management :item-entity="itemEntity" :title="title" :visible="visible" />
+          <stages-by-batch-management :item-batch="itemBatch" :title="title" :visible="visible" />
         </div>
 
         <div v-if="activeTab === '3'" class="flex-1 flex-column w-full h-full overflow-hidden">
-          <supplies-by-batch :item-entity="itemEntity" :title="title" />
+          <supplies-by-batch :item-entity="itemBatch" :title="title" />
         </div>
 
       </div>
