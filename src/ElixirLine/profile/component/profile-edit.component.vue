@@ -56,18 +56,13 @@ export default {
         <div class="field">
 
           <pv-float-label class="field mt-4">
-            <label for="id"> Id </label>
-            <pv-input-text id="id" v-model="itemEntity.id" :class="{ 'p-invalid': submitted && !itemEntity.id}"/>
-          </pv-float-label>
-
-          <pv-float-label class="field mt-4">
             <label for="name"> Name </label>
             <pv-input-text id="name" v-model="itemEntity.name" :class="{ 'p-invalid': submitted && !itemEntity.name}"/>
           </pv-float-label>
 
           <pv-float-label class="field mt-4">
             <label for="surname"> Surname </label>
-            <pv-input-text id="surname" v-model="itemEntity.surname" :class="{ 'p-invalid': submitted && !itemEntity.surname}"/>
+            <pv-input-text id="surname" v-model="itemEntity.lastname" :class="{ 'p-invalid': submitted && !itemEntity.lastname}"/>
           </pv-float-label>
 
           <pv-float-label class="field mt-4">
@@ -82,12 +77,8 @@ export default {
 
           <pv-float-label class="field mt-4">
             <label for="phone"> Phone </label>
-            <pv-input-text id="phone" v-model="itemEntity.phone" :class="{ 'p-invalid': submitted && !itemEntity.phone}"/>
-          </pv-float-label>
-
-          <pv-float-label class="field mt-4">
-            <label for="user_type"> User Type </label>
-            <pv-input-text id="user_type" v-model="itemEntity.user_type" :class="{ 'p-invalid': submitted && !itemEntity.user_type}"/>
+            <pv-input-text id="phone" v-model="itemEntity.phoneNumber" :class="{
+              'p-invalid': submitted && !itemEntity.phoneNumber}"/>
           </pv-float-label>
 
         </div>

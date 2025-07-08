@@ -103,24 +103,6 @@ export default {
     //#region CRUD Operations
     create() {
 
-      /*
-       employee = null,
-        startDate = null,
-        endDate = null,
-        bottlingLine = null,
-        filledBottles = 0,
-        bottleVolume = 750, // Default to 750ml
-        totalVolume = 0, // Calculated as filledBottles * bottleVolume
-        sealingType = null,
-        vineyardCode = null,
-        temperature = null,
-        filteredBeforeBottling = false,
-        labelsAtThisStage = false,
-        capsuleOrSealApplication = false,
-        comment = null
-       */
-
-
       this.createBottlingStage.employee = this.bottlingStage.employee;
       // formato de fecha yyyy-mm-dd
       // Para startDate, en caso sea nulo se asigna la fecha actual.
@@ -140,8 +122,6 @@ export default {
       this.createBottlingStage.labelsAtThisStage = this.bottlingStage.labelsAtThisStage;
       this.createBottlingStage.capsuleOrSealApplication = this.bottlingStage.capsuleOrSealApplication;
       this.createBottlingStage.comment = this.bottlingStage.comment;
-
-
 
 
       this.bottlingStageApiService.create(this.batchId, this.bottlingStage).then(response => {

@@ -7,10 +7,6 @@ export class EmployeeApiService {
         this.resourceEndpoint = _resourceEndpoint;
     }
 
-    getAllEmployeesByUserId(userId) {
-        return http.get(`${this.resourceEndpoint}/user/${userId}`);
-    }
-
     getAllResources() {
         return http.get(this.resourceEndpoint);
     }
@@ -23,8 +19,12 @@ export class EmployeeApiService {
         return http.post(this.resourceEndpoint, resource);
     }
 
-    update(id, resource) {
-        return http.put(`${this.resourceEndpoint}/${id}`, resource);
+    update(id, formData) {
+        return http.put(`${this.resourceEndpoint}/${id}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
     }
 
     delete(id) {

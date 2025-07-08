@@ -47,7 +47,6 @@ export default {
       }
     },
 
-
   },
 
   created() {
@@ -73,85 +72,92 @@ export default {
 
       <div class="field">
 
-        <!-- Imagen (manual, centrado estético) -->
-        <div class="field mt-5 text-center">
-          <label for="image" class="block text-sm font-semibold text-gray-700 mb-2 text-left">Imagen de Insumo</label>
-          <!-- Botón de selección -->
-          <div class="flex justify-center">
-            <pv-file-upload
-                mode="basic"
-                chooseLabel="Seleccionar imagen"
-                customUpload
-                @select="onImageSelected"
-                class="inline-block"
-                :class="{ 'p-invalid': submitted && !itemEntity.image }"
-            />
-          </div>
+        <!-- =============================================================== -->
 
-          <!-- Vista previa centrada -->
-          <div v-if="imagePreview" class="mt-4 flex justify-center">
-            <div
-                class="w-[150px] h-[150px] flex items-center justify-center rounded-full border border-gray-300 shadow-md overflow-hidden"
-            >
-              <img
-                  :src="imagePreview"
-                  alt="Vista previa"
-                  class="object-cover"
-                  style="width: 100%; height: 100%;"
+        <!-- Imagen (manual, centrado estético) -->
+          <div class="field mt-5 text-center">
+            <!-- Botón de selección -->
+            <div class="flex justify-center">
+              <pv-file-upload
+                  id="image"
+                  mode="basic"
+                  chooseLabel="Seleccionar imagen de insumo"
+                  customUpload
+                  accept="image/*"
+                  @select="onImageSelected"
+                  class="inline-block"
+                  :aria-invalid="submitted && !itemEntity.image"
+                  aria-describedby="image-error"
+                  :class="{ 'p-invalid': submitted && !itemEntity.image }"
               />
+            </div>
+
+            <!-- Vista previa centrada -->
+            <div v-if="imagePreview" class="mt-4 flex justify-center">
+              <div
+                  class="w-[150px] h-[150px] flex items-center justify-center rounded-full border border-gray-300 shadow-md overflow-hidden"
+              >
+                <img
+                    :src="imagePreview"
+                    alt="Vista previa de imagen de insumo"
+                    class="object-cover w-full h-full"
+                />
+              </div>
             </div>
           </div>
 
+        <!-- =============================================================== -->
 
-          <!-- Mensaje de error -->
-          <small v-if="submitted && !itemEntity.image" class="p-error mt-2 block text-left">La imagen es requerida.</small>
+
+          <pv-float-label class="field mt-5">
+            <label for="name">Nombre de insumo</label>
+            <pv-input-text
+                id="name"
+                v-model="itemEntity.name"
+                class="w-full"
+                :aria-invalid="submitted && !itemEntity.name"
+                aria-describedby="name-error"
+                :class="{ 'p-invalid': submitted && !itemEntity.name }"
+            />
+          </pv-float-label>
+
+          <pv-float-label class="field mt-5">
+            <label for="description">Descripción</label>
+            <pv-input-text
+                id="description"
+                v-model="itemEntity.description"
+                class="w-full"
+                :aria-invalid="submitted && !itemEntity.description"
+                aria-describedby="description-error"
+                :class="{ 'p-invalid': submitted && !itemEntity.description }"
+            />
+          </pv-float-label>
+
+          <pv-float-label class="field mt-5">
+            <label for="quantity">Cantidad</label>
+            <pv-input-text
+                id="quantity"
+                v-model.number="itemEntity.quantity"
+                class="w-full"
+                :aria-invalid="submitted && !itemEntity.quantity"
+                aria-describedby="quantity-error"
+                :class="{ 'p-invalid': submitted && !itemEntity.quantity }"
+            />
+          </pv-float-label>
+
+          <pv-float-label class="field mt-5">
+            <label for="unit">Unidad</label>
+            <pv-input-text
+                id="unit"
+                v-model="itemEntity.unit"
+                class="w-full"
+                :aria-invalid="submitted && !itemEntity.unit"
+                aria-describedby="unit-error"
+                :class="{ 'p-invalid': submitted && !itemEntity.unit }"
+            />
+          </pv-float-label>
+
         </div>
-
-
-
-        <pv-float-label class="field mt-5">
-          <label for="name">Nombre de insumo</label>
-          <pv-input-text
-              class="w-full"
-              id="name"
-              v-model="itemEntity.name"
-              :class="{ 'p-invalid': submitted && !itemEntity.name }"
-          />
-        </pv-float-label>
-
-        <pv-float-label class="field mt-5">
-          <label for="description">Descripción</label>
-          <pv-input-text
-              class="w-full"
-              id="description"
-              v-model="itemEntity.description"
-              :class="{ 'p-invalid': submitted && !itemEntity.description }"
-          />
-        </pv-float-label>
-
-        <pv-float-label class="field mt-5">
-          <label for="quantity">Cantidad</label>
-          <pv-input-text
-              class="w-full"
-              id="quantity"
-              v-model.number="itemEntity.quantity"
-              :class="{ 'p-invalid': submitted && !itemEntity.quantity }"
-          />
-        </pv-float-label>
-
-        <pv-float-label class="field mt-5">
-          <label for="unit">Unidad</label>
-          <pv-input-text
-              class="w-full"
-              id="unit"
-              v-model="itemEntity.unit"
-              :class="{ 'p-invalid': submitted && !itemEntity.unit }"
-          />
-        </pv-float-label>
-
-
-      </div>
-
 
     </template>
 
@@ -161,6 +167,11 @@ export default {
 </template>
 
 <style >
+
+/* Oculta el span donde aparece "No file chosen" en basic mode */
+.p-fileupload-basic .p-fileupload-filename {
+  display: none;
+}
 
 
 .p-datatable-column-header-content {

@@ -2,7 +2,6 @@
 import ViewDetails from "../../../shared/components/view-details.component.vue";
 import CreateAndEdit from "../../../shared/components/create-and-edit.component.vue";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
-import {WineBatch} from "../../winemaking-process/model/wine-batch.entity.js";
 
 export default {
   name: "batch-view-details",

@@ -1,10 +1,12 @@
 <script>
 import SupplyCreateAndEdit from "../components/supply-create-and-edit.component.vue";
 import DataManager from "../../../shared/components/data-manager.component.vue";
-import {supplyApiService} from "../services/supply-api.service.js";
 import {Supply} from "../model/supply.entity.js";
-import slotProps from "@primevue/core/baseeditableholder";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
+import {SupplyApiService} from "../services/supply-api.service.js";
+import {WinegrowerApiService} from "../../employee-management/services/winegrower-api.service.js";
+import {Winegrower} from "../../employee-management/model/winegrower.entity.js";
+import {useAuthenticationStore} from "../../security/services/authentication.store.js";
 
 export default {
   name: "supply-management",
@@ -23,11 +25,25 @@ export default {
       arrayItems: [],
       itemObject: new Supply({}),
       selectedItems: [],
-      batchAndCampaignApiService: null,
+
+      arrayWinegrowers: [],
+
+      supplyApiService: null,
+      winegrowerApiService: null,
+
+
+
       createAndEditDialogIsVisible: false,
       isEdit: false,
       submitted: false,
     }
+  },
+
+  computed: {
+    // Obtiene el userId desde el store de autenticación
+    userId() {
+      return useAuthenticationStore().currentUserId;
+    },
   },
 
 
@@ -94,7 +110,7 @@ export default {
 
     //#region CRUD Operations
     create() {
-      this.batchAndCampaignApiService.create(this.itemObject).then(response => {
+      this.supplyApiService.create(this.itemObject).then(response => {
         let newItem = new Supply(response.data);
         this.arrayItems.push(newItem);
         this.notifySuccessfulAction('Campaign created successfully');
@@ -104,7 +120,7 @@ export default {
     },
 
     update() {
-      this.batchAndCampaignApiService.update(this.itemObject.id, this.itemObject).then(response => {
+      this.supplyApiService.update(this.itemObject.id, this.itemObject).then(response => {
         let index = this.findIndexById(this.itemObject.id);
         this.arrayItems[index] = new Supply(response.data);
         this.notifySuccessfulAction('campaign updated successfully');
@@ -114,7 +130,7 @@ export default {
     },
 
     delete() {
-      this.batchAndCampaignApiService.delete(this.itemObject.id).then(() => {
+      this.supplyApiService.delete(this.itemObject.id).then(() => {
         let index = this.findIndexById(this.itemObject.id);
         this.arrayItems.splice(index, 1);
         this.notifySuccessfulAction('Batch deleted successfully');
@@ -125,7 +141,7 @@ export default {
 
     deleteSelectedItems() {
       this.selectedItems.forEach((variable) => {
-        this.batchAndCampaignApiService.delete(variable.id).then(() => {
+        this.supplyApiService.delete(variable.id).then(() => {
           this.arrayItems = this.arrayItems.filter((b) => b.id !== variable.id);
         }).catch(error => {
           console.error("Error deleting a campaign", error);
@@ -136,29 +152,69 @@ export default {
     },
     //#endregion
 
+    // Recupera el vinicultor asociado a un userId específico
+    findWinegrowerByUserId(userId) {
+      return this.arrayWinegrowers.find(winegrower => winegrower.userId === userId);
+    },
+
+    // Obtiene todos los vinicultores
+    getAllWinegrower() {
+      return this.winegrowerApiService.getAllWinegrowers()
+          .then(response => {
+            this.arrayWinegrowers = response.data.map(item => new Winegrower(item));
+            console.log("=== VINICULTORES RECUPERADOS: ===", this.arrayWinegrowers);
+          })
+          .catch(error => {
+            console.error("Error fetching winegrowers", error);
+
+          });
+    },
+
+    // Obtiene los insumos asociados al vinicultor del usuario
     getAllSupplies() {
+      const winegrower = this.findWinegrowerByUserId(this.userId);
+      console.log("=== VINICULTOR EN USO ====", this.userId, winegrower);
+      if (!winegrower) {
+        console.warn("No winegrower found for userId:", this.userId);
+        return;
+      }
 
-      this.batchAndCampaignApiService.getAllResources().then(response => {
-        console.log("Campaigns response", response.data);
+      this.supplyApiService.getAllResources(winegrower.id)
+          .then(response => {
+            this.arrayItems = response.data.map(resource => new Supply(resource));
+            console.log("Campaigns resources", this.arrayItems);
 
-        this.arrayItems = response.data.map(resource => new Supply(resource));
-
-        console.log("Campaigns resources", this.arrayItems);
-      }).catch(error => {
-        console.error("Error getting campaigns",error);
-      });
-    }
+            this.$toast.add({
+              severity: 'success',
+              summary: 'Insumos cargados',
+              detail: `${this.arrayItems.length} insumo(s) encontrados.`,
+              life: 3000
+            });
+          })
+          .catch(error => {
+            console.error("Error getting supplies", error);
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error al cargar insumos',
+              detail: 'No se pudieron obtener los insumos.',
+              life: 3000
+            });
+          });
+    },
   },
 
 
   //#region Lifecycle Hooks
-  created() {
+  created: async function () {
+    this.supplyApiService = new SupplyApiService('/inputs');
+    this.winegrowerApiService = new WinegrowerApiService('/winegrowers');
 
-    this.batchAndCampaignApiService = new supplyApiService('/inputs');
+    await this.getAllWinegrower();
     this.getAllSupplies();
 
     console.log("Campaigns Management component created");
-  }
+  },
+
   //#endregion
 
 }

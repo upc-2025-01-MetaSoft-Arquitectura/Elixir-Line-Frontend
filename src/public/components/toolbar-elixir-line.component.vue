@@ -1,5 +1,10 @@
 <script>
 import LanguageSwitcher from "./language-switcher.component.vue";
+import {User} from "../../ElixirLine/profile/model/User.entity.js";
+import {UserApiService} from "../../ElixirLine/employee-management/services/user-api.service.js";
+import {useAuthenticationStore} from "../../ElixirLine/security/services/authentication.store.js";
+import {FieldWorker} from "../../ElixirLine/employee-management/model/field-worker.entity.js";
+import {WinegrowerApiService} from "../../ElixirLine/employee-management/services/winegrower-api.service.js";
 
 export default {
   name: "toolbar-elixir-line",
@@ -12,16 +17,16 @@ export default {
         {label: 'sign-up', to: "/home/sign-up", icon: 'pi pi-user-plus'}
       ],
 
-      user: {
-        name: 'John Doe',
-        email: ' ',
-      }
+      arrayWinegrowers: [],
+
+      userData: new User({}), // Inicializar con un objeto User vacío
+      winegrowerApiService: null,
+      userApiService: null,
 
     }
   },
 
   computed: {
-
     itemsUser() {
       return [
         {
@@ -36,17 +41,60 @@ export default {
           label: this.$t('menu.label-sign-out'),
           icon: 'pi pi-cog',
           command: () => {
-            console.log('Cerrar sesión');
           }
         }
       ];
+    },
+
+    userId() {
+      return useAuthenticationStore().currentUserId;
+    },
+
+    currentWinegrower() {
+      return this.findWinegrowerById(this.userData.id); // suponiendo user.id == winegrower.id
     }
+  },
+
+  methods: {
+
+    getUser() {
+      console.log("user", this.userId);
+      this.userApiService.getUserById(this.userId).then(response => {
+        this.userData = new User(response.data);
+      }).catch(error => {
+        console.error('Error fetching user data:', error);
+      });
+    },
+
+    findWinegrowerById(id) {
+      return this.arrayWinegrowers.find(winegrower => winegrower.id === id);
+    },
+
+    getAllWinegrowers() {
+      this.winegrowerApiService.getAllWinegrowers().then(response => {
+
+        this.arrayWinegrowers = response.data.map(winegrower => new FieldWorker(winegrower));
+
+        console.log('All winegrowers:', response.data);
+      }).catch(error => {
+        console.error('Error fetching winegrowers:', error);
+      });
+    },
+
+
+
   },
 
 
 
   created()
   {
+    this.winegrowerApiService = new WinegrowerApiService('/winegrowers');
+    this.userApiService  = new UserApiService('/users');
+
+    this.getUser();               // 👈 Obtener el usuario actual
+    this.getAllWinegrowers();     // 👈 Obtener lista de viticultores
+
     console.log('Toolbar Home Elixir Line Created');
   }
 }
@@ -68,7 +116,9 @@ export default {
       <div class="flex flex-row w-full h-full justify-content-between align-items-center ">
 
         <div class="flex align-items-center pr-2">
-          <pv-split-button class="split-button" :model="itemsUser" > {{user.name}} </pv-split-button>
+          <pv-split-button class="split-button" :model="itemsUser" >
+            {{ currentWinegrower?.name + ' ' + currentWinegrower?.lastname }}
+          </pv-split-button>
         </div>
 
         <div>

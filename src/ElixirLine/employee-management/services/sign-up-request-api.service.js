@@ -1,13 +1,14 @@
 import http from "../../../shared/services/http-common.js";
 
 
-export class SupplyApiService {
+export class SignUpRequestApiService {
 
     constructor(_resourceEndpoint) {
         this.resourceEndpoint = _resourceEndpoint;
     }
 
-    getAllResources(winegrowerId) {
-        return http.get(`${this.resourceEndpoint}/winegrowers/${winegrowerId}`);
+    create(signUpRequest) {
+        return http.post(this.resourceEndpoint, signUpRequest);
     }
+
 }
