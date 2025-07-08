@@ -1,38 +1,27 @@
 
 export class Campaign {
-    /**
-     * @constructor
-     * @param id
-     * @param name
-     * @param createdBy
-     * @param startDate
-     * @param endDate
-     * @param batchesQuantity
-     * @param status
-     * @param acciones
-     */
+
     constructor(
         {
             id = '',
             name = '',
-            createdBy = '',
-            startDate = '',
-            endDate = '',
-            batchesQuantity = '',
+            year = '',
+            winegrowerId = '',
+            batches = 0,
             status = '',
-            acciones = ''
+            startDate = '',
+            endDate = ''
         }
     ) {
         this.id = id;
         this.name = name;
-        this.createdBy = createdBy;
+        this.year = year;
+        this.winegrowerId = winegrowerId;
+        this.batches = batches;
+        this.status = status;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.batchesQuantity = batchesQuantity;
-        this.status = status;
-        this.acciones = acciones;
     }
-
 
 
 

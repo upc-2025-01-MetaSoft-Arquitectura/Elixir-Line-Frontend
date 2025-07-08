@@ -1,44 +1,54 @@
 
+/*
+ {
+    "id": 10,
+    "campaignId": 5,
+    "winegrowerId": 1,
+    "vineyardCode": "B2025-VINEYARD01",
+    "receptionDate": "2025-06-03",
+    "harvestCampaign": 2025,
+    "vineyardOrigin": "Valle de Ica",
+    "grapeVariety": "MALBEC",
+    "initialGrapeQuantityKg": 3200,
+    "createdBy": "Luis Carlos Prada Naez",
+    "progress": 0,
+    "status": "NOT_STARTED",
+    "currentStage": "RECEPTION"
+  }
+*/
 
 export class WineBatch {
-    /**
-     * @param {int} id
-     * @param {string} internalCode
-     * @param {Date} receptionDate
-     * @param {string} harvestCampaign
-     * @param {string} vineyardOrigin
-     * @param {string} grapeVariety
-     * @param {number} initialGrapeQuantityKg
-     * @param {string} createdBy
-     * @param {string} status
-     * @param {string} currentStage
-     */
     constructor(
         {
-            id,
-            internalCode,
-            receptionDate,
-            harvestCampaign,
-            vineyardOrigin,
-            grapeVariety,
-            initialGrapeQuantityKg,
-            createdBy,
-            status,
-            currentStage
+            id = '',
+            campaignId = '',
+            winegrowerId = '',
+            vineyardCode = '',
+            receptionDate = '',
+            harvestCampaign = '',
+            vineyardOrigin = '',
+            grapeVariety = '',
+            initialGrapeQuantityKg = 0,
+            createdBy = '',
+            progress = 0,
+            status = 'NOT_STARTED',
+            currentStage = 'RECEPTION'
         }
     ) {
         this.id = id;
-        this.internalCode = internalCode;
+        this.campaignId = campaignId;
+        this.winegrowerId = winegrowerId;
+        this.vineyardCode = vineyardCode;
         this.receptionDate = receptionDate;
         this.harvestCampaign = harvestCampaign;
         this.vineyardOrigin = vineyardOrigin;
         this.grapeVariety = grapeVariety;
         this.initialGrapeQuantityKg = initialGrapeQuantityKg;
         this.createdBy = createdBy;
+        this.progress = progress;
         this.status = status;
         this.currentStage = currentStage;
     }
-
-
-
 }
+
+

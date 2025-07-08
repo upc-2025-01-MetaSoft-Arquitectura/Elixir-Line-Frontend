@@ -4,11 +4,18 @@ import {batchAndCampaignApiService} from "../services/batch-and-campaign-api.ser
 import {Campaign} from "../model/campaign.entity.js";
 import CampaignCreateAndEdit from "../components/campaign-create-and-edit.vue";
 import DataManager from "../../../shared/components/data-manager.component.vue";
+import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
+import TabsViewDetails from "../../wine-batch-detail/views/tabs-view-details.component.vue";
+import CampaignViewDetails from "../components/campaign-view-details.component.vue";
+import {CreateCampaign} from "../model/create-campaign.entity.js";
 
 export default {
   name: "campaigns-management",
 
   components: {
+    CampaignViewDetails,
+    TabsViewDetails,
+    BasePageLayout,
     DataManager,
     CampaignCreateAndEdit
   },
@@ -23,13 +30,18 @@ export default {
       createAndEditDialogIsVisible: false,
       isEdit: false,
       submitted: false,
+
+      createItem : new CreateCampaign({}), // Para crear una nueva campaña
+
+
+      // Para ver detalles de una campaña
+      isViewItem: false, // Para ver detalles de una campaña
+      viewDetailsDialogIsVisible: false,
+
     }
   },
 
-
-
   methods: {
-
     //#region Utility Methods
     notifySuccessfulAction(message) {
       this.$toast.add({severity: 'success', summary: 'Success', detail: message, life: 3000});
@@ -55,9 +67,15 @@ export default {
       this.createAndEditDialogIsVisible = true;
     },
 
+    onViewItem(item) {
+      this.itemObject = new Campaign(item);
+      this.isViewItem = true;
+      this.viewDetailsDialogIsVisible = true;
+    },
+
     onDeleteItem(item) {
       this.itemObject = new Campaign(item);
-      this.deleteBatch();
+      this.delete();
     },
 
     onDeleteSelectedItems(selectedItems) {
@@ -69,6 +87,11 @@ export default {
       this.createAndEditDialogIsVisible = false;
       this.submitted = false;
       this.isEdit = false;
+    },
+
+    onCloseDetails(){
+      this.viewDetailsDialogIsVisible = false;
+      this.isViewItem = false;
     },
 
     onSaveRequested(item) {
@@ -90,7 +113,16 @@ export default {
 
     //#region CRUD Operations
     create() {
-      this.batchAndCampaignApiService.create(this.itemObject).then(response => {
+
+      this.createItem.name = this.itemObject.name;
+      this.createItem.year = this.itemObject.year;
+      this.createItem.winegrowerId = this.itemObject.winegrowerId;
+      this.createItem.batches = this.itemObject.batches;
+      this.createItem.status = this.itemObject.status;
+      this.createItem.startDate = this.itemObject.startDate;
+      this.createItem.endDate = this.itemObject.endDate;
+
+      this.batchAndCampaignApiService.create(this.createItem).then(response => {
         let newItem = new Campaign(response.data);
         this.arrayItems.push(newItem);
         this.notifySuccessfulAction('Campaign created successfully');
@@ -135,17 +167,15 @@ export default {
     getAllCampaigns() {
 
       this.batchAndCampaignApiService.getAllResources().then(response => {
-        console.log("Campaigns response", response.data);
 
         this.arrayItems = response.data.map(resource => new Campaign(resource));
 
-        console.log("Campaigns resources", this.arrayItems);
+        console.log('Campañas recuperadas' , this.arrayItems);
       }).catch(error => {
         console.error("Error getting campaigns",error);
       });
     }
   },
-
 
   //#region Lifecycle Hooks
   created() {
@@ -164,24 +194,50 @@ export default {
 <template>
 
 
-  <div class="campaigns-container flex flex-column flex-1 w-full h-full overflow-hidden">
+
+  <base-page-layout>
+
+    <template #header>
+
+      <div class="flex flex-column w-full gap-4 p-2">
+
+        <div class="flex flex-row justify-content-between align-items-center">
+          <h2>{{$t('components.title-campaign')}}</h2>
+          <!--<span class="font-bold">{{$t('batch-management.total-campaigns')}} {{ campaignQuantity }}</span>
+          -->
+        </div>
+
+      </div>
 
 
-    <div class="header-container w-full border-bottom-1 border-300">
-      <h2>{{$t('components.title-campaign')}}</h2>
-    </div>
+    </template>
 
 
-    <div class="data-table-container pt-2 h-full flex-1 overflow-hidden flex flex-column">
+    <div class="data-table-container p-2 h-full flex-1 overflow-hidden flex flex-column">
+
       <data-manager :title="title"
                     v-bind:items="arrayItems"
                     v-bind:label-name="$t('winemaking.button-new-campaign')"
                     v-on:new-item-requested-manager="onNewItem"
                     v-on:edit-item-requested-manager="onEditItem($event)"
+                    v-on:view-item-details-requested-manager="onViewItem($event)"
                     v-on:delete-item-requested-manager="onDeleteItem($event)"
-                    v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)">
+                    v-on:delete-selected-items-requested-manager="onDeleteSelectedItems($event)" >
 
-        <template #custom-columns-manager >
+        <!--
+          {
+          "id": 1,
+          "name": "Campaña Vendimia Sur 2025",
+          "year": "2025",
+          "winegrowerId": 2,
+          "batches": 0,
+          "status": "NO_INICIADO",
+          "startDate": "2025-02-15",
+          "endDate": null
+          }
+         -->
+
+      <template #custom-columns-manager >
           <pv-column
               :sortable="true"
               field="name"
@@ -190,8 +246,20 @@ export default {
 
           <pv-column
               :sortable="true"
-              field="createdBy"
-              header="Created By"
+              field="year"
+              header="Year"
+          />
+
+          <pv-column
+              :sortable="true"
+              field="batches"
+              header="Batches Quantity "
+          />
+
+          <pv-column
+              :sortable="true"
+              field="status"
+              header="Status"
           />
 
           <pv-column
@@ -202,20 +270,8 @@ export default {
 
           <pv-column
               :sortable="true"
-              field="endDate"
+              field= "endDate"
               header="End Date"
-          />
-
-          <pv-column
-              :sortable="true"
-              field="batchesQuantity"
-              header="Batches Quantity"
-          />
-
-          <pv-column
-              :sortable="true"
-              field="status"
-              header="Status"
           />
 
         </template>
@@ -228,9 +284,18 @@ export default {
           v-on:cancel-requested="onCancelRequested"
           v-on:save-requested="onSaveRequested($event)">
       </campaign-create-and-edit>
+
+      <campaign-view-details
+          :item-entity="itemObject"
+          :title="itemObject.name"
+          :visible="viewDetailsDialogIsVisible"
+          v-on:close-view-details="onCloseDetails">
+      </campaign-view-details>
+
+
     </div>
 
-  </div>
+  </base-page-layout>
 
 </template>
 
