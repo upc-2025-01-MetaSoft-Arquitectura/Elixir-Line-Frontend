@@ -442,8 +442,80 @@
       "relatedId": "B2025-VINEYARD01",
       "assignee": "Sofía Gómez",
       "title": "Tarea Vineyard 1",
-      "startDate": "2025-06-10T05:00:00.000Z",
-      "dueDate": "2025-06-26T05:00:00.000Z",
+      "startDate": "2025-07-10T05:00:00.000Z",
+      "dueDate": "2025-07-09T05:00:00.000Z",
+      "type": "CAMPO",
+      "status": "InProcess",
+      "progress": 0,
+      "description": "Lorem ipsos",
+      "supplies": [
+        {
+          "id": "sup-002",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "e008",
+      "relatedId": "B2025-VINEYARD01",
+      "assignee": "Sofía Gómez",
+      "title": "Tarea Vineyard 1",
+      "startDate": "2025-07-10T05:00:00.000Z",
+      "dueDate": "2025-07-09T05:00:00.000Z",
+      "type": "CAMPO",
+      "status": "InProcess",
+      "progress": 0,
+      "description": "Lorem ipsos",
+      "supplies": [
+        {
+          "id": "sup-002",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "e009",
+      "relatedId": "B2025-VINEYARD01",
+      "assignee": "Sofía Gómez",
+      "title": "Tarea Vineyard 1",
+      "startDate": "2025-07-10T05:00:00.000Z",
+      "dueDate": "2025-07-09T05:00:00.000Z",
+      "type": "CAMPO",
+      "status": "InProcess",
+      "progress": 0,
+      "description": "Lorem ipsos",
+      "supplies": [
+        {
+          "id": "sup-002",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "e010",
+      "relatedId": "B2025-VINEYARD01",
+      "assignee": "Sofía Gómez",
+      "title": "Tarea Vineyard 1",
+      "startDate": "2025-07-10T05:00:00.000Z",
+      "dueDate": "2025-07-09T05:00:00.000Z",
+      "type": "CAMPO",
+      "status": "InProcess",
+      "progress": 0,
+      "description": "Lorem ipsos",
+      "supplies": [
+        {
+          "id": "sup-002",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "e011",
+      "relatedId": "B2025-VINEYARD01",
+      "assignee": "Sofía Gómez",
+      "title": "Tarea Vineyard 1",
+      "startDate": "2025-07-10T05:00:00.000Z",
+      "dueDate": "2025-07-09T05:00:00.000Z",
       "type": "CAMPO",
       "status": "InProcess",
       "progress": 0,

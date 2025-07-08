@@ -10,6 +10,8 @@ import CalendarManagement from "../ElixirLine/calendar/pages/calendar-management
 import EvidenceManager from "../ElixirLine/evidence-management/pages/evidence-manager.vue";
 import tabsEvidenceViewComponent from "../ElixirLine/evidence-management/views/tabs-evidence-view.component.vue";
 import WinemakingMap from "../ElixirLine/winemaking-map/page/winemaking-map.vue";
+import DashboardComponent from "../ElixirLine/dashboard/pages/dashboard-component.vue";
+import dashboardComponent from "../ElixirLine/dashboard/pages/dashboard-component.vue";
 
 
 const router = createRouter({
@@ -31,7 +33,7 @@ const router = createRouter({
                 {path: '/vinicultor/winemaking',      name: 'WinemakingProcess', component: TabsWinemakingViewComponent,     meta: { title: 'Winemaking'}},
                 {path:'/vinicultor/supplies', name: 'SuppliesManagement', component: SupplyManagement, meta: { title: 'Supplies'}},
                 {path: '/vinicultor/profile/settings', name: 'ProfileSettings', component: ProfileViewsConfigurationComponent, meta: { title: 'Profile Settings'}},
-
+                {path: '/dashboard', name: 'dashboard-component', component: dashboardComponent, meta: { title: 'Dashboard' }},
                 { path: '/vinicultor/tasks', name: 'Tasks', component: TaskManagement, meta: { title: 'Tasks' } } ,
                 { path: '/vinicultor/Calendar', name: 'Calendar', component: CalendarManagement, meta: { title: 'Calendar' } },
                 { path: '/vinicultor/map', name: 'Map', component: WinemakingMap, meta: { title: 'Map' } },
