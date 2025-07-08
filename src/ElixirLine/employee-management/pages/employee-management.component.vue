@@ -269,7 +269,6 @@ export default {
         }
 
 
-
       console.log('======= ESTAMOS ACTUALIZANDO EL FIELDWORKER =======',this.updateFieldworker);
 
       this.employeeApiService.update(this.createCompleteFliedWorker.id, formData).then(response => {

@@ -22,16 +22,19 @@ export default {
   data() {
     return {
       title: { singular: 'Supply', plural: 'Supplies' },
+
       arrayItems: [],
+
       itemObject: new Supply({}),
+      itemWinegrower: new Winegrower({}),
+
       selectedItems: [],
 
       arrayWinegrowers: [],
 
       supplyApiService: null,
+
       winegrowerApiService: null,
-
-
 
       createAndEditDialogIsVisible: false,
       isEdit: false,
@@ -77,7 +80,7 @@ export default {
 
     onDeleteItem(item) {
       this.itemObject = new Supply(item);
-      this.deleteBatch();
+      this.delete();
     },
 
     onDeleteSelectedItems(selectedItems) {
@@ -92,8 +95,10 @@ export default {
     },
 
     onSaveRequested(item) {
+      this.itemObject = new Supply(item);
+      this.itemObject.winegrowerId = this.itemWinegrower.id; // Asignar el vinicultor actual
 
-      console.log('onSaveRequestedManagement', item);
+      console.log('=== DATO DE SUPPLY QUE SE VA A GUARDAR O CREAR ===', this.itemObject);
 
       this.submitted = true;
 
@@ -110,24 +115,83 @@ export default {
 
     //#region CRUD Operations
     create() {
-      this.supplyApiService.create(this.itemObject).then(response => {
-        let newItem = new Supply(response.data);
-        this.arrayItems.push(newItem);
-        this.notifySuccessfulAction('Campaign created successfully');
-      }).catch(error => {
-        console.error("Error creating a Campaign",error);
-      });
+      const winegrower = this.findWinegrowerByUserId(this.userId);
+      if (!winegrower) {
+        console.error("❌ No se encontró el vinicultor para este usuario");
+        return;
+      }
+
+      const payload = {
+        winegrowerId: winegrower.id,
+        name:         this.itemObject.name,
+        description:  this.itemObject.description,
+        quantity:     this.itemObject.quantity,
+        unit:         this.itemObject.unit
+      };
+
+      const formData = new FormData();
+
+      formData.append(
+          'input',
+          new Blob([JSON.stringify(payload)], { type: 'application/json' })
+      );
+
+      if (this.itemObject.image instanceof File) {
+        formData.append('image', this.itemObject.image);
+      }
+
+      // Debug: no mostramos headers, solo confirmamos que es FormData
+      console.log('Enviando FormData con JSON+imagen');
+
+      this.supplyApiService.create(formData)
+          .then(res => {
+            this.arrayItems.push(new Supply(res.data));
+            this.notifySuccessfulAction('Supply created successfully');
+            this.createAndEditDialogIsVisible = false;
+            this.isEdit = false;
+          })
+          .catch(err => {
+            console.error("Error creating supply:", err);
+            console.error("🔴 Details:", err.response?.data);
+          });
     },
 
     update() {
-      this.supplyApiService.update(this.itemObject.id, this.itemObject).then(response => {
+      const formData = new FormData();
+
+
+      formData.append('id', this.itemObject.id);
+      formData.append('winegrowerId', this.itemWinegrower.id);
+      formData.append('name', this.itemObject.name);
+      formData.append('description', this.itemObject.description);
+      formData.append('quantity', this.itemObject.quantity);
+      formData.append('unit', this.itemObject.unit);
+      if (this.itemObject.image instanceof File) {
+        formData.append('image', this.itemObject.image);
+      }
+
+      console.log('======= ENVIANDO DATOS ACTUALIZADOS =======');
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+
+      this.supplyApiService.update(this.itemObject.id ,formData).then(response => {
         let index = this.findIndexById(this.itemObject.id);
-        this.arrayItems[index] = new Supply(response.data);
-        this.notifySuccessfulAction('campaign updated successfully');
+        if (index !== -1) {
+          this.arrayItems[index] = new Supply(response.data);
+          this.notifySuccessfulAction('Supply updated successfully');
+        } else {
+          console.warn("Item not found for update:", this.itemObject.id);
+        }
       }).catch(error => {
-        console.error("Error updating a campaign",error);
+        console.error("Error updating supply", error);
       });
+
+
+
+
     },
+
 
     delete() {
       this.supplyApiService.delete(this.itemObject.id).then(() => {
@@ -172,14 +236,14 @@ export default {
 
     // Obtiene los insumos asociados al vinicultor del usuario
     getAllSupplies() {
-      const winegrower = this.findWinegrowerByUserId(this.userId);
-      console.log("=== VINICULTOR EN USO ====", this.userId, winegrower);
-      if (!winegrower) {
+      this.itemWinegrower = new Winegrower(this.findWinegrowerByUserId(this.userId));
+      console.log("=== VINICULTOR EN USO ====", this.userId, this.itemWinegrower);
+      if (!this.itemWinegrower) {
         console.warn("No winegrower found for userId:", this.userId);
         return;
       }
 
-      this.supplyApiService.getAllResources(winegrower.id)
+      this.supplyApiService.getAllResources(this.itemWinegrower.id)
           .then(response => {
             this.arrayItems = response.data.map(resource => new Supply(resource));
             console.log("Campaigns resources", this.arrayItems);
@@ -223,6 +287,9 @@ export default {
 
 <template>
 
+  <!-- Mostrar mensajes de notificaciones -->
+  <pv-toast position="top-right" />
+
   <base-page-layout>
 
     <template #header>
@@ -254,7 +321,7 @@ export default {
 
         <pv-column
             :sortable="true"
-            field="unidad"
+            field="unit"
             header="Unidad"
         />
 

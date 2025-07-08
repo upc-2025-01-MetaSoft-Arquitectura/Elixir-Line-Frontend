@@ -16,7 +16,19 @@ export default {
   data() {
     return {
       submitted: false,
-      imagePreview: null
+      imagePreview: null,
+      allowedUnits: [
+        { label: 'Kilogramos', value: 'KG' },
+        { label: 'Mililitros', value: 'ML' },
+        { label: 'Litros', value: 'LITRO' },
+        { label: 'Unidades', value: 'UNIDAD' }
+      ],
+    }
+  },
+
+  mounted() {
+    if (typeof this.itemEntity.image === 'string') {
+      this.imagePreview = this.itemEntity.image;
     }
   },
 
@@ -32,20 +44,17 @@ export default {
     },
 
     onImageSelected(event) {
-      const file = event.files[0]; // archivo seleccionado
-
+      const file = event.originalEvent?.target?.files?.[0];
       if (file) {
-        // Guardar el archivo en itemEntity.image
         this.itemEntity.image = file;
 
-        // Generar vista previa (base64)
         const reader = new FileReader();
         reader.onload = (e) => {
           this.imagePreview = e.target.result;
         };
         reader.readAsDataURL(file);
       }
-    },
+    }
 
   },
 
@@ -145,17 +154,21 @@ export default {
             />
           </pv-float-label>
 
-          <pv-float-label class="field mt-5">
-            <label for="unit">Unidad</label>
-            <pv-input-text
-                id="unit"
-                v-model="itemEntity.unit"
-                class="w-full"
-                :aria-invalid="submitted && !itemEntity.unit"
-                aria-describedby="unit-error"
-                :class="{ 'p-invalid': submitted && !itemEntity.unit }"
-            />
-          </pv-float-label>
+        <pv-float-label class="field mt-5">
+          <label for="unit">Unidad</label>
+          <pv-dropdown
+              id="unit"
+              v-model="itemEntity.unit"
+              :options="allowedUnits"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Selecciona una unidad"
+              class="w-full"
+              :aria-invalid="submitted && !itemEntity.unit"
+              aria-describedby="unit-error"
+              :class="{ 'p-invalid': submitted && !itemEntity.unit }"
+          />
+        </pv-float-label>
 
         </div>
 
