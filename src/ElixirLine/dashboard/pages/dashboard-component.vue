@@ -54,14 +54,14 @@ export default {
         }
       }
 
-      this.pendingTasks = tasks.filter(t => ['InProcess', 'Pending'].includes(t.status));
+      this.pendingTasks = tasks.filter(t => ['IN_PROGRESS', 'NOT_STARTED'].includes(t.status));
 
       const now = new Date();
       const in30days = new Date(now);
       in30days.setDate(now.getDate() + 30);
       this.upcomingTasks = tasks.filter(t => {
-        if (!t.dueDate) return false;
-        const due = new Date(t.dueDate);
+        if (!t.endDate) return false;
+        const due = new Date(t.endDate);
         return due > now && due <= in30days;
       });
 
@@ -135,7 +135,7 @@ export default {
               <li v-for="(task, index) in upcomingTasks" :key="task.id || index" class="task-item">
                 <span class="task-icon">⏰</span>
                 <span class="task-title">{{ task.title || 'Sin título' }}</span>
-                <span class="task-status">(Vence: {{ new Date(task.dueDate).toLocaleDateString() || 'Sin fecha' }})</span>
+                <span class="task-status">(Vence: {{ new Date(task.endDate).toLocaleDateString() || 'Sin fecha' }})</span>
               </li>
               <li v-if="upcomingTasks.length === 0" class="task-empty">No hay tareas próximas a vencer</li>
             </ul>
