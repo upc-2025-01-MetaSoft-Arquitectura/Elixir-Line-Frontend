@@ -93,7 +93,7 @@ export default {
     <pv-toolbar class="w-full" style="height: 4rem;">
       <template #start>
         <pv-button
-            class="mr-2 w-12rem"
+            class="mr-2 w-8rem"
             icon="pi pi-plus"
             :label="labelName"
             severity="success"
@@ -144,6 +144,13 @@ export default {
         <pv-column :exportable="false" selection-mode="multiple" style="width: 3em" />
 
         <slot name="custom-columns-manager"></slot>
+
+        <template #empty>
+          <div class="p-4 text-center text-gray-600">
+              <i class="pi pi-inbox text-2xl text-blue-400"></i>
+              <p class="text-base">Aún no se han agregado datos.</p>
+          </div>
+        </template>
 
         <pv-column
             v-if="dynamic"

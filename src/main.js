@@ -2,7 +2,7 @@ import {createApp} from 'vue'
 import './style.css'
 import App from './App.vue'
 import i18n from "./i18n.js";
-
+import { createPinia } from 'pinia'
 
 //PrimeVue
 import PrimeVue from 'primevue/config';
@@ -70,11 +70,12 @@ import {
 
 //create app instance
 const app=createApp(App)
+const pinia = createPinia()
 
 //use Vue i18n
 app.use(i18n)
 
-
+app.use(pinia)
 // Use Router
 app.use(router);
 

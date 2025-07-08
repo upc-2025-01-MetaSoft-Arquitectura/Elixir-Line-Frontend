@@ -10,6 +10,8 @@ import CalendarManagement from "../ElixirLine/calendar/pages/calendar-management
 import EvidenceManager from "../ElixirLine/evidence-management/pages/evidence-manager.vue";
 import tabsEvidenceViewComponent from "../ElixirLine/evidence-management/views/tabs-evidence-view.component.vue";
 import WinemakingMap from "../ElixirLine/winemaking-map/page/winemaking-map.vue";
+import SignUpComponent from "../ElixirLine/security/pages/sign-up.component.vue";
+import {authenticationGuard} from "../ElixirLine/security/services/authentication.guard.js";
 
 
 const router = createRouter({
@@ -17,13 +19,13 @@ const router = createRouter({
     routes: [
 
         //ruta por defecto para redirigir a la página de inicio home-elixir line
-        {path: '/:pathMatch(.*)*', redirect: '/elixir-line/login'},
+        {path: '/:pathMatch(.*)*', redirect: '/elixir-line/sign-in'},
 
         {path: '/page-not-found',           name: 'PageNotFound',             component: PageNotFoundComponent,            meta: { title: 'Page Not Found' }},
 
-        {path: '/elixir-line/login' ,       name: 'Login', component: SignInComponent, meta: { title: 'Login'}},
-
-
+        {path: '/elixir-line/sign-in' ,       name: 'sign-in', component: SignInComponent, meta: { title: 'Login'}},
+        {path: '/elixir-line/sign-up', name: 'sign-up', component: SignUpComponent, meta: { title: 'Sign Up'}},
+        
         //ruta para la página de inicio home-elixir line
         {
             path: '/elixir-line/:id/home', name: 'ElixirLineHome', component: LayoutElixirLineComponent,
@@ -47,7 +49,7 @@ const router = createRouter({
     ]
 });
 
-
+router.beforeEach(authenticationGuard);
 router.beforeEach((to, from, next) => {
     let baseTitle = 'ElixirLine';
     document.title = `${baseTitle} | ${to.meta['title']}`;
