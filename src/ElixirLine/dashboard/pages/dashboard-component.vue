@@ -54,7 +54,7 @@ export default {
         }
       }
 
-      this.pendingTasks = tasks.filter(t => ['IN_PROGRESS', 'NOT_STARTED'].includes(t.status));
+      this.pendingTasks = tasks.filter(t => ['IN_PROCESS', 'NOT_STARTED'].includes(t.status));
 
       const now = new Date();
       const in30days = new Date(now);
