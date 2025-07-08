@@ -24,6 +24,7 @@
 
 export class FermentationStage {
 
+
     constructor({
         id = null,
         batchId = null,

@@ -1,19 +1,16 @@
 
-
-export class Supply {
+export class CreateSupply {
 
     constructor(
         {
-            id = '',
-            userId = '',
-            name = '',
-            description = '',
-            quantity = '',
-            unit = '',
-            image = ''
+        userId = 0,
+        name = '',
+        description = '',
+        quantity = 0,
+        unit = '',
+        image = ''
         }
     ) {
-        this.id = id;
         this.userId = userId;
         this.name = name;
         this.description = description;
@@ -21,4 +18,5 @@ export class Supply {
         this.unit = unit;
         this.image = image;
     }
+
 }

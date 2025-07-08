@@ -250,8 +250,32 @@ export default {
       })
     },
 
+    isDataComplete() {
+
+      return this.filtrationStage.employee.trim() !== '' &&
+             this.filtrationStage.startDate !== null &&
+             this.filtrationStage.filterType.trim() !== '' &&
+             this.filtrationStage.filterMedium.trim() !== '' &&
+             this.filtrationStage.porosity > 0 &&
+             this.filtrationStage.initialTurbidity >= 0 &&
+             this.filtrationStage.finalTurbidity >= 0 &&
+             this.filtrationStage.temperature >= 0 &&
+             this.filtrationStage.pressure >= 0 &&
+             this.filtrationStage.filteredVolume >= 0;
+    },
 
     completarEtapa() {
+
+      if (!this.isDataComplete()) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Por favor, completa todos los campos requeridos antes de completar la etapa.',
+          life: 4000
+        });
+        return;
+      }
+
       this.filtrationStage.completionStatus = 'COMPLETED'
 
       this.filtrationStageApiService.patch(this.filtrationStage.batchId, this.filtrationStage)
@@ -271,6 +295,7 @@ export default {
               life: 3000
             })
           })
+
     },
 
   },

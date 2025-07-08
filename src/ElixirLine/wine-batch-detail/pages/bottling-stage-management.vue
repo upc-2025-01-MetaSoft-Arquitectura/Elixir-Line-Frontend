@@ -240,8 +240,36 @@ export default {
       })
     },
 
+    isDataComplete() {
+
+      // Verifica que todos los campos requeridos estén completos
+      // los valores numerico no pueden ser menor que 0, las fechas no pueden ser nulas y los strings no pueden estar vacíos
+      return this.bottlingStage.employee.trim() !== '' &&
+              this.bottlingStage.startDate !== null &&
+              this.bottlingStage.bottlingLine.trim() !== '' &&
+              this.bottlingStage.filledBottles >= 0 &&
+              this.bottlingStage.bottleVolume >= 0 &&
+              this.bottlingStage.totalVolume >= 0 &&
+              this.bottlingStage.sealingType.trim() !== '' &&
+              this.bottlingStage.vineyardCode.trim() !== '' &&
+              (this.bottlingStage.temperature === null || this.bottlingStage.temperature >= 0) &&
+              (this.bottlingStage.comment === null || this.bottlingStage.comment.trim() !== '');
+    },
+
 
     completarEtapa() {
+
+      if (!this.isDataComplete()) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Por favor, completa todos los campos requeridos antes de completar la etapa.',
+          life: 4000
+        });
+        return;
+      }
+
+
       this.bottlingStage.completionStatus = 'COMPLETED'
 
       this.bottlingStageApiService.patch(this.bottlingStage.batchId, this.bottlingStage)

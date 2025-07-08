@@ -4,6 +4,7 @@ import {Employee} from "../model/employee.entity.js";
 import {EmployeeApiService} from "../services/employee-api.service.js";
 import EmployeeCreateAndEdit from "../component/employee-create-and-edit.component.vue";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
+import {useAuthenticationStore} from "../../security/services/authentication.store.js";
 
 export default {
   name: "employee-management",
@@ -17,17 +18,29 @@ export default {
   data() {
     return {
       title: { singular: 'Employee', plural: 'Employees' },
+
       arrayItems: [],
+
       itemObject: new Employee({}),
+
       selectedItems: [],
-      batchAndCampaignApiService: null,
+
+      employeeApiService: null,
+
       createAndEditDialogIsVisible: false,
+
       isEdit: false,
+
       submitted: false,
     }
   },
 
-
+  computed: {
+    // Obtiene el userId desde el store de autenticación
+    userId() {
+      return useAuthenticationStore().currentUserId;
+    },
+  },
 
   methods: {
 
@@ -91,7 +104,7 @@ export default {
 
     //#region CRUD Operations
     create() {
-      this.batchAndCampaignApiService.create(this.itemObject).then(response => {
+      this.employeeApiService.create(this.itemObject).then(response => {
         let newItem = new Employee(response.data);
         this.arrayItems.push(newItem);
         this.notifySuccessfulAction('Employee created successfully');
@@ -101,7 +114,7 @@ export default {
     },
 
     update() {
-      this.batchAndCampaignApiService.update(this.itemObject.id, this.itemObject).then(response => {
+      this.employeeApiService.update(this.itemObject.id, this.itemObject).then(response => {
         let index = this.findIndexById(this.itemObject.id);
         this.arrayItems[index] = new Employee(response.data);
         this.notifySuccessfulAction('Employee updated successfully');
@@ -111,7 +124,7 @@ export default {
     },
 
     delete() {
-      this.batchAndCampaignApiService.delete(this.itemObject.id).then(() => {
+      this.employeeApiService.delete(this.itemObject.id).then(() => {
         let index = this.findIndexById(this.itemObject.id);
         this.arrayItems.splice(index, 1);
         this.notifySuccessfulAction('Employee deleted successfully');
@@ -134,24 +147,32 @@ export default {
     //#endregion
 
     getAllEmployees() {
+      this.employeeApiService.getAllEmployeesByUserId(this.userId).then(response => {
 
-      this.batchAndCampaignApiService.getAllResources().then(response => {
-        console.log("Employees response", response.data);
+        console.log("=== EMPLEADOS RECUPERADOS POR USER ID:", response.data); // 👈 Agrega esto
 
-        this.arrayItems = response.data.map(resource => new Employee(resource));
+        // puede ser uno o un array de empleados
+        if (Array.isArray(response.data)) {
+          this.arrayItems = response.data.map(item => new Employee(item));
+        } else {
+          this.arrayItems = [new Employee(response.data)];
+        }
 
-        console.log("Employees resources", this.arrayItems);
       }).catch(error => {
-        console.error("Error getting Employees",error);
+        console.error("Error fetching employees", error);
       });
-    }
+    },
+
   },
 
 
   //#region Lifecycle Hooks
   created() {
 
-    this.batchAndCampaignApiService = new EmployeeApiService('/employees');
+    console.log("============================", this.userId);
+
+    this.employeeApiService = new EmployeeApiService('/fieldworkers');
+
     this.getAllEmployees();
 
     console.log("Employees Management component created");

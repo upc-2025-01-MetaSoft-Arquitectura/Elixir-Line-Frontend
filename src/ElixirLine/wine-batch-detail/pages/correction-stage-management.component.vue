@@ -206,7 +206,42 @@ export default {
       })
     },
 
+
+    isDataComplete() {
+
+
+
+      // Verifica que todos los campos requeridos estén completos
+      // los valores numerico no pueden ser menor que 0, las fechas no pueden ser nulas y los strings no pueden estar vacíos
+      return this.correctionStage.employee !== '' &&
+              this.correctionStage.startDate !== null &&
+              this.correctionStage.endDate !== null &&
+              this.correctionStage.initialSugarLevel !== null && this.correctionStage.initialSugarLevel >= 0 &&
+              this.correctionStage.finalSugarLevel !== null && this.correctionStage.finalSugarLevel >= 0 &&
+              this.correctionStage.addedSugar >= 0 &&
+              this.correctionStage.initialPH !== null && this.correctionStage.initialPH >= 0 &&
+              this.correctionStage.finalPH !== null && this.correctionStage.finalPH >= 0 &&
+              this.correctionStage.acidType !== '' &&
+              this.correctionStage.addedAcid >= 0 &&
+              this.correctionStage.addedSulphites >= 0 &&
+              Array.isArray(this.correctionStage.nutrients) && this.correctionStage.nutrients.length > 0 &&
+              this.correctionStage.justification !== '' &&
+              this.correctionStage.comment !== '';
+    },
+
+
     completarEtapa() {
+
+      if (!this.isDataComplete()) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Por favor, completa todos los campos requeridos antes de completar la etapa.',
+          life: 4000
+        });
+        return;
+      }
+
       this.correctionStage.completionStatus = 'COMPLETED'
 
       this.correctionStageApiService.patch(this.correctionStage.batchId, this.correctionStage)

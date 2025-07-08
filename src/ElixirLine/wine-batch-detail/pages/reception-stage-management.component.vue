@@ -175,26 +175,54 @@ export default {
       })
     },
 
+    isDataComplete(){
+
+      return this.receptionStage.employee.trim() !== '' &&
+             this.receptionStage.startDate &&
+              this.receptionStage.temperature !== null &&
+              this.receptionStage.pHLevel !== null &&
+              this.receptionStage.sugarLevel !== null &&
+              this.receptionStage.quantityKg !== null &&
+              this.receptionStage.comment.trim() !== '';
+    },
+
+
     completarEtapa() {
-      this.receptionStage.completionStatus = 'COMPLETED'
 
-      this.receptionStageApiService.patch(this.receptionStage.batchId, this.receptionStage)
-          .then(response => {
-            this.receptionStage = new ReceptionStage(response.data)
-            this.notifySuccessfulAction('Etapa completada correctamente')
-            console.log("== ETAPA DE RECEPCIÓN COMPLETADA ==", this.receptionStage)
-          })
-          .catch(error => {
-            this.receptionStage.completionStatus = 'NOT_COMPLETED'
+      this.receptionStage.endDate = new Date().toISOString().split('T')[0]; // Asignar fecha actual como fecha de finalización
 
-            console.error('❌ Error al completar la etapa:', error)
-            this.$toast.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: 'No se pudo completar la etapa.',
-              life: 3000
+      if (!this.isDataComplete()) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Advertencia',
+          detail: 'Por favor, completa todos los campos antes de completar la etapa.',
+          life: 4000
+        });
+
+        return;
+
+      } else {
+        this.receptionStage.completionStatus = 'COMPLETED'
+
+        this.receptionStageApiService.patch(this.receptionStage.batchId, this.receptionStage)
+            .then(response => {
+              this.receptionStage = new ReceptionStage(response.data)
+              this.notifySuccessfulAction('Etapa completada correctamente')
+              console.log("== ETAPA DE RECEPCIÓN COMPLETADA ==", this.receptionStage)
             })
-          })
+            .catch(error => {
+              this.receptionStage.completionStatus = 'NOT_COMPLETED'
+
+              console.error('❌ Error al completar la etapa:', error)
+              this.$toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'No se pudo completar la etapa.',
+                life: 3000
+              })
+            })
+      }
+
     }
     //#endregion
 

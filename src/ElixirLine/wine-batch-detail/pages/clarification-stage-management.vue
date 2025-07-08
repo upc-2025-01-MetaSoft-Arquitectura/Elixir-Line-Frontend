@@ -33,7 +33,7 @@ export default {
       batchId: null,
 
       // Objeto de la etapa de clarificación y prensado
-      clarificationStage: new PressingStage({}),
+      clarificationStage: new ClarificationStage({}),
       pressingStage: new PressingStage({}),
 
       // Objeto para crear una nueva etapa de clarificación
@@ -230,8 +230,37 @@ export default {
       })
     },
 
+    isDataComplete() {
+
+      // Verifica que todos los campos requeridos estén completos
+      // los valores numerico no pueden ser menor que 0, las fechas no pueden ser nulas y los strings no pueden estar vacíos
+      return this.clarificationStage.employee.trim() !== '' &&
+          this.clarificationStage.startDate !== null &&
+          this.clarificationStage.endDate !== null &&
+          this.clarificationStage.methodUsed.trim() !== '' &&
+          this.clarificationStage.initialTurbidity >= 0 &&
+          this.clarificationStage.finalTurbidity >= 0 &&
+          this.clarificationStage.volume >= 0 &&
+          this.clarificationStage.temperature >= 0 &&
+          this.clarificationStage.duration > 0 &&
+          Object.keys(this.clarificationStage.clarifyingAgents).length > 0 && // Asegura que haya al menos un agente clarificante
+          this.clarificationStage.comment.trim() !== '';
+    },
 
     completarEtapa() {
+
+      if (!this.isDataComplete()) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Por favor, completa todos los campos requeridos antes de completar la etapa.',
+          life: 4000
+        });
+        return;
+      }
+
+
+
       this.clarificationStage.completionStatus = 'COMPLETED'
 
       this.clarificationStageApiService.patch(this.clarificationStage.batchId, this.clarificationStage)
@@ -331,19 +360,7 @@ export default {
 
     <!-- contenido de la tarjeta -->
     <pv-card v-if="clarificationStage && clarificationStage.id && canAddStage === true">
-      <!-- contenido de la tarjeta
-      {
 
-
-
-        "duration": 2,
-        "clarifyingAgents": {
-          "Bentonite": 5,
-          "Gelatin": 2
-        },
-        "comment": "Clarificación realizada con éxito.",
-      }
-      -->
       <template #content>
 
         <div class="flex align-items-center gap-2">

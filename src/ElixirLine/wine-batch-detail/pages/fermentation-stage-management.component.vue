@@ -61,7 +61,6 @@ export default {
       this.$toast.add({severity: 'success', summary: 'Success', detail: message, life: 3000});
     },
 
-
     //#region Event Handlers
     onNewItem() {
       this.fermentationStage = new FermentationStage({});
@@ -168,7 +167,6 @@ export default {
           });
     },
 
-
     getCorrectionStage() {
       this.correctionStageApiService.getCorrectionStageByBatchId(this.batchId)
           .then(response => {
@@ -218,8 +216,35 @@ export default {
       })
     },
 
+    isDataComplete() {
+
+      // Verifica que todos los campos requeridos estén completos
+      // los valores numerico no pueden ser menor que 0, las fechas no pueden ser nulas y los strings no pueden estar vacíos
+      return this.fermentationStage.employee.trim() !== '' &&
+              this.fermentationStage.startDate !== null &&
+              this.fermentationStage.yeastUsed >= 0 &&
+              this.fermentationStage.fermentationType.trim() !== '' &&
+              this.fermentationStage.initialSugarLevel >= 0 &&
+              this.fermentationStage.finalSugarLevel >= 0 &&
+              this.fermentationStage.initialPH >= 0 &&
+              this.fermentationStage.finalPH >= 0 &&
+              this.fermentationStage.maxTemperature >= 0 &&
+              this.fermentationStage.minTemperature >= 0 &&
+              this.fermentationStage.tankCode.trim() !== '';
+    },
 
     completarEtapa() {
+
+      if (!this.isDataComplete()) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Por favor, completa todos los campos requeridos antes de completar la etapa.',
+          life: 4000
+        });
+        return;
+      }
+
       this.fermentationStage.completionStatus = 'COMPLETED'
 
       this.fermentationStageApiService.patch(this.fermentationStage.batchId, this.fermentationStage)
@@ -240,6 +265,7 @@ export default {
             })
           })
     },
+
 
 
 

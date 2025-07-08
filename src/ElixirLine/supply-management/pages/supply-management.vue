@@ -9,12 +9,6 @@ import BasePageLayout from "../../../shared/components/base-page-layout.componen
 export default {
   name: "supply-management",
 
-  computed: {
-    slotProps() {
-      return slotProps
-    }
-  },
-
 
   components: {
     BasePageLayout,
@@ -160,7 +154,7 @@ export default {
   //#region Lifecycle Hooks
   created() {
 
-    this.batchAndCampaignApiService = new supplyApiService('/supplies');
+    this.batchAndCampaignApiService = new supplyApiService('/inputs');
     this.getAllSupplies();
 
     console.log("Campaigns Management component created");

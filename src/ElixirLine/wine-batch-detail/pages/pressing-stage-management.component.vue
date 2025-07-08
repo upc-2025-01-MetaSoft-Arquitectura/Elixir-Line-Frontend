@@ -239,8 +239,32 @@ export default {
       })
     },
 
+    isDataComplete() {
+
+      return this.pressingStage.employee.trim() !== '' &&
+              this.pressingStage.startDate.trim() !== '' &&
+              this.pressingStage.endDate.trim() !== '' &&
+              this.pressingStage.pressType.trim() !== '' &&
+              this.pressingStage.pressure !== null &&
+              this.pressingStage.duration > 0 &&
+              this.pressingStage.pomadeWeight > 0 &&
+              this.pressingStage.yield >= 0 &&
+              this.pressingStage.mustUsage.trim() !== '';
+
+    },
 
     completarEtapa() {
+
+      if (!this.isDataComplete()) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Advertencia',
+          detail: 'Por favor, completa todos los campos antes de completar la etapa.',
+          life: 4000
+        });
+        return;
+      }
+
       this.pressingStage.completionStatus = 'COMPLETED'
 
       this.pressingStageApiService.patch(this.pressingStage.batchId, this.pressingStage)
@@ -260,9 +284,9 @@ export default {
               life: 3000
             })
           })
+
+
     },
-
-
 
   },
 

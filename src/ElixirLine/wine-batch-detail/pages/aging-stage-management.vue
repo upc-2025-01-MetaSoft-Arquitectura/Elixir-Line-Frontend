@@ -222,8 +222,38 @@ export default {
       })
     },
 
+    isDataComplete() {
+
+      // Verifica que todos los campos requeridos estén completos
+      // los valores numerico no pueden ser menor que 0, las fechas no pueden ser nulas y los strings no pueden estar vacíos
+      return this.agingStage.employee.trim() !== '' &&
+          this.agingStage.startDate !== null &&
+          this.agingStage.containerType.trim() !== '' &&
+          this.agingStage.material.trim() !== '' &&
+          this.agingStage.containerCode.trim() !== '' &&
+          this.agingStage.averageTemperature >= 0 &&
+          this.agingStage.volume >= 0 &&
+          this.agingStage.duration >= 0 &&
+          this.agingStage.frequency >= 0 &&
+          this.agingStage.batonnage >= 0 &&
+          this.agingStage.refills >= 0 &&
+          this.agingStage.rackings >= 0 &&
+          this.agingStage.purpose.trim() !== '' &&
+          this.agingStage.comment.trim() !== '';
+    },
 
     completarEtapa() {
+
+      if (!this.isDataComplete()) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Por favor, completa todos los campos requeridos antes de completar la etapa.',
+          life: 4000
+        });
+        return;
+      }
+
       this.agingStage.completionStatus = 'COMPLETED'
 
       this.agingStageApiService.patch(this.agingStage.batchId, this.agingStage)

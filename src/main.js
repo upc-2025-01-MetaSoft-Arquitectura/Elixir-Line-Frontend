@@ -134,6 +134,7 @@ app.component('pv-button', Button)
     .component('pv-input-textarea', Textarea)
     .component('pv-input-switch', InputSwitch)
     .component('pv-confirm-dialog', ConfirmDialog)
-    .component('pv-chips', Chips);
+    .component('pv-chips', Chips)
+    .component('pv-file-upload', FileUpload);
 
 app.mount('#app')
