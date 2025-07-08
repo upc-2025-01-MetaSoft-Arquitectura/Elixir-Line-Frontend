@@ -1,23 +1,21 @@
-
-export class Employee {
-
-    constructor(
-        {
-            id,
-            firstName,
-            lastName,
-            email,
-            phoneNumber,
-            password,
-        }
-    )
-    {
+export class FieldWorker {
+    constructor({
+                    id,
+                    userId,
+                    name,
+                    lastname,
+                    phoneNumber,
+                    profilePicture,
+                    winegrowerId,
+                    status
+                }) {
         this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
+        this.userId = userId;
+        this.name = name;
+        this.lastname = lastname;
         this.phoneNumber = phoneNumber;
-        this.password = password;
+        this.profilePicture = profilePicture;
+        this.winegrowerId = winegrowerId;
+        this.status = status;
     }
-
 }

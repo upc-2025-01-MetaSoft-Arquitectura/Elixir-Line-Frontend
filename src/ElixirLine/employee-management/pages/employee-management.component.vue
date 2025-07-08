@@ -1,9 +1,10 @@
 <script>
 import DataManager from "../../../shared/components/data-manager.component.vue";
-import {Employee} from "../model/employee.entity.js";
-import {EmployeeApiService} from "../services/employee-api.service.js";
+import {FieldWorker} from "../model/employee.entity.js";
+import {FieldWorkerApiService} from "../services/fieldWorker-api.service.js";
 import EmployeeCreateAndEdit from "../component/employee-create-and-edit.component.vue";
 import BasePageLayout from "../../../shared/components/base-page-layout.component.vue";
+import {WineBatchesApiService} from "../../winemaking-process/services/wine-batches-api.service.js";
 
 export default {
   name: "employee-management",
@@ -16,32 +17,34 @@ export default {
 
   data() {
     return {
-      title: { singular: 'Employee', plural: 'Employees' },
+      title: { singular: 'FieldWorker', plural: 'FieldWorkers' },
       arrayItems: [],
-      itemObject: new Employee({}),
+      itemObject: new FieldWorker({}),
       selectedItems: [],
       batchAndCampaignApiService: null,
       createAndEditDialogIsVisible: false,
       isEdit: false,
       submitted: false,
       taskDialogIsVisible: false,
-      selectedEmployeeForTask: {},
+      selectedFieldWorkerForTask: {},
       typeOptions: [
         { label: 'INDUSTRIAL', value: 'INDUSTRIAL' },
         { label: 'CAMPO', value: 'CAMPO' }
       ],
       taskObject: {
         id: '',
-        relatedId: '',
-        assignee: '',
         title: '',
-        dueDate: null,
-        startDate: null,
-        type: '',
-        status: '',
-        progress: 0,
         description: '',
-        supplies: ''
+        startDate: '',
+        endDate: '',
+        winegrowerId: '',
+        fieldWorkerName: '',
+        batchId: '',
+        inputsIds: [],
+        progressPercentage: 0,
+        status: 'IN_PROGRESS',
+        type: '',
+        inputs: []
       },
       availableBatches: [],
     }
@@ -63,25 +66,27 @@ export default {
 
     //#region Event Handlers
     onNewItem() {
-      this.itemObject = new Employee({});
+      this.itemObject = new FieldWorker({});
       this.isEdit = false;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
     },
-    onAddTaskItem(employee) {
-      this.selectedEmployeeForTask = employee;
+    onAddTaskItem(fieldWorker) {
+      this.selectedFieldWorkerForTask = fieldWorker;
       this.taskObject = {
         id: '',
-        relatedId: '',
-        assignee: employee.firstName + ' ' + employee.lastName,
         title: '',
-        dueDate: null,
-        startDate: null, 
-        type: '',
-        status: '',
-        progress: 0,
         description: '',
-        supplies: '' 
+        startDate: '',
+        endDate: '',
+        winegrowerId: '',
+        fieldWorkerName: fieldWorker.name + ' ' + fieldWorker.lastname,
+        batchId: '',
+        inputsIds: [],
+        progressPercentage: 0,
+        status: 'IN_PROGRESS',
+        type: '',
+        inputs: []
       };
       this.taskDialogIsVisible = true;
       this.loadAvailableBatches();
@@ -127,14 +132,18 @@ export default {
     onSaveTask() {
       const taskToSend = {
         id: this.taskObject.id || undefined,
-        relatedId: this.taskObject.relatedId,
-        assignee: this.selectedEmployeeForTask.firstName + ' ' + this.selectedEmployeeForTask.lastName,
         title: this.taskObject.title,
-        dueDate: this.taskObject.dueDate,
-        type: this.taskObject.type || '',
+        description: this.taskObject.description,
+        startDate: this.taskObject.startDate,
+        endDate: this.taskObject.endDate,
+        winegrowerId: this.taskObject.winegrowerId,
+        fieldWorkerName: this.selectedFieldWorkerForTask.name + ' ' + this.selectedFieldWorkerForTask.lastname,
+        batchId: this.taskObject.batchId,
+        inputsIds: this.taskObject.inputsIds,
+        progressPercentage: this.taskObject.progressPercentage,
         status: this.taskObject.status,
-        progress: 0,
-        description: this.taskObject.description
+        type: this.taskObject.type,
+        inputs: this.taskObject.inputs
       };
 
       this.batchApiService.createTask(taskToSend)
@@ -150,14 +159,14 @@ export default {
 
 
     onEditItem(item) {
-      this.itemObject = new Employee(item);
+      this.itemObject = new FieldWorker(item);
       this.isEdit = true;
       this.submitted = false;
       this.createAndEditDialogIsVisible = true;
     },
 
     onDeleteItem(item) {
-      this.itemObject = new Employee(item);
+      this.itemObject = new FieldWorker(item);
       this.deleteBatch();
     },
 
@@ -192,7 +201,7 @@ export default {
     //#region CRUD Operations
     create() {
       this.batchAndCampaignApiService.create(this.itemObject).then(response => {
-        let newItem = new Employee(response.data);
+        let newItem = new FieldWorker(response.data);
         this.arrayItems.push(newItem);
         this.notifySuccessfulAction('Employee created successfully');
       }).catch(error => {
@@ -203,7 +212,7 @@ export default {
     update() {
       this.batchAndCampaignApiService.update(this.itemObject.id, this.itemObject).then(response => {
         let index = this.findIndexById(this.itemObject.id);
-        this.arrayItems[index] = new Employee(response.data);
+        this.arrayItems[index] = new FieldWorker(response.data);
         this.notifySuccessfulAction('Employee updated successfully');
       }).catch(error => {
         console.error("Error updating a Employee",error);
@@ -233,16 +242,11 @@ export default {
     },
     //#endregion
 
-    getAllEmployees() {
-
-      this.batchAndCampaignApiService.getAllResources().then(response => {
-        console.log("Employees response", response.data);
-
-        this.arrayItems = response.data.map(resource => new Employee(resource));
-
-        console.log("Employees resources", this.arrayItems);
+    getAllFieldWorkers() {
+      this.batchAndCampaignApiService.getAllFieldWorkers().then(response => {
+        this.arrayItems = response.data.map(resource => new FieldWorker(resource));
       }).catch(error => {
-        console.error("Error getting Employees",error);
+        console.error("Error getting FieldWorkers", error);
       });
     }
   },
@@ -251,10 +255,10 @@ export default {
   //#region Lifecycle Hooks
   created() {
 
-    this.batchAndCampaignApiService = new EmployeeApiService('/employees');
-    this.batchApiService = new EmployeeApiService('/wine-batches');
+    this.batchAndCampaignApiService = new FieldWorkerApiService();
+    this.batchApiService = new WineBatchesApiService();
 
-    this.getAllEmployees();
+    this.getAllFieldWorkers();
 
     console.log("Employees Management component created");
   }
@@ -289,18 +293,14 @@ export default {
       <template #custom-columns-manager>
         <pv-column
             :sortable
-            field="firstName"
-            header="First Name" />
+            field="name"
+            header="Nombre" />
 
         <pv-column
             :sortable
-            field="lastName"
-            header="Last Name" />
-
-        <pv-column
-            :sortable
-            field="email"
-            header="Email" />
+            field="lastname"
+            header="Apellido" />
+        
 
         <pv-column
             :sortable
@@ -309,8 +309,8 @@ export default {
 
         <pv-column
             :sortable
-            field="password"
-            header="Password" />
+            field="status"
+            header="Estado" />
 
       </template>
       <template #actions="slotProps">
