@@ -37,7 +37,7 @@ export default {
   <div class="login-container flex w-full h-screen p-4"  >
 
     <!-- ================================ PANEL 01  -->
-    <div class="panel-01-container w-6 h-full flex flex-column align-items-center justify-content-center p-2"
+    <div class="panel-01-container w-6 h-full flex flex-column align-items-center justify-content-center p-4"
     style="background-color: #8B0000;">
 
       <h1 style="color: #e5edf6"> "Hacemos que el proceso fluya como un buen vino" </h1>
@@ -59,7 +59,6 @@ export default {
 
           <h1> <span style="color: #8B0000">Elixir</span><span style="color: #CFAE75">Line</span> </h1>
 
-          <h2 class="flex w-full "> Bienvenido de nuevo  👋 </h2>
           <p class="flex w-full "> <strong> Nos alegramos de tenerle de vuelta </strong> </p>
 
 
