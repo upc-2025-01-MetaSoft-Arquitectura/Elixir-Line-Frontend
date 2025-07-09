@@ -261,7 +261,29 @@ export default {
               life: 3000
             })
           })
-    }
+    },
+
+
+    copyHashToClipboard(hash) {
+      navigator.clipboard.writeText(hash).then(() => {
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Hash copiado',
+          detail: 'Se ha copiado el hash al portapapeles.',
+          life: 2000
+        });
+      }).catch(() => {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo copiar el hash.',
+          life: 2000
+        });
+      });
+    },
+
+
+
   },
 
 
@@ -288,6 +310,35 @@ export default {
 <template>
 
   <div class="reception-container flex flex-column flex-1 w-full h-full gap-3 p-3 surface-ground overflow-auto">
+
+    <!-- ================================================================================ -->
+    <!-- Mostrar el hash del lote luego de que la etapa de recepción esté completada -->
+    <div
+        v-if="correctionStage.id && correctionStage.completionStatus === 'COMPLETED' && correctionStage.dataHash"
+        class="flex flex-wrap justify-content-between align-items-center gap-2 border-bottom-1 surface-border surface-ground pb-3"
+    >
+      <!-- Icono de verificación -->
+      <i class="pi pi-shield text-2xl text-green-700"></i>
+      <!-- Mostrar el hash del lote -->
+      <div class="flex flex-column">
+        <span class="text-sm font-semibold">Hash del Lote (verificación):</span>
+        <code class="text-xs break-words max-w-[250px] bg-green-50 p-1 rounded-md border border-green-200">
+          {{ correctionStage.dataHash }}
+        </code>
+      </div>
+
+      <!-- Botón para copiar el hash al portapapeles -->
+      <pv-button
+          icon="pi pi-copy"
+          class="p-button-text text-green-700"
+          @click="copyHashToClipboard(correctionStage.dataHash)"
+          label="Copiar Hash"
+      />
+
+    </div>
+    <!-- =============================================================================== -->
+
+
 
     <!-- Encabezado y botones de acción -->
     <div class="flex flex-wrap justify-content-between align-items-center gap-4 border-bottom-1 surface-border pb-3">

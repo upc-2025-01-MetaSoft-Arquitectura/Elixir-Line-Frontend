@@ -1,34 +1,27 @@
 import http from "../../../shared/services/http-common.js";
 
 
-export class supplyApiService {
+export class SupplyApiService {
 
     constructor(_resourceEndpoint) {
         this.resourceEndpoint = _resourceEndpoint;
     }
 
-    getAllResources() {
-        return http.get(this.resourceEndpoint);
+    getAllResources(winegrowerId) {
+        return http.get(`${this.resourceEndpoint}/winegrower/${winegrowerId}`);
     }
 
-    getResourceById(id) {
-        return http.get(`${this.resourceEndpoint}/${id}`);
+    create(data){
+        return http.post(`${this.resourceEndpoint}`, data);
     }
 
-    create(resource) {
-        return http.post(this.resourceEndpoint, resource);
+
+    update(resourceId, data) {
+        return http.put(`${this.resourceEndpoint}/${resourceId}`, data);
     }
 
-    update(id, resource) {
-        return http.put(`${this.resourceEndpoint}/${id}`, resource);
-    }
-
-    delete(id) {
-        return http.delete(`${this.resourceEndpoint}/${id}`);
-    }
-
-    findResourceById(id) {
-        return http.get(`${this.resourceEndpoint}?id=${id}`);
+    delete(resourceId) {
+        return http.delete(`${this.resourceEndpoint}/${resourceId}`);
     }
 
 }

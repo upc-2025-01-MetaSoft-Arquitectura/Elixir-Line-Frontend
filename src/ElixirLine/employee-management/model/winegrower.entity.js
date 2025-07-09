@@ -1,5 +1,16 @@
 
-
+/*
+{
+  "id": 1,
+  "userId": 5,
+  "name": "Juan Carlos",
+  "lastname": "Pérez Gómez",
+  "country": "Perú",
+  "phoneNumber": "923456789",
+  "profilePicture": "https://example.com/profile.jpg",
+  "status": "ACTIVE"
+}
+ */
 
 export class Winegrower {
 
@@ -7,12 +18,12 @@ export class Winegrower {
         {
             id = null,
             userId = null,
-            name = "",
-            lastname = "",
-            country = "",
-            phoneNumber = "",
-            profilePicture = "",
-            status = ""
+            name = null,
+            lastname = null,
+            country = null,
+            phoneNumber = null,
+            profilePicture = null,
+            status = "ACTIVE"
         }
     ) {
         this.id = id;

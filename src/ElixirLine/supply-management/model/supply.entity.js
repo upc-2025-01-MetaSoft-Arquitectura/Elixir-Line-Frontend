@@ -5,7 +5,7 @@ export class Supply {
     constructor(
         {
             id = '',
-            userId = '',
+            winegrowerId = '',
             name = '',
             description = '',
             quantity = '',
@@ -14,7 +14,7 @@ export class Supply {
         }
     ) {
         this.id = id;
-        this.userId = userId;
+        this.winegrowerId = winegrowerId;
         this.name = name;
         this.description = description;
         this.quantity = quantity;

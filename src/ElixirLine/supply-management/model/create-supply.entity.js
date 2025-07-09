@@ -3,15 +3,15 @@ export class CreateSupply {
 
     constructor(
         {
-        userId = 0,
-        name = '',
-        description = '',
-        quantity = 0,
-        unit = '',
-        image = ''
+            winegrowerId = 0,
+            name = '',
+            description = '',
+            quantity = 0,
+            unit = '',
+            image = ''
         }
     ) {
-        this.userId = userId;
+        this.winegrowerId = winegrowerId;
         this.name = name;
         this.description = description;
         this.quantity = quantity;

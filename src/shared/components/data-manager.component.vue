@@ -132,8 +132,8 @@ export default {
           v-model:selection="selectedItems"
           :filters="filters"
           :paginator="true"
-          :rows="4"
-          :rows-per-page-options="[4, 8, 12]"
+          :rows="5"
+          :rows-per-page-options="[5, 10, 15]"
           :value="items"
           scrollable
           scroll-height="flex"

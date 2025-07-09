@@ -6,12 +6,12 @@
 export class SignUpRequest {
     /**
      * Constructor
-     * @param {string} username - The username
+     * @param {string} email - The username
      * @param {string} password - The password
      * @param {string} role - The role
      */
-    constructor(username, password, role) {
-        this.username = username;
+    constructor(email, password, role) {
+        this.email = email;
         this.password = password
         this.role = role;
     }

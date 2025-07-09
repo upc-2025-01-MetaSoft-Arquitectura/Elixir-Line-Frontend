@@ -83,6 +83,7 @@ export const useAuthenticationStore = defineStore({
             authenticationService.signUp(signUpRequest)
                 .then(response => {
                     let signUpResponse = new SignUpResponse(response.data.message);
+                    console.log("✔ Registro completo:", signUpResponse.message);
                     router.push({name: 'sign-in'});
                 })
                 .catch(error => {

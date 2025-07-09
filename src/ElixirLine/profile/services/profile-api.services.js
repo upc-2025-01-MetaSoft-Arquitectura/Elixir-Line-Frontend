@@ -1,6 +1,5 @@
-import axios from "axios";
+import http from "../../../shared/services/http-common.js";
 
-const http = axios.create({baseURL: "http://localhost:3000"});
 
 export class ProfileApiServices {
 
@@ -9,21 +8,26 @@ export class ProfileApiServices {
         this.resourceEndpoint = _resourceEndpoint;
     }
 
-
-    getAllResources() {
-        return http.get(this.resourceEndpoint);
-    }
-
     getResourceById(id) {
         return http.get(`${this.resourceEndpoint}/${id}`);
     }
 
     create(resource) {
-        return http.post(this.resourceEndpoint, resource);
+        return http.post(this.resourceEndpoint, resource, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            },
+        );
     }
 
-    update(id, resource) {
-        return http.put(`${this.resourceEndpoint}/${id}`, resource);
+    update(id, resourceData) {
+        return http.put(`${this.resourceEndpoint}/${id}`, resourceData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        },
+    );
     }
 
     delete(id) {
