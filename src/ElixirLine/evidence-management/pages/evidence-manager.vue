@@ -1,9 +1,20 @@
 <script>
-
 import DataManager from '../../../shared/components/data-manager.component.vue'
 import basePageLayoutComponent from "../../../shared/components/base-page-layout.component.vue";
 import CreateAndEdit from '../../../shared/components/create-and-edit.component.vue'
 
+
+import { EvidenceApiService } from '../services/evidence-service.js'
+import { IncidenceApiService } from '../services/incidence-service.js'
+import {TaskApiService} from "../../task-management/services/task-api.service.js";
+import {useAuthenticationStore} from "../../security/services/authentication.store.js";
+import {computed} from "vue";
+
+const evidenceService = new EvidenceApiService()
+const incidentService = new IncidenceApiService()
+const taskService = new TaskApiService();
+
+const userId = computed(() => useAuthenticationStore().currentUserId);
 
 export default {
   name: "evidence-manager",
@@ -24,9 +35,9 @@ export default {
       tasks: [],
       form: {
         taskId: "",
-        percentage: 0,
+        progressPercentage: 0,
         description: "",
-        image: "",
+        imageUrl: "",
         type: "industrial"
       },
       evidences: [],
@@ -34,31 +45,36 @@ export default {
       showEvidenceDialog: false,
       evidenceCarouselIndex: 0,
       minPercentageForTask: 0
-      
-      
     };
   },
   async mounted() {
-    const resTasks = await fetch("http://localhost:3000/tasks");
-    this.tasks = await resTasks.json();
-    const resEvidences = await fetch("http://localhost:3000/evidences");
-    this.evidences = await resEvidences.json();
+    try {
+      const winegrowerId = userId.value;
+
+      const resTasks = await taskService.getByWinegrowerId(winegrowerId);
+      this.tasks = resTasks.data;
+
+      if (this.tasks.length > 0) {
+        await this.loadEvidences(this.tasks[0].id); // Pasa el ID de la primera tarea
+      }
+    } catch (error) {
+      console.error("Error cargando tareas o evidencias:", error);
+    }
   },
+
   computed: {
     selectedTaskType() {
       const task = this.tasks.find(t => t.id === this.form.taskId);
       return task ? (task.type || '') : '';
     },
     evidencesFiltered() {
-      if (this.activeTask === '0') {
-        // Industrial
-        return this.evidences.filter(ev => this.getTaskById(ev.taskId)?.type === 'INDUSTRIAL');
-      }
-      if (this.activeTask === '1') {
-        // Campo
-        return this.evidences.filter(ev => this.getTaskById(ev.taskId)?.type === 'CAMPO');
-      }
-      return this.evidences;
+      return this.evidences.filter(ev => {
+        const task = this.getTaskById(ev.taskId);
+        if (!task) return false;
+        if (this.activeTask === '0') return task.type === 'INDUSTRIAL';
+        if (this.activeTask === '1') return task.type === 'CAMPO';
+        return true;
+      });
     },
     filteredTasks() {
       if (this.activeTask === '0') {
@@ -80,15 +96,35 @@ export default {
       if (!taskId) return 0;
       return Math.max(
           0,
-          ...this.evidences.filter(ev => ev.taskId === taskId).map(ev => ev.percentage)
+          ...this.evidences
+              .filter(ev => ev.taskId === taskId)
+              .map(ev => ev.progressPercentage)
       );
     }
   },
   methods: {
+    async loadEvidences(taskId) {
+      try {
+        const res = await evidenceService.getEvidencesByTaskId(taskId);
+        if (res.data && res.data.length > 0) {
+          this.evidences = res.data;
+        } else {
+          this.evidences = [];
+          console.warn("No hay evidencias disponibles para esta tarea.");
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          this.evidences = [];
+          console.warn("No se encontraron evidencias para esta tarea.");
+        } else {
+          console.error("Error cargando evidencias:", error);
+        }
+      }
+    },
     setMinPercentageForTask() {
       this.minPercentageForTask = this.maxPercentageForSelectedTask;
-      if (this.form.percentage < this.minPercentageForTask) {
-        this.form.percentage = this.minPercentageForTask;
+      if (this.form.progressPercentage < this.minPercentageForTask) {
+        this.form.progressPercentage = this.minPercentageForTask;
       }
     },
     updateTaskType() {
@@ -100,9 +136,9 @@ export default {
       this.showDialog = true;
       this.form = {
         taskId: "",
-        percentage: 0,
+        progressPercentage: 0,
         description: "",
-        image: "",
+        imageUrl: "",
         type: "industrial"
       };
       this.minPercentageForTask = 0;
@@ -119,33 +155,60 @@ export default {
       return d.toLocaleDateString();
     },
     async saveEvidence() {
-      const maxPercentage = Math.max(
-          0,
-          ...this.evidences
-              .filter(ev => ev.taskId === this.form.taskId)
-              .map(ev => ev.percentage)
-      );
-      if (this.form.percentage < maxPercentage) {
-        alert(`El porcentaje no puede ser menor al ya avanzado (${maxPercentage}%) para esta tarea.`);
+      // Validar estructura de datos
+      if (!this.form.taskId || typeof this.form.taskId !== 'number') {
+        alert("El campo 'taskId' es obligatorio y debe ser un número.");
         return;
       }
-      const newEvidence = {
-        id: Date.now().toString(),
+      if (!this.form.description || this.form.description.trim() === "") {
+        alert("El campo 'description' es obligatorio y debe ser un texto.");
+        return;
+      }
+      if (!this.form.progressPercentage || !Number.isInteger(Number(this.form.progressPercentage))) {
+        alert("El campo 'progressPercentage' es obligatorio y debe ser un número entero.");
+        return;
+      }
+      if (!this.form.imageFile || !(this.form.imageFile instanceof File)) {
+        alert("El campo 'imageFile' es obligatorio y debe ser un archivo válido.");
+        return;
+      }
+
+      // Crear objeto FormData al estilo supply-management
+      const payload = {
         taskId: this.form.taskId,
-        percentage: this.form.percentage,
         description: this.form.description,
-        image: this.form.image,
-        createdAt: new Date().toISOString(),
-        type: this.form.type
+        progressPercentage: this.form.progressPercentage
       };
-      await fetch("http://localhost:3000/evidences", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newEvidence)
-      });
-      this.showDialog = false;
-      const resEvidences = await fetch("http://localhost:3000/evidences");
-      this.evidences = await resEvidences.json();
+      const evidence = new FormData();
+      evidence.append(
+        'input',
+        new Blob([JSON.stringify(payload)], { type: 'application/json' })
+      );
+      evidence.append('evidence', this.form.imageFile);
+
+      // Debug: mostrar el contenido del FormData
+      console.log('=== DATO DE EVIDENCE QUE SE VA A GUARDAR O CREAR ===', payload);
+      if (this.form.imageFile instanceof File) {
+        console.log('Archivo adjunto:', this.form.imageFile.name, this.form.imageFile.type, this.form.imageFile.size, 'bytes');
+      }
+      for (let [key, value] of evidence.entries()) {
+        if (value instanceof Blob) {
+          console.log(`${key}: [Blob]`, value);
+        } else {
+          console.log(`${key}:`, value);
+        }
+      }
+      try {
+        // Enviar datos al backend como FormData (no JSON)
+        await evidenceService.createEvidence(evidence);
+        this.showDialog = false;
+        await this.loadEvidences(this.form.taskId);
+      } catch (error) {
+        console.error("Error guardando evidencia:", error);
+        if (error.response && error.response.data) {
+          console.error("🔴 Details:", error.response.data);
+        }
+      }
     },
     openEvidenceDialog(task) {
       this.selectedTask = task;
@@ -168,14 +231,15 @@ export default {
     }
   },
   watch: {
-    'form.percentage'(val) {
+    'form.progressPercentage'(val) {
       if (val < this.minPercentageForTask) {
-        this.form.percentage = this.minPercentageForTask;
+        this.form.progressPercentage = this.minPercentageForTask;
       }
     }
   }
 }
 </script>
+
 
 <template>
   
@@ -213,24 +277,18 @@ export default {
           <label>Tarea:
             <select v-model="form.taskId" required @change="updateTaskType">
               <option v-for="task in tasks" :key="task.id" :value="task.id">
-                {{ task.title || task.id }} (ID: {{ task.id }}, Rel: {{ task.relatedId }})
+                {{ task.title || task.id }} ({{ task.relatedId }})
               </option>
             </select>
-          </label>
-          <label>Tipo:
-            <input
-                type="text"
-                :value="selectedTaskType"
-                readonly
-                class="readonly-type"
-                style="background: #222; color: #fff;"
-            />
           </label>
           <label>Descripción:
             <input type="text" v-model="form.description" required />
           </label>
-          <label>Imagen (URL):
-            <input type="text" v-model="form.image" />
+          <label>Porcentaje de Avance:
+            <input type="number" v-model="form.progressPercentage" min="0" max="100" required />
+          </label>
+          <label>Archivo de Imagen:
+            <input type="file" @change="e => form.imageFile = e.target.files[0]" accept=".jpg,.jpeg,.png" required />
           </label>
         </form>
       </template>

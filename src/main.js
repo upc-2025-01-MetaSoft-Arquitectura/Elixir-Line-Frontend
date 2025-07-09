@@ -56,7 +56,7 @@ import {
     AccordionHeader,
     AccordionPanel,
     AutoComplete,
-    Badge, Calendar, Chips, Dropdown, InputSwitch, ProgressBar,
+    Badge, Calendar, Chips, Dropdown, InputSwitch, MultiSelect, Paginator, ProgressBar,
     SplitButton,
     TabPanels
 } from "primevue";
@@ -134,7 +134,44 @@ app.component('pv-button', Button)
     .component('pv-input-switch', InputSwitch)
     .component('pv-confirm-dialog', ConfirmDialog)
     .component('pv-chips', Chips)
-    .component('pv-file-upload', FileUpload);
+    .component('pv-file-upload', FileUpload)
+    .component('pv-card', Card)
+    .component('pv-column', Column)
+    .component('pv-confirm-dialog', ConfirmDialog)
+    .component('pv-checkbox', Checkbox)
+    .component('pv-data-table', DataTable)
+    .component('pv-dialog', Dialog)
+    .component('pv-select', Select)
+    .component('pv-select-button', SelectButton)
+    .component('pv-file-upload', FileUpload)
+    .component('pv-float-label', FloatLabel)
+    .component('pv-icon-field', IconField)
+    .component('pv-input-icon', InputIcon)
+    .component('pv-input-text', InputText)
+    .component('pv-input-number', InputNumber)
+    .component('pv-menu', Menu)
+    .component('pv-rating', Rating)
+    .component('pv-row', Row)
+    .component('pv-drawer', Drawer)
+    .component('pv-tag', Tag)
+    .component('pv-textarea', Textarea)
+    .component('pv-toolbar', Toolbar)
+    .component('pv-toast', Toast)
+    .component('pv-tabs', Tabs)
+    .component('pv-tab-list', TabList)
+    .component('pv-tab', Tab)
+    .component('pv-tab-panel', TabPanel)
+    .component('pv-tab-panels', TabPanels)
+    .component('pv-data-view', DataView)
+    .component('pv-accordion', Accordion)
+    .component('pv-accordion-panel',AccordionPanel)
+    .component('pv-accordion-header',AccordionHeader)
+    .component('pv-accordion-content',AccordionContent)
+    .component('pv-badge', Badge)
+    .component('pv-split-button', SplitButton)
+    .component('pv-paginator', Paginator)
+    .component('pv-multi-select', MultiSelect)
+    .component('pv-calendar', Calendar);
 
 
 app.mount('#app')

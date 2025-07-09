@@ -26,11 +26,13 @@ export default {
       return [
         { label: 'navbar.title-dashboard-option', icon: 'pi pi-fw pi-home', to: `${basePath}/vinicultor/dashboard` },
         { label: 'navbar.title-batch-option', icon: 'pi pi-fw pi-table', to: `${basePath}/vinicultor/winemaking` },
-        { label: 'navbar.title-task-option', icon: 'pi pi-pen-to-square', to: `${basePath}/vinicultor/tasks` },
-        { label: 'navbar.title-map-option', icon: 'pi pi-fw pi-map', to: `${basePath}/map` },
         { label: 'navbar.title-supplies-option', icon: 'pi pi-fw pi-box', to: `${basePath}/vinicultor/supplies` },
-        { label: 'navbar.title-calendar-option', icon: 'pi pi-fw pi-calendar', to: `${basePath}/calendar` },
-        { label: 'navbar.title-reports-option', icon: 'pi pi-fw pi-chart-bar', to: `${basePath}/reports` }
+        { label: 'navbar.title-task-option', icon: 'pi pi-pen-to-square', to: `${basePath}/vinicultor/tasks` },
+        { label: 'navbar.title-map-option', icon: 'pi pi-fw pi-map', to: `${basePath}/vinicultor/map` },
+        { label: 'navbar.title-calendar-option', icon: 'pi pi-fw pi-calendar', to: `${basePath}/vinicultor/calendar` },
+        {label: 'navbar.title-evidence-option', icon: 'pi pi-fw pi-camera', to: `${basePath}/vinicultor/evidence` }
+
+
       ];
     }
   },

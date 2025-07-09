@@ -1,143 +1,140 @@
 <script setup>
 import {ref, onMounted, computed, watch} from 'vue';
-import {SupplyApiService, TaskApiService, EmployeeApiService} from '../services/task-api.service.js';
+import {InputApiService, TaskApiService, FieldWorkerApiService} from '../services/task-api.service.js';
 import DataManager from "../../../shared/components/data-manager.component.vue";
 import { WineBatchesApiService } from '../../winemaking-process/services/wine-batches-api.service.js';
+import {useAuthenticationStore} from "../../security/services/authentication.store.js";
 
 const taskService = new TaskApiService();
-const supplyService = new SupplyApiService();
-const employeeService = new EmployeeApiService();
+const inputService = new InputApiService();
+const fieldWorkerService = new FieldWorkerApiService();
 
 const showEditDialog = ref(false);
 const showNewTaskDialog = ref(false);
 
 const editTask = ref({});
 const newTask = ref({});
-const allSupplies = ref([]);
-const allEmployees = ref([]);
+const allInputs = ref([]);
+const allFieldWorkers = ref([]);
 const tasks = ref([]);
 const activeTab = ref('industrial');
 const wineBatchesService = new WineBatchesApiService();
 const wineBatches = ref([]);
+
+const winegrowerIdField = 1;
+const winegrowerIdIndustry = 2;
+
+const userId = computed(() => useAuthenticationStore().currentUserId);
 async function openEditTask(task) {
-  const [taskRes, suppliesRes, employeesRes] = await Promise.all([
+  const [taskRes, inputsRes, fieldWorkersRes] = await Promise.all([
     taskService.getTaskById(task.id),
-    supplyService.getAllSupplies(),
-    employeeService.getAllEmployees()
+    inputService.getAllInputs(),
+    fieldWorkerService.getAllFieldWorkers()
   ]);
   // Filtra insumos únicos por id
-  const uniqueSupplies = Array.from(
-      new Map(suppliesRes.data.map(s => [s.id, s])).values()
+  const uniqueInputs = Array.from(
+      new Map(inputsRes.data.map(i => [i.id, i])).values()
   );
-  allSupplies.value = uniqueSupplies;
-  allEmployees.value = employeesRes.data;
-  editTask.value = { ...taskRes.data, supplies: (taskRes.data.supplies || []).map(s => ({ ...s, quantity: s.quantity || 1 })) };
+  allInputs.value = uniqueInputs;
+  allFieldWorkers.value = fieldWorkersRes.data;
+  editTask.value = { 
+    ...taskRes.data, 
+    inputs: (taskRes.data.inputs || []).map(i => ({ ...i, quantity: i.quantity || 1 })),
+    fieldWorkerId: taskRes.data.fieldWorkerId || null,
+    inputsIds: (taskRes.data.suppliesIds || taskRes.data.inputsIds || (taskRes.data.inputs ? taskRes.data.inputs.map(i => i.id) : []))
+  };
   showEditDialog.value = true;
 }
 async function openNewTaskDialog() {
   console.log('Evento recibido: abrir diálogo de nueva tarea');
-  const [suppliesRes, employeesRes] = await Promise.all([
-    supplyService.getAllSupplies(),
-    employeeService.getAllEmployees()
+  const [inputsRes, fieldWorkersRes] = await Promise.all([
+    inputService.getAllInputs(),
+    fieldWorkerService.getAllFieldWorkers()
   ]);
-  allSupplies.value = Array.from(new Map(suppliesRes.data.map(s => [s.id, s])).values());
-  allEmployees.value = employeesRes.data;
+  allInputs.value = Array.from(new Map(inputsRes.data.map(i => [i.id, i])).values());
+  allFieldWorkers.value = fieldWorkersRes.data;
   newTask.value = {
-    assignee: '',
     title: '',
-    startDate: '',
-    dueDate: '',
-    type: '',
-    status: 'Pending',
-    progress: 0,
     description: '',
-    supplies: [],
-    suppliesIds: []
+    startDate: '',
+    endDate: '',
+    winegrowerId: '',
+    fieldWorkerName: '',
+    batchId: '',
+    inputsIds: [],
+    progressPercentage: 0,
+    status: 'IN_PROGRESS',
+    type: '',
+    inputs: []
   };
   showNewTaskDialog.value = true;
   console.log('Estado inicial de showNewTaskDialog:', showNewTaskDialog.value);
   showNewTaskDialog.value = true;
   console.log('Estado final de showNewTaskDialog:', showNewTaskDialog.value);
 }
-function getOrCreateSupplyQuantity(supplyId) {
-  let found = newTask.value.supplies.find(s => s.id === supplyId);
+function getOrCreateInputQuantity(inputId) {
+  let found = newTask.value.inputs.find(i => i.id === inputId);
   if (!found) {
-    found = { id: supplyId, quantity: 1 };
-    newTask.value.supplies.push(found);
+    found = { id: inputId, quantity: 1 };
+    newTask.value.inputs.push(found);
   }
   return found.quantity;
 }
-
-watch(() => newTask.value.suppliesIds, (ids) => {
-  // Elimina insumos no seleccionados
-  newTask.value.supplies = newTask.value.supplies.filter(s => ids.includes(s.id));
+async function loadTasks() {
+  if (activeTab.value === 'industrial') {
+    const res = await taskService.getByWinegrowerAndType(userId.value, 'TASK_INDUSTRY');
+    tasks.value = res.data;
+  } else {
+    const res = await taskService.getByWinegrowerAndType(userId.value, 'TASK_FIELD');
+    tasks.value = res.data;
+  }
+}
+watch(() => newTask.value.inputsIds, (ids) => {
+  newTask.value.inputs = newTask.value.inputs.filter(i => ids.includes(i.id));
 });
-function toggleSupply(supply) {
-  const idx = editTask.value.supplies.findIndex(s => s.id === supply.id);
-  if (idx === -1) {
-    editTask.value.supplies.push({ ...supply, quantity: 1 });
-  } else {
-    editTask.value.supplies.splice(idx, 1);
-  }
-}
-
-function getSupplyQuantity(supplyId) {
-  const found = editTask.value.supplies.find(s => s.id === supplyId);
-  return found ? found.quantity : 1;
-}
-
-function setSupplyQuantity(supplyId, qty) {
-  const found = editTask.value.supplies.find(s => s.id === supplyId);
-  if (found) found.quantity = qty;
-}
-function toggleSupplyForm(supply) {
-  const idx = newTask.value.supplies.findIndex(s => s.id === supply.id);
-  if (idx === -1) {
-    newTask.value.supplies.push({ ...supply, quantity: 1 });
-  } else {
-    newTask.value.supplies.splice(idx, 1);
-  }
-}
-function getSupplyQuantityForm(supplyId) {
-  const found = newTask.value.supplies.find(s => s.id === supplyId);
-  return found ? found.quantity : 1;
-}
-function setSupplyQuantityForm(supplyId, qty) {
-  const found = newTask.value.supplies.find(s => s.id === supplyId);
-  if (found) found.quantity = qty;
-}
+watch(activeTab, async () => {
+  await loadTasks();
+});
 
 async function createTask() {
-  await taskService.createTask(newTask.value);
+  // Buscar el nombre del trabajador seleccionado
+  const selectedWorker = allFieldWorkers.value.find(fw => fw.id === newTask.value.fieldWorkerId);
+  const fieldWorkerName = selectedWorker ? `${selectedWorker.name} ${selectedWorker.lastName}` : '';
+  const taskToSend = {
+    ...newTask.value,
+    winegrowerId: userId.value,
+    fieldWorkerName,
+    suppliesIds: newTask.value.inputsIds
+  };
+  await taskService.createTask(taskToSend);
   showNewTaskDialog.value = false;
-  // Recarga las tareas si es necesario
-  const response = await taskService.getAllTasks();
-  tasks.value = response.data;
+  
 }
 async function saveTask() {
+  // Buscar el nombre del trabajador seleccionado
+  const selectedWorker = allFieldWorkers.value.find(fw => fw.id === editTask.value.fieldWorkerId);
+  const fieldWorkerName = selectedWorker ? `${selectedWorker.name} ${selectedWorker.lastName}` : '';
   const taskToSend = {
     ...editTask.value,
-    supplies: editTask.value.supplies.map(s => ({ id: s.id, quantity: s.quantity }))
+    fieldWorkerName,
+    suppliesIds: editTask.value.inputsIds
   };
   await taskService.updateTask(editTask.value.id, taskToSend);
   showEditDialog.value = false;
-  const response = await taskService.getAllTasks();
-  tasks.value = response.data;
+  
 }
 
 const columns = [
   { field: 'id', header: 'ID' },
-  { field: 'relatedId', header: 'ID Relacionado' },
-  { field: 'assignee', header: 'Encargado' },
+  { field: 'batchId', header: 'Lote' },
+  { field: 'fieldWorkerName', header: 'Trabajador' },
   { field: 'title', header: 'Título' },
-  { field: 'dueDate', header: 'Fecha Fin' },
+  { field: 'endDate', header: 'Fecha Fin' },
   { field: 'type', header: 'Tipo' },
-  
 ];
 
 onMounted(async () => {
-  const tasksResponse = await taskService.getAllTasks();
-  tasks.value = tasksResponse.data;
+  await loadTasks();
   const wineBatchesResponse = await wineBatchesService.getAll();
   wineBatches.value = wineBatchesResponse.data;
 });
@@ -145,8 +142,8 @@ onMounted(async () => {
 const filteredTasks = computed(() =>
     tasks.value.filter(task =>
         activeTab.value === 'industrial'
-            ? task.type === 'INDUSTRIAL'
-            : task.type === 'CAMPO'
+            ? task.type === 'TASK_INDUSTRY'
+            : task.type === 'TASK_FIELD'
     )
 );
 
@@ -158,22 +155,20 @@ function formatDate(dateStr) {
 }
 const showTaskDialog = ref(false);
 const selectedTask = ref(null);
-
 async function previewTask(task) {
-  // Si la lista de insumos está vacía, cárgala primero
-  if (!allSupplies.value.length) {
-    const suppliesRes = await supplyService.getAllSupplies();
-    allSupplies.value = Array.from(new Map(suppliesRes.data.map(s => [s.id, s])).values());
+  if (!allInputs.value.length) {
+    const inputsRes = await inputService.getAllInputs();
+    allInputs.value = Array.from(new Map(inputsRes.data.map(i => [i.id, i])).values());
   }
   const response = await taskService.getTaskById(task.id);
-  const suppliesWithNames = (response.data.supplies || []).map(s => {
-    const found = allSupplies.value.find(a => a.id === s.id);
+  const inputsWithNames = (response.data.inputs || []).map(i => {
+    const found = allInputs.value.find(a => a.id === i.id);
     return {
-      ...s,
+      ...i,
       name: found ? found.name : 'Insumo desconocido'
     };
   });
-  selectedTask.value = { ...response.data, supplies: suppliesWithNames };
+  selectedTask.value = { ...response.data, inputs: inputsWithNames };
   showTaskDialog.value = true;
 }
 </script>
@@ -181,8 +176,8 @@ async function previewTask(task) {
 <template>
   <div class="task-management-container">
     <div class="tabs">
-      <button :class="{active: activeTab === 'industrial'}" @click="activeTab = 'industrial'">Ambiente Industrial</button>
-      <button :class="{active: activeTab === 'campo'}" @click="activeTab = 'campo'">Ambiente de Campo</button>
+      <button :class="{active: activeTab === 'industrial'}" @click="activeTab = 'industrial'">Industrial</button>
+      <button :class="{active: activeTab === 'campo'}" @click="activeTab = 'campo'">Campo</button>
     </div>
     <data-manager
         :items="filteredTasks"
@@ -191,37 +186,24 @@ async function previewTask(task) {
         @edit-item-requested-manager="openEditTask"
         @new-item-requested-manager="openNewTaskDialog"
     >
-      
       <template #custom-columns-manager>
         <pv-column field="id" header="ID" />
-        <pv-column field="relatedId" header="ID Relacionado" />
-        <pv-column field="assignee" header="Encargado" />
+        <pv-column field="batchId" header="Lote" />
+        <pv-column field="fieldWorkerName" header="Trabajador" />
         <pv-column field="title" header="Título" />
-        <pv-column field="dueDate" header="Fecha Fin">
+        <pv-column field="endDate" header="Fecha Fin">
           <template #body="slotProps">
-            {{ formatDate(slotProps.data.dueDate) }}
+            {{ formatDate(slotProps.data.endDate) }}
           </template>
         </pv-column>
         <pv-column field="type" header="Tipo" />
-        <pv-column field="status" header="Estado">
-          <template #body="slotProps">
-            <span
-                class="status-badge"
-                :class="{
-                'status-inprocess': slotProps.data.status === 'InProcess',
-                'status-completed': slotProps.data.status === 'Completed'
-              }"
-            >
-              {{ slotProps.data.status }}
-            </span>
-          </template>
-        </pv-column>
-        <pv-column header="Avance" field="progress">
+        <pv-column field="status" header="Estado" />
+        <pv-column header="Avance" field="progressPercentage">
           <template #body="slotProps">
             <div class="progress-bar-bg">
-              <div class="progress-bar-fill" :style="{ width: slotProps.data.progress + '%' }"></div>
+              <div class="progress-bar-fill" :style="{ width: slotProps.data.progressPercentage + '%' }"></div>
             </div>
-            <span class="progress-label">{{ slotProps.data.progress }}%</span>
+            <span class="progress-label">{{ slotProps.data.progressPercentage }}%</span>
           </template>
         </pv-column>
       </template>
@@ -241,24 +223,24 @@ async function previewTask(task) {
         <h3>Nueva tarea</h3>
         <form @submit.prevent="createTask">
           <p>
-            <label>Encargado:</label>
-            <select v-model="newTask.assignee" class="editable-field">
-              <option v-for="emp in allEmployees" :key="emp.id" :value="emp.firstName + ' ' + emp.lastName">
-                {{ emp.firstName }} {{ emp.lastName }}
+            <label>Trabajador:</label>
+            <select v-model="newTask.fieldWorkerId" class="editable-field">
+              <option v-for="fw in allFieldWorkers" :key="fw.id" :value="fw.id">
+                {{ fw.name }} {{ fw.lastName }}
               </option>
             </select>
           </p>
           <div>
-            <label for="relatedId">Lote de vino:</label>
+            <label for="batchId">Lote de vino:</label>
             <select
-                id="relatedId"
-                v-model="newTask.relatedId"
+                id="batchId"
+                v-model="newTask.batchId"
                 class="editable-field"
                 style="width: 220px; margin-bottom: 12px;"
             >
               <option disabled value="">Selecciona un lote</option>
-              <option v-for="batch in wineBatches" :key="batch.id" :value="batch.internalCode">
-                {{ batch.internalCode }} - {{ batch.vineyardOrigin }}
+              <option v-for="batch in wineBatches" :key="batch.id" :value="batch.id">
+                {{ batch.vineyardCode }} - {{ batch.vineyardOrigin }}
               </option>
             </select>
           </div>
@@ -268,57 +250,41 @@ async function previewTask(task) {
           </p>
           <p>
             <label>Fecha Inicio:</label>
-            <input type="date" v-model="newTask.startDate" class="editable-field" />
+            <pv-calendar v-model="newTask.startDate" dateFormat="yy-mm-dd" class="editable-field" />
           </p>
           <p>
             <label>Fecha Fin:</label>
-            <input type="date" v-model="newTask.dueDate" class="editable-field" />
+            <pv-calendar v-model="newTask.endDate" dateFormat="yy-mm-dd" class="editable-field" />
           </p>
           <p>
             <label>Tipo:</label>
             <select v-model="newTask.type" class="editable-field">
               <option disabled value="">Selecciona tipo</option>
-              <option value="INDUSTRIAL">Industrial</option>
-              <option value="CAMPO">Campo</option>
+              <option value="TASK_INDUSTRY">Industrial</option>
+              <option value="TASK_FIELD">Campo</option>
             </select>
           </p>
           <p>
             <label>Descripción:</label>
             <textarea v-model="newTask.description" class="editable-field"></textarea>
           </p>
-          <div>
+          <p>
             <label>Insumos:</label>
-            <div v-for="(item, idx) in newTask.supplies" :key="idx" style="margin-bottom: 8px;">
-              <select v-model="item.id" class="editable-field" style="width: 180px;">
-                <option disabled value="">Selecciona insumo</option>
-                <option v-for="supply in allSupplies" :key="supply.id" :value="supply.id">
-                  {{ supply.name }}
-                </option>
-              </select>
-              <input
-                  type="number"
-                  min="1"
-                  v-model.number="item.quantity"
-                  placeholder="Cantidad"
-                  class="editable-field"
-                  style="width: 90px; margin-left: 8px;"
-              />
-              <button
-                  type="button"
-                  class="boton-rojo"
-                  @click="newTask.supplies.splice(idx, 1)"
-              >
-                Quitar
-              </button>
-            </div>
-            <button
-                type="button"
-                class="boton-verde"
-                @click="newTask.supplies.push({ id: '', quantity: 1 })"
-            >
-              Agregar insumo
-            </button>
-          </div>
+            <pv-multi-select
+              v-model="newTask.inputsIds"
+              :options="allInputs"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Buscar y seleccionar insumos"
+              display="chip"
+              class="editable-field"
+              style="width: 220px;"
+            />
+          </p>
+          <p>
+            <label>Avance:</label>
+            <input type="number" v-model="newTask.progressPercentage" min="0" max="100" class="editable-field" disabled /> %
+          </p>
           <pv-button label="Guardar" type="submit" />
           <pv-button label="Cancelar" severity="secondary" @click="showNewTaskDialog = false" />
         </form>
@@ -329,70 +295,69 @@ async function previewTask(task) {
         <h3>Editar tarea</h3>
         <form @submit.prevent="saveTask">
           <p><strong>ID:</strong> {{ editTask.id }}</p>
-          <p><strong>ID Relacionado:</strong> {{ editTask.relatedId }}</p>
-          <p><strong>Estado:</strong> {{ editTask.status }}</p>
-          <p><strong>Tipo:</strong> {{ editTask.type }}</p>
           <p>
-            <label>Encargado:</label>
-            <select v-model="editTask.assignee" class="editable-field">
-              <option v-for="emp in allEmployees" :key="emp.id" :value="emp.firstName + ' ' + emp.lastName">
-                {{ emp.firstName }} {{ emp.lastName }}
+            <label>Trabajador:</label>
+            <select v-model="editTask.fieldWorkerId" class="editable-field">
+              <option v-for="fw in allFieldWorkers" :key="fw.id" :value="fw.id">
+                {{ fw.name }} {{ fw.lastName }}
               </option>
             </select>
           </p>
+          <div>
+            <label for="batchId">Lote de vino:</label>
+            <select
+                id="batchId"
+                v-model="editTask.batchId"
+                class="editable-field"
+                style="width: 220px; margin-bottom: 12px;"
+            >
+              <option disabled value="">Selecciona un lote</option>
+              <option v-for="batch in wineBatches" :key="batch.id" :value="batch.id">
+                {{ batch.vineyardCode }} - {{ batch.vineyardOrigin }}
+              </option>
+            </select>
+          </div>
           <p>
             <label>Título:</label>
             <input v-model="editTask.title" class="editable-field" />
           </p>
           <p>
             <label>Fecha Inicio:</label>
-            <input type="date" v-model="editTask.startDate" class="editable-field" />
+            <pv-calendar v-model="editTask.startDate" dateFormat="yy-mm-dd" class="editable-field" />
           </p>
           <p>
             <label>Fecha Fin:</label>
-            <input type="date" v-model="editTask.dueDate" class="editable-field" />
+            <pv-calendar v-model="editTask.endDate" dateFormat="yy-mm-dd" class="editable-field" />
           </p>
           <p>
-            <label>Avance:</label>
-            <input type="number" v-model="editTask.progress" min="0" max="100" class="editable-field" /> %
+            <label>Tipo:</label>
+            <select v-model="editTask.type" class="editable-field">
+              <option disabled value="">Selecciona tipo</option>
+              <option value="TASK_INDUSTRY">Industrial</option>
+              <option value="TASK_FIELD">Campo</option>
+            </select>
           </p>
           <p>
             <label>Descripción:</label>
             <textarea v-model="editTask.description" class="editable-field"></textarea>
           </p>
-          <div>
+          <p>
             <label>Insumos:</label>
-            <div v-for="(item, idx) in editTask.supplies" :key="item.id" style="margin-bottom: 8px;">
-              <select v-model="item.id" class="editable-field" style="width: 180px;">
-                <option disabled value="">Selecciona insumo</option>
-                <option v-for="supply in allSupplies" :key="supply.id" :value="supply.id">
-                  {{ supply.name }}
-                </option>
-              </select>
-              <input
-                  type="number"
-                  min="1"
-                  v-model.number="item.quantity"
-                  placeholder="Cantidad"
-                  class="editable-field"
-                  style="width: 90px; margin-left: 8px;"
-              />
-              <button
-                  type="button"
-                  class="boton-rojo"
-                  @click="editTask.supplies.splice(idx, 1)"
-              >
-                Quitar
-              </button>
-            </div>
-            <button
-                type="button"
-                class="boton-verde"
-                @click="editTask.supplies.push({ id: '', quantity: 1 })"
-            >
-              Agregar insumo
-            </button>
-          </div>
+            <pv-multi-select
+              v-model="editTask.inputsIds"
+              :options="allInputs"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Buscar y seleccionar insumos"
+              display="chip"
+              class="editable-field"
+              style="width: 220px;"
+            />
+          </p>
+          <p>
+            <label>Avance:</label>
+            <input type="number" v-model="editTask.progressPercentage" min="0" max="100" class="editable-field" disabled /> %
+          </p>
           <pv-button label="Guardar" type="submit" />
           <pv-button label="Cancelar" severity="secondary" @click="showEditDialog = false" />
         </form>
@@ -403,23 +368,23 @@ async function previewTask(task) {
         <h3>Previsualización de tarea</h3>
         <div class="task-details">
           <p><strong>ID:</strong> {{ selectedTask.id }}</p>
-          <p><strong>ID Relacionado:</strong> {{ selectedTask.relatedId }}</p>
-          <p><strong>Encargado:</strong> {{ selectedTask.assignee }}</p>
+          <p><strong>Lote:</strong> {{ selectedTask.batchId }}</p>
+          <p><strong>Trabajador:</strong> {{ selectedTask.fieldWorkerName }}</p>
           <p><strong>Título:</strong> {{ selectedTask.title }}</p>
           <p><strong>Fecha Inicio:</strong> {{ formatDate(selectedTask.startDate) }}</p>
-          <p><strong>Fecha Fin:</strong> {{ formatDate(selectedTask.dueDate) }}</p>
+          <p><strong>Fecha Fin:</strong> {{ formatDate(selectedTask.endDate) }}</p>
           <p><strong>Tipo:</strong> {{ selectedTask.type }}</p>
           <p><strong>Estado:</strong> {{ selectedTask.status }}</p>
-          <p><strong>Avance:</strong> {{ selectedTask.progress }}%</p>
+          <p><strong>Avance:</strong> {{ selectedTask.progressPercentage }}%</p>
           <p><strong>Descripción:</strong> {{ selectedTask.description }}</p>
           <p><strong>Insumos:</strong>
             <span v-if="selectedTask.supplies && selectedTask.supplies.length">
-    <ul>
-      <li v-for="supply in selectedTask.supplies" :key="supply.id">
-        {{ supply.name }} <span v-if="supply.quantity">- {{ supply.quantity }}</span>
-      </li>
-    </ul>
-  </span>
+              <ul>
+                <li v-for="supply in selectedTask.supplies" :key="supply.id">
+                  {{ supply.name }}
+                </li>
+              </ul>
+            </span>
             <span v-else> Sin insumos</span>
           </p>
         </div>
@@ -585,4 +550,8 @@ async function previewTask(task) {
   font-weight: 500;
   margin-left: 8px;
 }
+
+
+
+
 </style>
