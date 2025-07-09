@@ -35,4 +35,9 @@ export class IncidenceApiService {
     getFieldIncidences() {
         return http.get(`${this.resourceEndpoint}/with-task-info/field`);
     }
+
+    // Obtener todas las incidencias
+    getAllIncidences() {
+        return http.get(this.resourceEndpoint);
+    }
 }

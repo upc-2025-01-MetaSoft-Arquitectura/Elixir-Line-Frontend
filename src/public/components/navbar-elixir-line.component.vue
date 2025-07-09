@@ -21,8 +21,8 @@ export default {
 
     // Construye la lista de ítems con rutas dinámicas usando userId
     items() {
+      if (!this.userId) return [];
       const basePath = `/elixir-line/${this.userId}`;
-
       return [
         { label: 'navbar.title-dashboard-option', icon: 'pi pi-fw pi-home', to: `${basePath}/vinicultor/dashboard` },
         { label: 'navbar.title-batch-option', icon: 'pi pi-fw pi-table', to: `${basePath}/vinicultor/winemaking` },
@@ -31,8 +31,6 @@ export default {
         { label: 'navbar.title-map-option', icon: 'pi pi-fw pi-map', to: `${basePath}/vinicultor/map` },
         { label: 'navbar.title-calendar-option', icon: 'pi pi-fw pi-calendar', to: `${basePath}/vinicultor/calendar` },
         {label: 'navbar.title-evidence-option', icon: 'pi pi-fw pi-camera', to: `${basePath}/vinicultor/evidence` }
-
-
       ];
     }
   },

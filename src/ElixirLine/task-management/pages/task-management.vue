@@ -176,8 +176,8 @@ async function previewTask(task) {
 <template>
   <div class="task-management-container">
     <div class="tabs">
-      <button :class="{active: activeTab === 'industrial'}" @click="activeTab = 'industrial'">Industrial</button>
-      <button :class="{active: activeTab === 'campo'}" @click="activeTab = 'campo'">Campo</button>
+      <button :class="['tab-button', { 'active-tab': activeTab === 'industrial' }]" @click="activeTab = 'industrial'">Industrial</button>
+      <button :class="['tab-button', { 'active-tab': activeTab === 'campo' }]" @click="activeTab = 'campo'">Campo</button>
     </div>
     <data-manager
         :items="filteredTasks"
@@ -223,19 +223,19 @@ async function previewTask(task) {
         <h3>Nueva tarea</h3>
         <form @submit.prevent="createTask">
           <p>
-            <label>Trabajador:</label>
-            <select v-model="newTask.fieldWorkerId" class="editable-field">
+            <select v-model="newTask.fieldWorkerId" class="editable-field" :placeholder="'Trabajador'">
+              <option disabled value="">Selecciona un trabajador</option>
               <option v-for="fw in allFieldWorkers" :key="fw.id" :value="fw.id">
                 {{ fw.name }} {{ fw.lastName }}
               </option>
             </select>
           </p>
           <div>
-            <label for="batchId">Lote de vino:</label>
             <select
                 id="batchId"
                 v-model="newTask.batchId"
                 class="editable-field"
+                :placeholder="'Lote de vino'"
                 style="width: 220px; margin-bottom: 12px;"
             >
               <option disabled value="">Selecciona un lote</option>
@@ -245,31 +245,25 @@ async function previewTask(task) {
             </select>
           </div>
           <p>
-            <label>Título:</label>
-            <input v-model="newTask.title" class="editable-field" />
+            <input v-model="newTask.title" class="editable-field" placeholder="Título" />
           </p>
           <p>
-            <label>Fecha Inicio:</label>
-            <pv-calendar v-model="newTask.startDate" dateFormat="yy-mm-dd" class="editable-field" />
+            <pv-calendar v-model="newTask.startDate" dateFormat="yy-mm-dd" class="editable-field" placeholder="Fecha Inicio" />
           </p>
           <p>
-            <label>Fecha Fin:</label>
-            <pv-calendar v-model="newTask.endDate" dateFormat="yy-mm-dd" class="editable-field" />
+            <pv-calendar v-model="newTask.endDate" dateFormat="yy-mm-dd" class="editable-field" placeholder="Fecha Fin" />
           </p>
           <p>
-            <label>Tipo:</label>
-            <select v-model="newTask.type" class="editable-field">
+            <select v-model="newTask.type" class="editable-field" :placeholder="'Tipo'">
               <option disabled value="">Selecciona tipo</option>
               <option value="TASK_INDUSTRY">Industrial</option>
               <option value="TASK_FIELD">Campo</option>
             </select>
           </p>
           <p>
-            <label>Descripción:</label>
-            <textarea v-model="newTask.description" class="editable-field"></textarea>
+            <textarea v-model="newTask.description" class="editable-field" placeholder="Descripción"></textarea>
           </p>
           <p>
-            <label>Insumos:</label>
             <pv-multi-select
               v-model="newTask.inputsIds"
               :options="allInputs"
@@ -280,10 +274,6 @@ async function previewTask(task) {
               class="editable-field"
               style="width: 220px;"
             />
-          </p>
-          <p>
-            <label>Avance:</label>
-            <input type="number" v-model="newTask.progressPercentage" min="0" max="100" class="editable-field" disabled /> %
           </p>
           <pv-button label="Guardar" type="submit" />
           <pv-button label="Cancelar" severity="secondary" @click="showNewTaskDialog = false" />
@@ -404,154 +394,83 @@ async function previewTask(task) {
   display: flex;
   margin-bottom: 28px;
   justify-content: flex-start;
- 
 }
-.tabs button {
-  padding: 10px 28px;
-  border: none;
-  background: #eaeaea;
-  color: #708090;
-  border-radius: 6px 6px 0 0;
+.tab-button {
+  color: #708090 !important;
+  padding: 10px 20px;
+  border: none !important;
+  background-color: transparent !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
   font-weight: 500;
+  border-radius: 6px 6px 0 0;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  border-bottom: 3px solid #708090;
 }
-.tabs button.active {
-  background: #8B0000;
-  color: #fff;
-  border-bottom: 3px solid #DE9595;
-}
-.progress-bar-bg {
-  width: 100px;
-  height: 14px;
-  background: #eee;
-  border-radius: 7px;
-  overflow: hidden;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 8px;
-}
-.progress-bar-fill {
-  height: 100%;
-  background: #47A747;
-  transition: width 0.3s;
-}
-.progress-label {
-  font-size: 13px;
-  color: #5F6868;
-  vertical-align: middle;
-}
-.status-badge {
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 13px;
-  display: inline-block;
-}
-.status-inprocess {
-  background: #ADCAF9;
-  color: #424E59;
-}
-.status-completed {
-  background: #CEFDCE;
-  color: #47A747
-}
-.editable-field {
-  border: 1px solid #bdbdbd;
-  border-radius: 4px;
-  padding: 4px 8px;
-  background: #f9f9f9;
-  margin-bottom: 6px;
-  color: #5F6868;
+.tab-button.active-tab {
+  color: #DAA520 !important;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 .pv-dialog form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   padding: 10px 0;
-}
-
-.pv-dialog form p {
-  display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 0;
 }
-
-.pv-dialog label {
-  min-width: 110px;
-  font-weight: 500;
-  color: #444;
-}
-
-.pv-dialog input[type="text"],
-.pv-dialog input[type="date"],
-.pv-dialog input[type="number"],
-.pv-dialog select,
-.pv-dialog textarea {
-  flex: 1;
-  max-width: 320px;
-}
-
-.pv-dialog textarea {
-  min-height: 60px;
-  resize: vertical;
-}
-
-.editable-field {
-  border: 1px solid #bdbdbd;
-  border-radius: 4px;
-  padding: 6px 10px;
-  background: #f9f9f9;
-  margin-bottom: 0;
-  color: #5F6868;
-  font-size: 15px;
+.pv-dialog form p, .pv-dialog form div {
   width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+.editable-field,
+.pv-dialog select.editable-field,
+.pv-dialog textarea.editable-field,
+.pv-dialog input.editable-field,
+.pv-dialog .pv-multi-select.editable-field,
+.pv-dialog .pv-calendar.editable-field {
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif !important;
+  font-size: 16px !important;
+  min-width: 320px !important;
+  max-width: 320px !important;
+  width: 320px !important;
   box-sizing: border-box;
+}
+.editable-field {
+  border: 1.5px solid #444;
+  border-radius: 6px;
+  padding: 10px 14px;
+  background: #23272f;
+  color: #e0e0e0;
+  font-size: 16px;
+  width: 320px;
+  box-sizing: border-box;
+  margin-bottom: 0;
   transition: border 0.2s;
 }
-
 .editable-field:focus {
-  border: 1.5px solid #8B0000;
+  border: 2px solid #8B0000;
   outline: none;
-  background: #fff;
+  background: #23272f;
 }
-
-.pv-dialog [type="checkbox"] {
-  margin-right: 6px;
+.editable-field::placeholder {
+  color: #bdbdbd;
+  opacity: 1;
 }
-
+.pv-dialog select.editable-field, .pv-dialog textarea.editable-field, .pv-dialog input.editable-field {
+  min-width: 320px;
+  max-width: 320px;
+}
+.pv-dialog .pv-multi-select.editable-field {
+  min-width: 320px !important;
+  max-width: 320px !important;
+}
+.pv-dialog .pv-calendar.editable-field {
+  min-width: 320px;
+  max-width: 320px;
+}
 .pv-button {
   margin-right: 10px;
 }
-.insumos-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.boton-verde {
-  background: #48b85b !important;
-  color: #fff !important;
-  border: none !important;
-  border-radius: 4px;
-  padding: 6px 16px;
-  cursor: pointer;
-  font-weight: 500;
-  margin-top: 8px;
-}
-.boton-rojo {
-  background: #c33535 !important;
-  color: #fff !important;
-  border: none !important;
-  border-radius: 4px;
-  padding: 6px 12px;
-  cursor: pointer;
-  font-weight: 500;
-  margin-left: 8px;
-}
-
-
-
-
 </style>

@@ -26,4 +26,9 @@ export class EvidenceApiService {
     getEvidencesByTaskId(taskId) {
         return http.get(`${this.resourceEndpoint}/task/${taskId}`);
     }
+
+    // Obtener todas las evidencias
+    getAllEvidences() {
+        return http.get(this.resourceEndpoint);
+    }
 }

@@ -1,7 +1,5 @@
 <script>
-import DataManager from '../../../shared/components/data-manager.component.vue';
 import basePageLayoutComponent from "../../../shared/components/base-page-layout.component.vue";
-import CreateAndEdit from '../../../shared/components/create-and-edit.component.vue';
 import { IncidenceApiService } from '../services/incidence-service.js';
 import { TaskApiService } from "../../task-management/services/task-api.service.js";
 import { useAuthenticationStore } from "../../security/services/authentication.store.js";
@@ -14,9 +12,7 @@ const userId = computed(() => useAuthenticationStore().currentUserId);
 export default {
   name: "incidence-manager",
   components: {
-    DataManager,
-    basePageLayoutComponent,
-    CreateAndEdit
+    basePageLayoutComponent
   },
   data() {
     return {
@@ -26,46 +22,21 @@ export default {
         { label: 'Ambiente Industrial', value: '0' },
         { label: 'Ambiente de campo', value: '1' },
       ],
-      showDialog: false,
       tasks: [],
-      form: {
-        taskId: "",
-        description: "",
-        imageUrl: "",
-        type: "industrial"
-      },
-      incidences: [],
-      selectedTask: null,
-      showIncidenceDialog: false,
-      incidenceCarouselIndex: 0
+      incidences: []
     };
   },
   async mounted() {
     try {
       const winegrowerId = userId.value;
-
       const resTasks = await taskService.getByWinegrowerId(winegrowerId);
       this.tasks = resTasks.data;
-
-      await this.loadIncidences();
+      await this.loadAllIncidences();
     } catch (error) {
       console.error("Error cargando tareas o incidencias:", error);
     }
   },
   computed: {
-    selectedTaskType() {
-      const task = this.tasks.find(t => t.id === this.form.taskId);
-      return task ? (task.type || '') : '';
-    },
-    incidencesFiltered() {
-      return this.incidences.filter(inc => {
-        const task = this.getTaskById(inc.taskId);
-        if (!task) return false;
-        if (this.activeTask === '0') return task.type === 'INDUSTRIAL';
-        if (this.activeTask === '1') return task.type === 'CAMPO';
-        return true;
-      });
-    },
     filteredTasks() {
       if (this.activeTask === '0') {
         return this.tasks.filter(t => t.type === 'INDUSTRIAL');
@@ -75,77 +46,24 @@ export default {
       }
       return this.tasks;
     },
-    incidencesForSelectedTask() {
-      if (!this.selectedTask) return [];
-      return this.incidences
-          .filter(inc => inc.taskId === this.selectedTask.id)
-          .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    incidencesByTask() {
+      // Agrupa incidencias por taskId
+      const map = {};
+      this.incidences.forEach(inc => {
+        if (!map[inc.taskId]) map[inc.taskId] = [];
+        map[inc.taskId].push(inc);
+      });
+      return map;
     }
   },
   methods: {
-    async loadIncidences() {
+    async loadAllIncidences() {
       try {
+        // Suponiendo que hay un endpoint para obtener todas las incidencias del winegrower
         const res = await incidenceService.getAllIncidences();
         this.incidences = res.data;
       } catch (error) {
         console.error("Error cargando incidencias:", error);
-      }
-    },
-    openDialog() {
-      this.showDialog = true;
-      this.form = {
-        taskId: "",
-        description: "",
-        imageUrl: "",
-        type: "industrial"
-      };
-      this.$nextTick(() => {
-        this.$refs.incidenceDialog?.showModal?.();
-      });
-    },
-    getTaskById(id) {
-      return this.tasks.find(t => t.id === id);
-    },
-    formatDate(dateStr) {
-      if (!dateStr) return '';
-      const d = new Date(dateStr);
-      return d.toLocaleDateString();
-    },
-    async saveIncidence() {
-      const incidence = new Incidence({
-        id: Date.now(),
-        taskId: this.form.taskId,
-        description: this.form.description,
-        imageUrl: this.form.imageUrl,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      });
-
-      try {
-        await incidenceService.createIncidence(incidence);
-        this.showDialog = false;
-        await this.loadIncidences();
-      } catch (error) {
-        console.error("Error guardando incidencia:", error);
-      }
-    },
-    openIncidenceDialog(task) {
-      this.selectedTask = task;
-      this.incidenceCarouselIndex = 0;
-      this.showIncidenceDialog = true;
-    },
-    closeIncidenceDialog() {
-      this.showIncidenceDialog = false;
-      this.selectedTask = null;
-    },
-    nextIncidence() {
-      if (this.incidenceCarouselIndex < this.incidencesForSelectedTask.length - 1) {
-        this.incidenceCarouselIndex++;
-      }
-    },
-    prevIncidence() {
-      if (this.incidenceCarouselIndex > 0) {
-        this.incidenceCarouselIndex--;
       }
     }
   }
@@ -168,117 +86,36 @@ export default {
           option-value="value"
       />
     </div>
-    <div class="flex-1 h-full overflow-hidden flex flex-column">
-      <div v-if="activeTask === '0'" class="flex-1 flex-column w-full overflow-hidden"></div>
-      <div v-if="activeTask === '1'" class="flex-1 flex-column w-full overflow-hidden"></div>
-    </div>
-    <create-and-edit
-        class="create-and-edit"
-        :entity="form"
-        :visible="showDialog"
-        entity-name="Incidencia"
-        :edit="false"
-        @saved-shared="saveIncidence"
-        @canceled-shared="showDialog = false"
-    >
-      <template #content>
-        <form @submit.prevent>
-          <label>Tarea:
-            <select v-model="form.taskId" required>
-              <option v-for="task in tasks" :key="task.id" :value="task.id">
-                {{ task.title || task.id }} ({{ task.relatedId }})
-              </option>
-            </select>
-          </label>
-          <label>Tipo:
-            <input
-                type="text"
-                :value="selectedTaskType"
-                readonly
-                class="readonly-type"
-                style="background: #222; color: #fff;"
-            />
-          </label>
-          <label>Descripción:
-            <input type="text" v-model="form.description" required />
-          </label>
-          <label>Imagen (URL):
-            <input type="text" v-model="form.imageUrl" />
-          </label>
-        </form>
-      </template>
-    </create-and-edit>
-    <div class="button-section">
-      <button @click="openDialog">Nueva Incidencia</button>
-    </div>
     <div class="incidencias-container">
       <div class="incidencias">
         <div
             v-for="task in filteredTasks"
             :key="task.id"
             class="card"
-            @click="openIncidenceDialog(task)"
-            style="cursor:pointer"
         >
-          <img
-              v-if="task.image"
-              :src="task.image"
-              alt="Imagen"
-              class="imagen"
-          />
           <div class="contenido">
             <div class="titulo">{{ task.title || 'Sin título' }}</div>
             <div class="tipo">{{ task.type || 'N/A' }}</div>
             <div class="encargado">Encargado: {{ task.assignee || 'N/A' }}</div>
             <div class="fecha">ID: {{ task.id }}</div>
           </div>
+          <div v-if="incidencesByTask[task.id] && incidencesByTask[task.id].length">
+            <div v-for="incidence in incidencesByTask[task.id]" :key="incidence.id" class="incidence-item">
+              <img v-if="incidence.imageUrl" :src="incidence.imageUrl" alt="Imagen" class="incidence-img" />
+              <div class="incidence-info">
+                <div class="incidence-fecha">Fecha: {{ incidence.createdAt ? new Date(incidence.createdAt).toLocaleDateString() : '' }}</div>
+                <div class="incidence-desc">{{ incidence.description }}</div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="incidence-empty">No hay incidencias para esta tarea.</div>
         </div>
       </div>
     </div>
-    <dialog v-if="showIncidenceDialog" open class="incidence-dialog">
-      <div v-if="incidencesForSelectedTask.length" class="carousel-incidence-wrapper">
-        <button
-            class="carousel-btn left"
-            @click="prevIncidence"
-            :disabled="incidenceCarouselIndex === 0"
-        >
-          ‹
-        </button>
-        <div class="carousel-incidence">
-          <img
-              v-if="incidencesForSelectedTask[incidenceCarouselIndex].imageUrl"
-              :src="incidencesForSelectedTask[incidenceCarouselIndex].imageUrl"
-              alt="Imagen"
-              class="incidence-img"
-          />
-          <div class="incidence-info">
-            <div class="incidence-fecha">
-              Fecha: {{ formatDate(incidencesForSelectedTask[incidenceCarouselIndex].createdAt) }}
-            </div>
-            <div class="incidence-desc">
-              {{ incidencesForSelectedTask[incidenceCarouselIndex].description }}
-            </div>
-          </div>
-        </div>
-        <button
-            class="carousel-btn right"
-            @click="nextIncidence"
-            :disabled="incidenceCarouselIndex === incidencesForSelectedTask.length - 1"
-        >
-          ›
-        </button>
-      </div>
-      <div v-else>
-        No hay incidencias para esta tarea.
-      </div>
-      <div class="dialog-footer">
-        <button @click="closeIncidenceDialog">Cerrar</button>
-      </div>
-    </dialog>
   </div>
 </template>
-<style >
 
+<style>
 button {
   background-color: #1976d2;
   color: #fff;
