@@ -30,7 +30,6 @@ const editingField = ref(null); // Lote en edición
 const editSidebarVisible = ref(false);
 const editedField = reactive({}); // Copia editable
 const wineBatchOrigins = reactive({});
-const wineBatchCodes = ref({}); // wineBatchId -> vineyardCode
 const sidebarCollapsed = ref(false);
 const editSidebarCollapsed = ref(false);
 const wineBatchService = new WineBatchesApiService();
@@ -102,14 +101,18 @@ onMounted(async () => {
       }
   );
   autocomplete.addListener('place_changed', onPlaceChanged);
-  await loadWineBatchCodes();
   await loadWineBatchOrigins();
 
 });
+// Al cargar los campos, asegurarse de que cada field tenga wineBatchId igual a batchId
 async function loadSavedFields() {
   try {
     const response = await mapService.getAllFields();
     response.data.forEach(field => {
+      // Asegura que cada field tenga wineBatchId para agrupamiento y búsqueda
+      if (field.batchId && !field.wineBatchId) {
+        field.wineBatchId = field.batchId;
+      }
       if (field.type === 'polygon' && Array.isArray(field.path)) {
         const polygon = new window.google.maps.Polygon({
           paths: field.path,
@@ -121,27 +124,17 @@ async function loadSavedFields() {
           zIndex: 1,
           map: map.value
         });
-        polygon.addListener('click', (event) => showIconsOverlay(event, polygon, field.label)); // para loadSavedFields
-
+        polygon.addListener('click', (event) => showIconsOverlay(event, polygon, field.label));
         drawnShapes.value.push(polygon);
       }
     });
+    // Actualiza searchResults para que los campos tengan wineBatchId
+    searchResults.value = response.data.map(field => {
+      if (field.batchId && !field.wineBatchId) field.wineBatchId = field.batchId;
+      return field;
+    });
   } catch (e) {
     alert('Error al cargar los campos guardados');
-  }
-}
-async function loadWineBatchCodes() {
-  try {
-    const res = await wineBatchService.getAll();
-    console.log('[loadWineBatchCodes] Respuesta de getAll:', res);
-    // res.data debe ser un array de batches
-    res.data.forEach(batch => {
-      wineBatchCodes.value[String(batch.id)] = batch.vineyardCode;
-    });
-    console.log('[loadWineBatchCodes] wineBatchCodes:', JSON.stringify(wineBatchCodes.value));
-  } catch (err) {
-    console.error('[loadWineBatchCodes] Error al obtener batches:', err);
-    // Si falla, deja los códigos vacíos
   }
 }
 async function loadWineBatchOrigins() {
@@ -150,10 +143,8 @@ async function loadWineBatchOrigins() {
     if (id && !wineBatchOrigins[id]) {
       try {
         const res = await wineBatchService.getById(id);
-        console.log(`[loadWineBatchOrigins] Batch ${id}:`, res);
         wineBatchOrigins[id] = res.data.vineyardOrigin;
-      } catch (err) {
-        console.error(`[loadWineBatchOrigins] Error batch ${id}:`, err);
+      } catch {
         wineBatchOrigins[id] = 'Desconocido';
       }
     }
@@ -250,16 +241,12 @@ function enableDrawing() {
 // Maneja el evento confirm del diálogo
 async function onDialogConfirm({ label, wineBatchId }) {
   try {
-    const winegrowerId = useAuthenticationStore().currentUserId;
-    const payload = {
+    const response = await mapService.createField({
       type: 'polygon',
       path: lastPolygonPath,
       label,
-      batchId: wineBatchId,
-      winegrowerId
-    };
-    console.log('Payload enviado a createField:', JSON.stringify(payload, null, 2));
-    const response = await mapService.createField(payload);
+      wineBatchId
+    });
     // Dibuja el polígono en el mapa
     const polygon = new window.google.maps.Polygon({
       paths: lastPolygonPath,
@@ -275,10 +262,6 @@ async function onDialogConfirm({ label, wineBatchId }) {
     drawnShapes.value.push(polygon);
     alert('Campo guardado correctamente');
   } catch (e) {
-    console.error('Error al guardar el campo:', e);
-    if (e.response) {
-      console.error('Respuesta del backend:', e.response.data);
-    }
     alert('Error al guardar el campo');
   }
 }
@@ -469,12 +452,6 @@ function expandPolygon(points, factor = 1.01) {
     lng: centroid.lng + (p.lng - centroid.lng) * factor
   }));
 }
-// Debe estar antes del <template> y como arrow function
-const getVineyardCode = (wineBatchId) => {
-  if (!wineBatchId) return '';
-  const code = wineBatchCodes.value[String(wineBatchId)];
-  return code !== undefined && code !== null && code !== '' ? code : 'Cargando...';
-};
 defineExpose({ enableDrawing });
 </script>
 
@@ -491,7 +468,8 @@ defineExpose({ enableDrawing });
           <div class="sidebar-cards">
             <div v-for="(fields, wineBatchId) in groupedFields" :key="wineBatchId" class="sidebar-group">
               <div class="sidebar-group-title">
-                Viñedo: {{ getVineyardCode(wineBatchId) }}
+                
+                Viñedo: {{ wineBatchOrigins[wineBatchId] || 'Cargando...' }}
               </div>
               <div v-for="field in fields" :key="field.id" class="sidebar-card" @click="focusField(field)">
                 <div class="sidebar-card-title">{{ field.label }}</div>
@@ -654,7 +632,7 @@ defineExpose({ enableDrawing });
 }
 .polygon-icon-vertical {
   flex-direction: column;
-  align-items: center;
+  align-item: center;
 }
 .polygon-icons {
   display: flex;

@@ -343,7 +343,7 @@ export default {
           <div class="contenido">
             <div class="titulo">{{ task.title || 'Sin título' }}</div>
             <div class="tipo">{{ task.type || 'N/A' }}</div>
-            <div class="encargado">Encargado: {{ task.assignee || 'N/A' }}</div>
+            <div class="encargado">Encargado: {{ task.fieldWorkerName.split(' ')[0] || 'N/A' }}</div>
             <div class="fecha">ID: {{ task.id }}</div>
           </div>
           <div class="evidence-items-list">
@@ -353,13 +353,14 @@ export default {
                 <div class="evidence-fecha">Fecha: {{ formatDate(evidence.createdAt) }}</div>
                 <div class="evidence-desc">{{ evidence.description }}</div>
                 <div class="evidence-percentage">Avance: {{ evidence.progressPercentage }}%</div>
+                <div class="evidence-encargado" v-if="getTaskById(evidence.taskId)?.fieldWorkerName">
+                  Encargado: {{ getTaskById(evidence.taskId).fieldWorkerName.split(' ')[0] }}
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div v-if="!filteredTasks.some(task => evidencesByTask[task.id] && evidencesByTask[task.id].length)" class="evidence-empty">
-          No hay evidencias para mostrar.
-        </div>
+        
       </div>
     </div>
 

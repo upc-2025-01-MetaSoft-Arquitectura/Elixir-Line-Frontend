@@ -111,7 +111,7 @@ export default {
           <div class="contenido">
             <div class="titulo">{{ task.title || 'Sin título' }}</div>
             <div class="tipo">{{ task.type || 'N/A' }}</div>
-            <div class="encargado">Encargado: {{ task.assignee || 'N/A' }}</div>
+            <div class="encargado">Encargado: {{ task.fieldWorkerName.split(' ')[0] || 'N/A' }}</div>
             <div class="fecha">ID: {{ task.id }}</div>
           </div>
           <div v-if="incidencesByTask[task.id] && incidencesByTask[task.id].length">
