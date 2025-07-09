@@ -37,7 +37,12 @@ async function openEditTask(task) {
   );
   allInputs.value = uniqueInputs;
   allFieldWorkers.value = fieldWorkersRes.data;
-  editTask.value = { ...taskRes.data, inputs: (taskRes.data.inputs || []).map(i => ({ ...i, quantity: i.quantity || 1 })) };
+  editTask.value = { 
+    ...taskRes.data, 
+    inputs: (taskRes.data.inputs || []).map(i => ({ ...i, quantity: i.quantity || 1 })),
+    fieldWorkerId: taskRes.data.fieldWorkerId || null,
+    inputsIds: (taskRes.data.suppliesIds || taskRes.data.inputsIds || (taskRes.data.inputs ? taskRes.data.inputs.map(i => i.id) : []))
+  };
   showEditDialog.value = true;
 }
 async function openNewTaskDialog() {
@@ -92,14 +97,27 @@ watch(activeTab, async () => {
 });
 
 async function createTask() {
-  await taskService.createTask(newTask.value);
+  // Buscar el nombre del trabajador seleccionado
+  const selectedWorker = allFieldWorkers.value.find(fw => fw.id === newTask.value.fieldWorkerId);
+  const fieldWorkerName = selectedWorker ? `${selectedWorker.name} ${selectedWorker.lastName}` : '';
+  const taskToSend = {
+    ...newTask.value,
+    winegrowerId: userId.value,
+    fieldWorkerName,
+    suppliesIds: newTask.value.inputsIds
+  };
+  await taskService.createTask(taskToSend);
   showNewTaskDialog.value = false;
   
 }
 async function saveTask() {
+  // Buscar el nombre del trabajador seleccionado
+  const selectedWorker = allFieldWorkers.value.find(fw => fw.id === editTask.value.fieldWorkerId);
+  const fieldWorkerName = selectedWorker ? `${selectedWorker.name} ${selectedWorker.lastName}` : '';
   const taskToSend = {
     ...editTask.value,
-    supplies: editTask.value.supplies.map(s => ({ id: s.id, quantity: s.quantity }))
+    fieldWorkerName,
+    suppliesIds: editTask.value.inputsIds
   };
   await taskService.updateTask(editTask.value.id, taskToSend);
   showEditDialog.value = false;
@@ -124,7 +142,7 @@ onMounted(async () => {
 const filteredTasks = computed(() =>
     tasks.value.filter(task =>
         activeTab.value === 'industrial'
-            ? task.type === 'TASK_INDUSTRIAL'
+            ? task.type === 'TASK_INDUSTRY'
             : task.type === 'TASK_FIELD'
     )
 );
@@ -206,9 +224,9 @@ async function previewTask(task) {
         <form @submit.prevent="createTask">
           <p>
             <label>Trabajador:</label>
-            <select v-model="newTask.fieldWorkerName" class="editable-field">
-              <option v-for="emp in allEmployees" :key="emp.id" :value="emp.firstName + ' ' + emp.lastName">
-                {{ emp.firstName }} {{ emp.lastName }}
+            <select v-model="newTask.fieldWorkerId" class="editable-field">
+              <option v-for="fw in allFieldWorkers" :key="fw.id" :value="fw.id">
+                {{ fw.name }} {{ fw.lastName }}
               </option>
             </select>
           </p>
@@ -232,17 +250,17 @@ async function previewTask(task) {
           </p>
           <p>
             <label>Fecha Inicio:</label>
-            <input type="date" v-model="newTask.startDate" class="editable-field" />
+            <pv-calendar v-model="newTask.startDate" dateFormat="yy-mm-dd" class="editable-field" />
           </p>
           <p>
             <label>Fecha Fin:</label>
-            <input type="date" v-model="newTask.endDate" class="editable-field" />
+            <pv-calendar v-model="newTask.endDate" dateFormat="yy-mm-dd" class="editable-field" />
           </p>
           <p>
             <label>Tipo:</label>
             <select v-model="newTask.type" class="editable-field">
               <option disabled value="">Selecciona tipo</option>
-              <option value="TASK_INDUSTRIAL">Industrial</option>
+              <option value="TASK_INDUSTRY">Industrial</option>
               <option value="TASK_FIELD">Campo</option>
             </select>
           </p>
@@ -250,17 +268,22 @@ async function previewTask(task) {
             <label>Descripción:</label>
             <textarea v-model="newTask.description" class="editable-field"></textarea>
           </p>
-          <div>
+          <p>
             <label>Insumos:</label>
-            <select v-model="newTask.inputsIds" multiple class="editable-field" style="width: 220px;">
-              <option v-for="input in allInputs" :key="input.id" :value="input.id">
-                {{ input.name }}
-              </option>
-            </select>
-          </div>
+            <pv-multi-select
+              v-model="newTask.inputsIds"
+              :options="allInputs"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Buscar y seleccionar insumos"
+              display="chip"
+              class="editable-field"
+              style="width: 220px;"
+            />
+          </p>
           <p>
             <label>Avance:</label>
-            <input type="number" v-model="newTask.progressPercentage" min="0" max="100" class="editable-field" /> %
+            <input type="number" v-model="newTask.progressPercentage" min="0" max="100" class="editable-field" disabled /> %
           </p>
           <pv-button label="Guardar" type="submit" />
           <pv-button label="Cancelar" severity="secondary" @click="showNewTaskDialog = false" />
@@ -274,8 +297,8 @@ async function previewTask(task) {
           <p><strong>ID:</strong> {{ editTask.id }}</p>
           <p>
             <label>Trabajador:</label>
-            <select v-model="newTask.fieldWorkerName" class="editable-field">
-              <option v-for="fw in allFieldWorkers" :key="fw.id" :value="fw.name + ' ' + fw.lastName">
+            <select v-model="editTask.fieldWorkerId" class="editable-field">
+              <option v-for="fw in allFieldWorkers" :key="fw.id" :value="fw.id">
                 {{ fw.name }} {{ fw.lastName }}
               </option>
             </select>
@@ -300,17 +323,17 @@ async function previewTask(task) {
           </p>
           <p>
             <label>Fecha Inicio:</label>
-            <input type="date" v-model="editTask.startDate" class="editable-field" />
+            <pv-calendar v-model="editTask.startDate" dateFormat="yy-mm-dd" class="editable-field" />
           </p>
           <p>
             <label>Fecha Fin:</label>
-            <input type="date" v-model="editTask.endDate" class="editable-field" />
+            <pv-calendar v-model="editTask.endDate" dateFormat="yy-mm-dd" class="editable-field" />
           </p>
           <p>
             <label>Tipo:</label>
             <select v-model="editTask.type" class="editable-field">
               <option disabled value="">Selecciona tipo</option>
-              <option value="TASK_INDUSTRIAL">Industrial</option>
+              <option value="TASK_INDUSTRY">Industrial</option>
               <option value="TASK_FIELD">Campo</option>
             </select>
           </p>
@@ -318,17 +341,22 @@ async function previewTask(task) {
             <label>Descripción:</label>
             <textarea v-model="editTask.description" class="editable-field"></textarea>
           </p>
-          <div>
+          <p>
             <label>Insumos:</label>
-            <select v-model="newTask.inputsIds" multiple class="editable-field" style="width: 220px;">
-              <option v-for="input in allInputs" :key="input.id" :value="input.id">
-                {{ input.name }}
-              </option>
-            </select>
-          </div>
+            <pv-multi-select
+              v-model="editTask.inputsIds"
+              :options="allInputs"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Buscar y seleccionar insumos"
+              display="chip"
+              class="editable-field"
+              style="width: 220px;"
+            />
+          </p>
           <p>
             <label>Avance:</label>
-            <input type="number" v-model="editTask.progressPercentage" min="0" max="100" class="editable-field" /> %
+            <input type="number" v-model="editTask.progressPercentage" min="0" max="100" class="editable-field" disabled /> %
           </p>
           <pv-button label="Guardar" type="submit" />
           <pv-button label="Cancelar" severity="secondary" @click="showEditDialog = false" />

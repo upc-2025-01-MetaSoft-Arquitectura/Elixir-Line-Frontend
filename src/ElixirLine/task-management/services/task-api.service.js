@@ -36,7 +36,7 @@ export class TaskApiService {
     }
 
     getByWinegrowerId(winegrowerId) {
-        return http.get(`${this.resourceEndpoint}/winegrower/${winegrowerId}`);
+        return http.get(`/tasks/winegrower/${winegrowerId}`);
     }
 
     getByWinegrowerAndFieldWorker(winegrowerId, fieldWorkerId) {

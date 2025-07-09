@@ -30,6 +30,7 @@ export default {
         { label: 'navbar.title-map-option', icon: 'pi pi-fw pi-map', to: `${basePath}/vinicultor/map` },
         { label: 'navbar.title-supplies-option', icon: 'pi pi-fw pi-box', to: `${basePath}/vinicultor/supplies` },
         { label: 'navbar.title-calendar-option', icon: 'pi pi-fw pi-calendar', to: `${basePath}/vinicultor/calendar` },
+        {label: 'navbar.title-evidence-option', icon: 'pi pi-fw pi-camera', to: `${basePath}/vinicultor/evidence` }
       ];
     }
   },

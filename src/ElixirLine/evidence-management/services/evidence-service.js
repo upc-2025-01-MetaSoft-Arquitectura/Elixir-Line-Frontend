@@ -1,30 +1,33 @@
-// src/ElixirLine/evidence-management/services/evidence-service.js
-import axios from "axios";
+import http from "../../../shared/services/http-common.js";
 
-const http = axios.create({ baseURL: "http://localhost:3000" });
 
 export class EvidenceApiService {
     constructor() {
         this.resourceEndpoint = "/evidences";
     }
 
-    getAllEvidences() {
-        return http.get(this.resourceEndpoint);
+    // Crear evidencia para una tarea
+    createEvidence(evidenceFormData) {
+        // Forzar Content-Type a multipart/form-data para compatibilidad backend
+        return http.post('/evidences', evidenceFormData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
     }
 
-    getEvidenceById(id) {
-        return http.get(`${this.resourceEndpoint}/${id}`);
+    // Actualizar parcialmente una evidencia (PATCH)
+    updateEvidence(evidenceId, evidence) {
+        return http.patch(`${this.resourceEndpoint}/${evidenceId}`, evidence);
     }
 
-    createEvidence(evidence) {
-        return http.post(this.resourceEndpoint, evidence);
+    // Eliminar evidencia
+    deleteEvidence(evidenceId) {
+        return http.delete(`${this.resourceEndpoint}/${evidenceId}`);
     }
 
-    updateEvidence(id, evidence) {
-        return http.put(`${this.resourceEndpoint}/${id}`, evidence);
-    }
-
-    deleteEvidence(id) {
-        return http.delete(`${this.resourceEndpoint}/${id}`);
+    // Obtener evidencias por ID de tarea
+    getEvidencesByTaskId(taskId) {
+        return http.get(`${this.resourceEndpoint}/task/${taskId}`);
     }
 }

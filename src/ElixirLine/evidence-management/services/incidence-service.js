@@ -1,30 +1,38 @@
-// src/ElixirLine/evidence-management/services/incidence-service.js
-import axios from "axios";
+import http from "../../../shared/services/http-common.js";
 
-const http = axios.create({ baseURL: "http://localhost:3000" });
 
 export class IncidenceApiService {
     constructor() {
-        this.resourceEndpoint = "/incidences";
+        this.resourceEndpoint = "/incidents";
     }
 
-    getAllIncidences() {
-        return http.get(this.resourceEndpoint);
-    }
-
-    getIncidenceById(id) {
-        return http.get(`${this.resourceEndpoint}/${id}`);
-    }
-
+    // Crear incidencia para una tarea
     createIncidence(incidence) {
         return http.post(this.resourceEndpoint, incidence);
     }
 
-    updateIncidence(id, incidence) {
-        return http.put(`${this.resourceEndpoint}/${id}`, incidence);
+    // Obtener una incidencia por su ID
+    getIncidenceById(incidenceId) {
+        return http.get(`${this.resourceEndpoint}/${incidenceId}`);
     }
 
-    deleteIncidence(id) {
-        return http.delete(`${this.resourceEndpoint}/${id}`);
+    // Eliminar una incidencia por ID
+    deleteIncidence(incidenceId) {
+        return http.delete(`${this.resourceEndpoint}/${incidenceId}`);
+    }
+
+    // Actualizar parcialmente una incidencia (PATCH)
+    updateIncidence(incidenceId, incidence) {
+        return http.patch(`${this.resourceEndpoint}/${incidenceId}`, incidence);
+    }
+
+    // Listar incidencias de tipo industrial
+    getIndustrialIncidences() {
+        return http.get(`${this.resourceEndpoint}/with-task-info/industrial`);
+    }
+
+    // Listar incidencias de tipo campo
+    getFieldIncidences() {
+        return http.get(`${this.resourceEndpoint}/with-task-info/field`);
     }
 }

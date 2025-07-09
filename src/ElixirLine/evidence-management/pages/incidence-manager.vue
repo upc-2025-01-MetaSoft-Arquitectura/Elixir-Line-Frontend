@@ -1,19 +1,27 @@
 <script>
-
-import DataManager from '../../../shared/components/data-manager.component.vue'
+import DataManager from '../../../shared/components/data-manager.component.vue';
 import basePageLayoutComponent from "../../../shared/components/base-page-layout.component.vue";
+import CreateAndEdit from '../../../shared/components/create-and-edit.component.vue';
+import { Incident } from '../models/incidence-model.js';
 import { IncidenceApiService } from '../services/incidence-service.js';
+import { TaskApiService } from "../../task-management/services/task-api.service.js";
+import { useAuthenticationStore } from "../../security/services/authentication.store.js";
+import { computed } from "vue";
 
 const incidenceService = new IncidenceApiService();
+const taskService = new TaskApiService();
+const userId = computed(() => useAuthenticationStore().currentUserId);
+
 export default {
   name: "incidence-manager",
-      components: {
+  components: {
     DataManager,
-        basePageLayoutComponent,
+    basePageLayoutComponent,
+    CreateAndEdit
   },
   data() {
     return {
-      title: { singular: 'Incidence', plural: 'Incidences' },
+      title: { singular: 'Incidencia', plural: 'Incidencias' },
       activeTask: '0',
       taskOptions: [
         { label: 'Ambiente Industrial', value: '0' },
@@ -21,26 +29,29 @@ export default {
       ],
       showDialog: false,
       tasks: [],
-      incidences: [],
       form: {
         taskId: "",
         description: "",
-        image: "",
+        imageUrl: "",
         type: "industrial"
       },
+      incidences: [],
       selectedTask: null,
       showIncidenceDialog: false,
       incidenceCarouselIndex: 0
-      
     };
-    
   },
-  
   async mounted() {
-    const resTasks = await fetch("http://localhost:3000/tasks");
-    this.tasks = await resTasks.json();
-    const resIncidences = await incidenceService.getAllIncidences();
-    this.incidences = resIncidences.data;
+    try {
+      const winegrowerId = userId.value;
+
+      const resTasks = await taskService.getByWinegrowerId(winegrowerId);
+      this.tasks = resTasks.data;
+
+      await this.loadIncidences();
+    } catch (error) {
+      console.error("Error cargando tareas o incidencias:", error);
+    }
   },
   computed: {
     selectedTaskType() {
@@ -48,13 +59,13 @@ export default {
       return task ? (task.type || '') : '';
     },
     incidencesFiltered() {
-      if (this.activeTask === '0') {
-        return this.incidences.filter(inc => this.getTaskById(inc.taskId)?.type === 'INDUSTRIAL');
-      }
-      if (this.activeTask === '1') {
-        return this.incidences.filter(inc => this.getTaskById(inc.taskId)?.type === 'CAMPO');
-      }
-      return this.incidences;
+      return this.incidences.filter(inc => {
+        const task = this.getTaskById(inc.taskId);
+        if (!task) return false;
+        if (this.activeTask === '0') return task.type === 'INDUSTRIAL';
+        if (this.activeTask === '1') return task.type === 'CAMPO';
+        return true;
+      });
     },
     filteredTasks() {
       if (this.activeTask === '0') {
@@ -73,12 +84,20 @@ export default {
     }
   },
   methods: {
+    async loadIncidences() {
+      try {
+        const res = await incidenceService.getAllIncidences();
+        this.incidences = res.data;
+      } catch (error) {
+        console.error("Error cargando incidencias:", error);
+      }
+    },
     openDialog() {
       this.showDialog = true;
       this.form = {
         taskId: "",
         description: "",
-        image: "",
+        imageUrl: "",
         type: "industrial"
       };
       this.$nextTick(() => {
@@ -94,18 +113,22 @@ export default {
       return d.toLocaleDateString();
     },
     async saveIncidence() {
-      const newIncidence = {
-        id: Date.now().toString(),
+      const incidence = new Incidence({
+        id: Date.now(),
         taskId: this.form.taskId,
         description: this.form.description,
-        image: this.form.image,
+        imageUrl: this.form.imageUrl,
         createdAt: new Date().toISOString(),
-        type: this.form.type
-      };
-      await incidenceService.createIncidence(newIncidence);
-      this.showDialog = false;
-      const resIncidences = await incidenceService.getAllIncidences();
-      this.incidences = resIncidences.data;
+        updatedAt: new Date().toISOString()
+      });
+
+      try {
+        await incidenceService.createIncidence(incidence);
+        this.showDialog = false;
+        await this.loadIncidences();
+      } catch (error) {
+        console.error("Error guardando incidencia:", error);
+      }
     },
     openIncidenceDialog(task) {
       this.selectedTask = task;
@@ -127,7 +150,7 @@ export default {
       }
     }
   }
-}
+};
 </script>
 
 <template>
@@ -150,28 +173,42 @@ export default {
       <div v-if="activeTask === '0'" class="flex-1 flex-column w-full overflow-hidden"></div>
       <div v-if="activeTask === '1'" class="flex-1 flex-column w-full overflow-hidden"></div>
     </div>
-    <dialog v-if="showDialog" ref="incidenceDialog" open>
-      <form @submit.prevent="saveIncidence">
-        <label>Tarea:
-          <select v-model="form.taskId" required>
-            <option v-for="task in tasks" :key="task.id" :value="task.id">
-              {{ task.title || task.id }} (ID: {{ task.id }})
-            </option>
-          </select>
-        </label>
-        <label>Tipo:
-          <input type="text" :value="selectedTaskType" readonly />
-        </label>
-        <label>Descripción:
-          <input type="text" v-model="form.description" required />
-        </label>
-        <label>Imagen (URL):
-          <input type="text" v-model="form.image" />
-        </label>
-        <button type="submit">Guardar</button>
-        <button type="button" @click="showDialog = false">Cancelar</button>
-      </form>
-    </dialog>
+    <create-and-edit
+        class="create-and-edit"
+        :entity="form"
+        :visible="showDialog"
+        entity-name="Incidencia"
+        :edit="false"
+        @saved-shared="saveIncidence"
+        @canceled-shared="showDialog = false"
+    >
+      <template #content>
+        <form @submit.prevent>
+          <label>Tarea:
+            <select v-model="form.taskId" required>
+              <option v-for="task in tasks" :key="task.id" :value="task.id">
+                {{ task.title || task.id }} ({{ task.relatedId }})
+              </option>
+            </select>
+          </label>
+          <label>Tipo:
+            <input
+                type="text"
+                :value="selectedTaskType"
+                readonly
+                class="readonly-type"
+                style="background: #222; color: #fff;"
+            />
+          </label>
+          <label>Descripción:
+            <input type="text" v-model="form.description" required />
+          </label>
+          <label>Imagen (URL):
+            <input type="text" v-model="form.imageUrl" />
+          </label>
+        </form>
+      </template>
+    </create-and-edit>
     <div class="button-section">
       <button @click="openDialog">Nueva Incidencia</button>
     </div>
@@ -201,11 +238,17 @@ export default {
     </div>
     <dialog v-if="showIncidenceDialog" open class="incidence-dialog">
       <div v-if="incidencesForSelectedTask.length" class="carousel-incidence-wrapper">
-        <button class="carousel-btn left" @click="prevIncidence" :disabled="incidenceCarouselIndex === 0">‹</button>
+        <button
+            class="carousel-btn left"
+            @click="prevIncidence"
+            :disabled="incidenceCarouselIndex === 0"
+        >
+          ‹
+        </button>
         <div class="carousel-incidence">
           <img
-              v-if="incidencesForSelectedTask[incidenceCarouselIndex].image"
-              :src="incidencesForSelectedTask[incidenceCarouselIndex].image"
+              v-if="incidencesForSelectedTask[incidenceCarouselIndex].imageUrl"
+              :src="incidencesForSelectedTask[incidenceCarouselIndex].imageUrl"
               alt="Imagen"
               class="incidence-img"
           />
@@ -218,7 +261,13 @@ export default {
             </div>
           </div>
         </div>
-        <button class="carousel-btn right" @click="nextIncidence" :disabled="incidenceCarouselIndex === incidencesForSelectedTask.length - 1">›</button>
+        <button
+            class="carousel-btn right"
+            @click="nextIncidence"
+            :disabled="incidenceCarouselIndex === incidencesForSelectedTask.length - 1"
+        >
+          ›
+        </button>
       </div>
       <div v-else>
         No hay incidencias para esta tarea.
