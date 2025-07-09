@@ -8,12 +8,8 @@ export class EvidenceApiService {
 
     // Crear evidencia para una tarea
     createEvidence(evidenceFormData) {
-        // Forzar Content-Type a multipart/form-data para compatibilidad backend
-        return http.post('/evidences', evidenceFormData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
+        // No establecer Content-Type, deja que Axios lo maneje automáticamente
+        return http.post('/evidences', evidenceFormData);
     }
 
     // Actualizar parcialmente una evidencia (PATCH)

@@ -1,11 +1,9 @@
 // src/ElixirLine/winemaking-map/services/maps-service.js
-import axios from "axios";
-
-const http = axios.create({ baseURL: "http://localhost:3000" });
+import http from '../../../shared/services/http-common.js';
 
 export class MapApiService {
     constructor() {
-        this.resourceEndpoint = "/map";
+        this.resourceEndpoint = "/plot";
     }
 
     // Obtener todos los polígonos guardados
