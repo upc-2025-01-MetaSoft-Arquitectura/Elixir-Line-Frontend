@@ -24,7 +24,7 @@ export default {
       const basePath = `/elixir-line/${this.userId}`;
 
       return [
-        { label: 'navbar.title-dashboard-option', icon: 'pi pi-fw pi-home', to: `${basePath}/dashboard` },
+        { label: 'navbar.title-dashboard-option', icon: 'pi pi-fw pi-home', to: `${basePath}/vinicultor/dashboard` },
         { label: 'navbar.title-batch-option', icon: 'pi pi-fw pi-table', to: `${basePath}/vinicultor/winemaking` },
         { label: 'navbar.title-task-option', icon: 'pi pi-pen-to-square', to: `${basePath}/vinicultor/tasks` },
         { label: 'navbar.title-map-option', icon: 'pi pi-fw pi-map', to: `${basePath}/map` },

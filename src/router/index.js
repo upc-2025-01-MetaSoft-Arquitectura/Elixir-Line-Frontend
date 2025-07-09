@@ -8,6 +8,7 @@ import SupplyManagement from "../ElixirLine/supply-management/pages/supply-manag
 import ProfileViewsConfigurationComponent from "../ElixirLine/profile/views/profile-views-configuration.component.vue";
 import SignUpComponent from "../ElixirLine/security/pages/sign-up.component.vue";
 import {authenticationGuard} from "../ElixirLine/security/services/authentication.guard.js";
+import dashboardComponent from "../ElixirLine/dashboard/pages/dashboard-component.vue";
 
 
 const router = createRouter({
@@ -30,6 +31,7 @@ const router = createRouter({
                 {path: 'vinicultor/winemaking', name: 'WinemakingProcess', component: TabsWinemakingViewComponent,     meta: { title: 'Winemaking' }},
                 {path:'vinicultor/supplies', name: 'SuppliesManagement', component: SupplyManagement, meta: { title: 'Supplies' }},
                 {path: 'vinicultor/profile/settings', name: 'ProfileSettings', component: ProfileViewsConfigurationComponent, meta: { title: 'Profile Settings'}},
+                {path: 'vinicultor/dashboard', name: 'dashboard-component', component: dashboardComponent, meta: { title: 'Dashboard' }},
 
             ], meta: { title: 'Wine Batches' },
 
