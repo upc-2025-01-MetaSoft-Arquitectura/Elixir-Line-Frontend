@@ -38,11 +38,12 @@ export default {
   },
   computed: {
     filteredTasks() {
+      // Acepta TASK_FIELD para campo y TASK_INDUSTRY para industrial
       if (this.activeTask === '0') {
-        return this.tasks.filter(t => t.type === 'INDUSTRIAL');
+        return this.tasks.filter(t => t.type === 'TASK_INDUSTRY');
       }
       if (this.activeTask === '1') {
-        return this.tasks.filter(t => t.type === 'CAMPO');
+        return this.tasks.filter(t => t.type === 'TASK_FIELD');
       }
       return this.tasks;
     },
@@ -59,9 +60,23 @@ export default {
   methods: {
     async loadAllIncidences() {
       try {
-        // Suponiendo que hay un endpoint para obtener todas las incidencias del winegrower
-        const res = await incidenceService.getAllIncidences();
-        this.incidences = res.data;
+        const allIncidences = [];
+        for (const task of this.tasks) {
+          try {
+            const res = await incidenceService.getIncidencesByTaskId(task.id);
+            if (Array.isArray(res.data)) {
+              const mapped = res.data.map(inc => ({
+                ...inc,
+                imageUrl: inc.imageUrl || inc.image || null
+              }));
+              allIncidences.push(...mapped);
+            }
+          } catch (err) {
+            // Si la petición falla (por ejemplo, 404), solo loguea y continúa
+            console.warn(`No incidencias para tarea ${task.id}:`, err?.response?.status || err);
+          }
+        }
+        this.incidences = allIncidences;
       } catch (error) {
         console.error("Error cargando incidencias:", error);
       }

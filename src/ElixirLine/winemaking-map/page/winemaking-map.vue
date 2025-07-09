@@ -136,7 +136,7 @@ async function loadWineBatchCodes() {
     console.log('[loadWineBatchCodes] Respuesta de getAll:', res);
     // res.data debe ser un array de batches
     res.data.forEach(batch => {
-      wineBatchCodes.value[batch.id] = batch.vineyardCode;
+      wineBatchCodes.value[String(batch.id)] = batch.vineyardCode;
     });
     console.log('[loadWineBatchCodes] wineBatchCodes:', JSON.stringify(wineBatchCodes.value));
   } catch (err) {
@@ -472,7 +472,7 @@ function expandPolygon(points, factor = 1.01) {
 // Debe estar antes del <template> y como arrow function
 const getVineyardCode = (wineBatchId) => {
   if (!wineBatchId) return '';
-  const code = wineBatchCodes.value[wineBatchId];
+  const code = wineBatchCodes.value[String(wineBatchId)];
   return code !== undefined && code !== null && code !== '' ? code : 'Cargando...';
 };
 defineExpose({ enableDrawing });
