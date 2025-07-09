@@ -68,6 +68,8 @@ export const useAuthenticationStore = defineStore({
 
                 })
                 .catch(error => {
+                    this.signedIn = false;
+
                     console.log(error);
                     router.push({name: 'sign-in'});
                 });

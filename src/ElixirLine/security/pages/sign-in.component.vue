@@ -5,7 +5,6 @@ import {useAuthenticationStore} from "../services/authentication.store.js";
 
 export default {
   name: "sing-in",
-  components: {},
 
   data() {
     return {
@@ -24,6 +23,22 @@ export default {
 
       authenticationStore.signIn(signInRequest, this.$router);
 
+      if(!authenticationStore.signedIn) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error de inicio de sesión',
+          detail: 'Por favor, verifique sus credenciales.',
+          life: 3000
+        });
+      } else {
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Inicio de sesión exitoso',
+          detail: 'Bienvenido de nuevo!',
+          life: 3000
+        });
+      }
+
       console.log("Respuesta de Inicio de sesión: ",signInRequest);
 
     }
@@ -33,6 +48,8 @@ export default {
 </script>
 
 <template>
+
+  <pv-toast></pv-toast>
 
   <div class="login-container flex w-full h-screen p-4"  >
 
