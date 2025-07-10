@@ -106,8 +106,8 @@ export default {
   <pv-toolbar class="toolbar-elixir-line flex" style="background-color: #8B0000; color: #e5edf6; border: none; border-radius: 0;">
     <template #start>
       <div class="brand">
-        <img src="https://www.primefaces.org/primevue/showcase/assets/showcase/images/primelogo.svg"
-             alt="Logo Elixir Line"/>
+        <!-- Nombre de producto: ElixirLine -->
+        <span class="text-white font-bold text-2xl">ElixirLine</span>
       </div>
     </template>
 
