@@ -29,9 +29,8 @@ export default {
       activeTab: '0', // Tab activa por defecto
       tabs: [
         { label: this.$t('details-tabs.tab-1'), value: '0' },
-        { label: this.$t('details-tabs.tab-2'), value: '1' },
-        { label: this.$t('details-tabs.tab-3'), value: '2' },
-        { label: this.$t('details-tabs.tab-4'), value: '3' },
+        { label: this.$t('details-tabs.tab-3'), value: '1' },
+
       ]
     }
   },
@@ -84,15 +83,7 @@ export default {
         </div>
 
         <div v-if="activeTab === '1'" class="flex-1 flex-column w-full h-full overflow-hidden">
-          <tasks-by-batch  :item-entity="itemBatch" :title="title" />
-        </div>
-
-        <div v-if="activeTab === '2'" class="flex-1 flex-column w-full h-full overflow-hidden">
           <stages-by-batch-management :item-batch="itemBatch" :title="title" :visible="visible" />
-        </div>
-
-        <div v-if="activeTab === '3'" class="flex-1 flex-column w-full h-full overflow-hidden">
-          <supplies-by-batch :item-entity="itemBatch" :title="title" />
         </div>
 
       </div>

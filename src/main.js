@@ -90,6 +90,7 @@ app.use(PrimeVue, { theme: { preset: Aura }, ripple: true })
     .use(ToastService);
 
 
+
 // Use PrimeVue Components
 app.component('pv-button', Button)
     .component('pv-card', Card)
@@ -142,7 +143,6 @@ app.component('pv-button', Button)
     .component('pv-data-table', DataTable)
     .component('pv-dialog', Dialog)
     .component('pv-select', Select)
-    .component('pv-select-button', SelectButton)
     .component('pv-file-upload', FileUpload)
     .component('pv-float-label', FloatLabel)
     .component('pv-icon-field', IconField)
@@ -175,6 +175,5 @@ app.component('pv-button', Button)
 
 
 app.mount('#app')
-export default class PvInputText {
-}
+
 
