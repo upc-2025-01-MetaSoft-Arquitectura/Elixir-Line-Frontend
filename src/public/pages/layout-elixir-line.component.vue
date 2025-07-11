@@ -9,9 +9,7 @@ export default {
 
 
   created() {
-    //visualización de la página
     console.log("Layout Elixir Line created");
-    //this.$router.push("/vitivinicultor/supplies");
   }
 
 

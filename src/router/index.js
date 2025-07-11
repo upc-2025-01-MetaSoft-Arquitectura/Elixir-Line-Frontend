@@ -31,7 +31,8 @@ const router = createRouter({
         //ruta para la página de inicio home-elixir line
         {
             path: '/elixir-line/:id', name: 'ElixirLineHome', component: LayoutElixirLineComponent,
-            children:[
+            children: [
+
                 {path: 'vinicultor/winemaking', name: 'WinemakingProcess', component: TabsWinemakingViewComponent,     meta: { title: 'Winemaking' }},
                 {path:'vinicultor/supplies', name: 'SuppliesManagement', component: SupplyManagement, meta: { title: 'Supplies' }},
                 {path: 'vinicultor/profile/settings', name: 'ProfileSettings', component: ProfileViewsConfigurationComponent, meta: { title: 'Profile Settings'}},

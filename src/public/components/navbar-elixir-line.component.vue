@@ -37,6 +37,9 @@ export default {
 
 
   created() {
+    if (this.items.length > 0) {
+      this.$router.push(this.items[0].to);
+    }
     console.log('Navbar created');
   }
 

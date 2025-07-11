@@ -39,8 +39,11 @@ export default {
         },
         {
           label: this.$t('menu.label-sign-out'),
-          icon: 'pi pi-cog',
+          icon: 'pi pi-sign-out',
           command: () => {
+            const authStore = useAuthenticationStore();
+            authStore.signOut();
+            this.$router.push('/home/sign-in'); // Redirige al login
           }
         }
       ];
