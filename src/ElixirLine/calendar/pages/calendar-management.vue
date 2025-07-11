@@ -45,14 +45,15 @@ const evidenceService = new EvidenceApiService();
 const incidenceService = new IncidenceApiService();
 const evidences = ref([]);
 const incidences = ref([]);
+const deadlines = ref([]);
 
 onMounted(async () => {
   // Cargar tareas del usuario actual
   const resTasks = await taskService.getByWinegrowerId(userId.value);
   tasks.value = resTasks.data;
-  // Cargar evidencias e incidencias por cada tarea
+  // Cargar evidencias por cada tarea
   const allEvidences = [];
-  const allIncidences = [];
+  const allDeadlines = [];
   for (const task of tasks.value) {
     try {
       const resEv = await evidenceService.getEvidencesByTaskId(task.id);
@@ -61,21 +62,43 @@ onMounted(async () => {
         allEvidences.push(...mapped);
       }
     } catch (err) {
-      // Si la petición falla (por ejemplo, 404), solo loguea y continúa
       console.warn(`No evidencias para tarea ${task.id}:`, err?.response?.status || err);
     }
-    try {
-      const resInc = await incidenceService.getIncidencesByTaskId(task.id);
-      if (Array.isArray(resInc.data)) {
-        const mapped = resInc.data.map(inc => ({ ...inc, task }));
-        allIncidences.push(...mapped);
-      }
-    } catch (err) {
-      console.warn(`No incidencias para tarea ${task.id}:`, err?.response?.status || err);
+    // Guardar fecha límite si existe (endDate)
+    if (task.endDate) {
+      allDeadlines.push({
+        task,
+        deadline: new Date(task.endDate)
+      });
     }
   }
   evidences.value = allEvidences;
-  incidences.value = allIncidences;
+  deadlines.value = allDeadlines;
+
+  // Cargar incidencias de todos los tipos
+  let allIncidences = [];
+  try {
+    const resInd = await incidenceService.getIndustrialIncidences();
+    if (Array.isArray(resInd.data)) {
+      allIncidences = allIncidences.concat(resInd.data.map(inc => ({ ...inc })));
+    }
+  } catch (err) {
+    console.warn('No incidencias industriales:', err?.response?.status || err);
+  }
+  try {
+    const resField = await incidenceService.getFieldIncidences();
+    if (Array.isArray(resField.data)) {
+      allIncidences = allIncidences.concat(resField.data.map(inc => ({ ...inc })));
+    }
+  } catch (err) {
+    console.warn('No incidencias de campo:', err?.response?.status || err);
+  }
+  // Asocia cada incidencia con su tarea
+  const incidencesWithTask = allIncidences.map(inc => {
+    const task = tasks.value.find(t => t.id === inc.taskId);
+    return { ...inc, task };
+  });
+  incidences.value = incidencesWithTask;
 });
 
 function itemsForDayAndHour(day, hour) {
@@ -97,6 +120,16 @@ function itemsForDayAndHour(day, hour) {
         type: 'incidence',
         ...inc,
         task: inc.task
+      });
+    }
+  }
+  // Mostrar fecha límite de la tarea en rojo
+  for (const dl of deadlines.value) {
+    if (isSameDay(dl.deadline, day) && dl.deadline.getHours() === parseInt(hour)) {
+      result.push({
+        type: 'deadline',
+        task: dl.task,
+        deadline: dl.deadline
       });
     }
   }
@@ -142,6 +175,24 @@ function onDateChange(e) {
     showDatePicker.value = false;
   }
 }
+
+const showCellDialog = ref(false);
+const cellDialogItems = ref([]);
+const cellDialogDay = ref(null);
+const cellDialogHour = ref(null);
+
+function openCellDialog(day, hour) {
+  cellDialogDay.value = day;
+  cellDialogHour.value = hour;
+  cellDialogItems.value = itemsForDayAndHour(day, hour);
+  showCellDialog.value = true;
+}
+function closeCellDialog() {
+  showCellDialog.value = false;
+  cellDialogItems.value = [];
+  cellDialogDay.value = null;
+  cellDialogHour.value = null;
+}
 </script>
 
 
@@ -165,6 +216,8 @@ function onDateChange(e) {
       <span class="legend-label">Evidencia</span>
       <span class="legend-color incidence"></span>
       <span class="legend-label incidence">Incidencia</span>
+      <span class="legend-color deadline"></span>
+      <span class="legend-label deadline">Fecha Límite</span>
     </div>
   </div>
   <div class="calendar-container">
@@ -197,16 +250,35 @@ function onDateChange(e) {
               class="calendar-cell"
               :class="{ selected: isSameDay(day.date, selectedDate) }"
           >
-            <div v-for="item in itemsForDayAndHour(day.date, hour.split(':')[0])"
-                 :key="item.type + '-' + item.id"
-                 :class="item.type === 'evidence' ? 'evidence-mini-card' : 'incidence-mini-card'"
-                 style="margin-bottom: 4px; padding: 4px 6px; border-radius: 6px; font-size: 12px; display: flex; align-items: center; gap: 6px;"
-                 @click="openTaskDialog(item)">
-              <img v-if="item.image || item.imageUrl" :src="item.image || item.imageUrl" alt="img" style="width:22px;height:22px;object-fit:cover;border-radius:4px;" />
-              <span style="font-weight:600;">{{ item.task?.title || 'Sin título' }}</span>
-              <span v-if="item.type === 'evidence'" style="color:#1976d2;">Evidencia</span>
-              <span v-if="item.type === 'incidence'" style="color:#ff9800;">Incidencia</span>
-            </div>
+            <template v-if="itemsForDayAndHour(day.date, hour.split(':')[0]).length > 3">
+              <div v-for="item in itemsForDayAndHour(day.date, hour.split(':')[0]).slice(0,2)"
+                   :key="item.type + '-' + item.id + '-' + item.task?.id"
+                   :class="item.type === 'evidence' ? 'evidence-mini-card' : item.type === 'incidence' ? 'incidence-mini-card' : 'deadline-mini-card'"
+                   style="margin-bottom: 4px; padding: 4px 6px; border-radius: 6px; font-size: 12px; display: flex; align-items: center; gap: 6px;"
+                   @click="item.type !== 'deadline' && openTaskDialog(item)">
+                <img v-if="item.image || item.imageUrl" :src="item.image || item.imageUrl" alt="img" style="width:22px;height:22px;object-fit:cover;border-radius:4px;" />
+                <span style="font-weight:600;" v-if="item.task">{{ item.task?.title || 'Sin título' }}</span>
+                <span v-if="item.type === 'evidence'" style="color:#1976d2;">Evidencia</span>
+                <span v-if="item.type === 'incidence'" style="color:#ff9800;">Incidencia</span>
+                <span v-if="item.type === 'deadline'" style="color:#ff2d2d;font-weight:700;">Fecha límite</span>
+              </div>
+              <button class="cell-more-btn" @click="openCellDialog(day.date, hour.split(':')[0])">
+                Ver +{{ itemsForDayAndHour(day.date, hour.split(':')[0]).length - 2 }}
+              </button>
+            </template>
+            <template v-else>
+              <div v-for="item in itemsForDayAndHour(day.date, hour.split(':')[0])"
+                   :key="item.type + '-' + item.id + '-' + item.task?.id"
+                   :class="item.type === 'evidence' ? 'evidence-mini-card' : item.type === 'incidence' ? 'incidence-mini-card' : 'deadline-mini-card'"
+                   style="margin-bottom: 4px; padding: 4px 6px; border-radius: 6px; font-size: 12px; display: flex; align-items: center; gap: 6px;"
+                   @click="item.type !== 'deadline' && openTaskDialog(item)">
+                <img v-if="item.image || item.imageUrl" :src="item.image || item.imageUrl" alt="img" style="width:22px;height:22px;object-fit:cover;border-radius:4px;" />
+                <span style="font-weight:600;" v-if="item.task">{{ item.task?.title || 'Sin título' }}</span>
+                <span v-if="item.type === 'evidence'" style="color:#1976d2;">Evidencia</span>
+                <span v-if="item.type === 'incidence'" style="color:#ff9800;">Incidencia</span>
+                <span v-if="item.type === 'deadline'" style="color:#ff2d2d;font-weight:700;">Fecha límite</span>
+              </div>
+            </template>
           </td>
         </tr>
         </tbody>
@@ -214,35 +286,52 @@ function onDateChange(e) {
     </div>
   </div>
 
-  <div v-if="showTaskDialog" class="dialog-overlay" @click.self="closeTaskDialog">
-    <div class="dialog-content calendar-dialog">
-      <h3 class="dialog-title">Detalle de {{ selectedCalendarItem?.type === 'evidence' ? 'Evidencia' : 'Incidencia' }}</h3>
-      <div class="dialog-row">
-        <span class="dialog-label">Tarea asociada:</span>
-        <span>{{ selectedCalendarItem?.task?.id }}</span>
+  <div v-if="showCellDialog" class="dialog-overlay" @click.self="closeCellDialog">
+    <div class="cell-dialog">
+      <h3 class="cell-dialog-title">Cards de la celda</h3>
+      <div class="cell-dialog-list">
+        <div v-for="item in cellDialogItems" :key="item.type + '-' + item.id + '-' + item.task?.id"
+             class="cell-dialog-list-item"
+             @click="item.type !== 'deadline' && openTaskDialog(item)">
+          <span>{{ item.task?.title || 'Sin título' }}</span>
+          <span v-if="item.type === 'evidence'" style="color:#1976d2; margin-left:8px;">Evidencia</span>
+          <span v-if="item.type === 'incidence'" style="color:#ff9800; margin-left:8px;">Incidencia</span>
+          <span v-if="item.type === 'deadline'" style="color:#ff2d2d; margin-left:8px;">Fecha límite</span>
+        </div>
       </div>
-      <div class="dialog-row">
-        <span class="dialog-label">Nombre tarea:</span>
-        <span>{{ selectedCalendarItem?.task?.title }}</span>
+      <button @click="closeCellDialog" class="cell-dialog-close-btn">Cerrar</button>
+    </div>
+    <!-- Diálogo de detalle sobrepuesto -->
+    <div v-if="showTaskDialog" class="dialog-overlay task-dialog-overlay">
+      <div class="dialog-content calendar-dialog">
+        <h3 class="dialog-title">Detalle de {{ selectedCalendarItem?.type === 'evidence' ? 'Evidencia' : 'Incidencia' }}</h3>
+        <div class="dialog-row">
+          <span class="dialog-label">Tarea asociada:</span>
+          <span>{{ selectedCalendarItem?.task?.id }}</span>
+        </div>
+        <div class="dialog-row">
+          <span class="dialog-label">Nombre tarea:</span>
+          <span>{{ selectedCalendarItem?.task?.title }}</span>
+        </div>
+        <div class="dialog-row">
+          <span class="dialog-label">Descripción tarea:</span>
+          <span>{{ selectedCalendarItem?.task?.description }}</span>
+        </div>
+        <div class="dialog-row" v-if="selectedCalendarItem?.description">
+          <span class="dialog-label">Descripción {{ selectedCalendarItem?.type === 'evidence' ? 'evidencia' : 'incidencia' }}:</span>
+          <span>{{ selectedCalendarItem?.description }}</span>
+        </div>
+        <div class="dialog-row">
+          <span class="dialog-label">Fecha y hora de creación:</span>
+          <span>{{ formatPeruTime(selectedCalendarItem?.createdAt) }}</span>
+        </div>
+        <div class="dialog-row">
+          <span class="dialog-label">Trabajador asignado:</span>
+          <span>{{ fieldWorkerName.split(' ')[0] }}</span>
+        </div>
+        <img v-if="selectedCalendarItem?.image || selectedCalendarItem?.imageUrl" :src="selectedCalendarItem?.image || selectedCalendarItem?.imageUrl" alt="img" class="dialog-img" />
+        <button @click="closeTaskDialog" class="dialog-close-btn">Cerrar</button>
       </div>
-      <div class="dialog-row">
-        <span class="dialog-label">Descripción tarea:</span>
-        <span>{{ selectedCalendarItem?.task?.description }}</span>
-      </div>
-      <div class="dialog-row" v-if="selectedCalendarItem?.description">
-        <span class="dialog-label">Descripción {{ selectedCalendarItem?.type === 'evidence' ? 'evidencia' : 'incidencia' }}:</span>
-        <span>{{ selectedCalendarItem?.description }}</span>
-      </div>
-      <div class="dialog-row">
-        <span class="dialog-label">Fecha y hora de creación:</span>
-        <span>{{ formatPeruTime(selectedCalendarItem?.createdAt) }}</span>
-      </div>
-      <div class="dialog-row">
-        <span class="dialog-label">Trabajador asignado:</span>
-        <span>{{ fieldWorkerName.split(' ')[0] }}</span>
-      </div>
-      <img v-if="selectedCalendarItem?.image || selectedCalendarItem?.imageUrl" :src="selectedCalendarItem?.image || selectedCalendarItem?.imageUrl" alt="img" class="dialog-img" />
-      <button @click="closeTaskDialog" class="dialog-close-btn">Cerrar</button>
     </div>
   </div>
 
@@ -523,6 +612,31 @@ th {
   background: #3a2323;
   box-shadow: 0 4px 16px rgba(255,152,0,0.16);
 }
+.deadline-mini-card {
+  background: #2d2323;
+  border: 1px solid #ff2d2d;
+  color: #ff2d2d;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(255,45,45,0.08);
+  transition: box-shadow 0.2s, background 0.2s;
+  cursor: default;
+}
+.cell-more-btn {
+  background: #232323;
+  color: #ff9800;
+  border: 1px solid #ff9800;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 2px;
+  transition: background 0.2s, color 0.2s;
+}
+.cell-more-btn:hover {
+  background: #ff9800;
+  color: #232323;
+}
 .calendar-legend {
   display: flex;
   align-items: center;
@@ -551,6 +665,13 @@ th {
 }
 .legend-label.incidence {
   color: #ff9800;
+}
+.legend-color.deadline {
+  background: #e91e63;
+  border: 1px solid #c2185b;
+}
+.legend-label.deadline {
+  color: #e91e63;
 }
 .calendar-dialog {
   background: #232323;
@@ -609,5 +730,69 @@ th {
 }
 .dialog-close-btn:hover {
   background: #5c5c5c;
+}
+.cell-dialog {
+  background: #232323;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(24,144,255,0.18);
+  padding: 28px 32px 18px 32px;
+  min-width: 340px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+}
+.cell-dialog-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ff9800;
+  margin-bottom: 14px;
+  letter-spacing: 0.5px;
+  text-align: left;
+}
+.cell-dialog-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cell-dialog-list-item {
+  background: #232a36;
+  border-radius: 7px;
+  padding: 8px 12px;
+  font-size: 15px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.cell-dialog-list-item:hover {
+  background: #1a2230;
+}
+.cell-dialog-close-btn {
+  margin-top: 18px;
+  background: #2f2f2f;
+  color: #ff9800;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(24,144,255,0.08);
+  transition: background 0.2s;
+}
+.cell-dialog-close-btn:hover {
+  background: #5c5c5c;
+}
+.task-dialog-overlay {
+  z-index: 2000 !important;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30, 30, 30, 0.92);
 }
 </style>

@@ -60,26 +60,35 @@ export default {
   methods: {
     async loadAllIncidences() {
       try {
-        const allIncidences = [];
-        for (const task of this.tasks) {
-          try {
-            const res = await incidenceService.getIncidencesByTaskId(task.id);
-            if (Array.isArray(res.data)) {
-              const mapped = res.data.map(inc => ({
-                ...inc,
-                imageUrl: inc.imageUrl || inc.image || null
-              }));
-              allIncidences.push(...mapped);
-            }
-          } catch (err) {
-            // Si la petición falla (por ejemplo, 404), solo loguea y continúa
-            console.warn(`No incidencias para tarea ${task.id}:`, err?.response?.status || err);
-          }
+        let incidences = [];
+        if (this.activeTask === '0') {
+          // Industrial
+          console.log('Consultando incidencias industriales...');
+          const res = await incidenceService.getIndustrialIncidences();
+          incidences = Array.isArray(res.data) ? res.data : [];
+        } else if (this.activeTask === '1') {
+          // Campo
+          console.log('Consultando incidencias de campo...');
+          const res = await incidenceService.getFieldIncidences();
+          incidences = Array.isArray(res.data) ? res.data : [];
+        } else {
+          incidences = [];
         }
-        this.incidences = allIncidences;
+        // Mapear incidencias a tareas
+        const mapped = incidences.map(inc => ({
+          ...inc,
+          imageUrl: inc.imageUrl || inc.image || null
+        }));
+        console.log('Incidencias mapeadas:', mapped);
+        this.incidences = mapped;
       } catch (error) {
         console.error("Error cargando incidencias:", error);
       }
+    }
+  },
+  watch: {
+    activeTask() {
+      this.loadAllIncidences();
     }
   }
 };
@@ -131,6 +140,17 @@ export default {
 </template>
 
 <style>
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto !important;
+}
+#app {
+  min-height: 100vh;
+  height: auto;
+  overflow-y: auto !important;
+}
 button {
   background-color: #1976d2;
   color: #fff;
@@ -256,25 +276,37 @@ button:hover {
 .incidencias-container {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  height: auto;
+  overflow: visible;
 }
-
 .incidencias {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   justify-content: left;
   padding: 10px;
+  width: 100%;
 }
-
 .card {
   width: 350px;
   max-width: 100%;
-  overflow: hidden;
   background: #23272f;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.13);
   display: flex;
   flex-direction: column;
+  margin-bottom: 24px;
+  max-height: none;
+  height: auto;
+  /* Permite que la card crezca y el contenido se muestre completo */
+}
+/* Forzar scroll en el contenedor principal de la página */
+.main-scrollable {
+  width: 100vw;
+  min-height: 100vh;
+  height: auto;
+  overflow-y: auto !important;
 }
 
 .imagen {
@@ -298,7 +330,7 @@ button:hover {
   text-align: left;
   flex: 1;
   word-break: break-word;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .titulo {
