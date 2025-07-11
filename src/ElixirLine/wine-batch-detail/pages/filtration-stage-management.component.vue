@@ -396,7 +396,7 @@ export default {
             icon="pi pi-plus"
             @click="onNewItem"
             class="p-button-success"
-            v-if="!filtrationStage.id"
+            v-if="!filtrationStage.id && canAddStage"
         />
 
         <pv-button

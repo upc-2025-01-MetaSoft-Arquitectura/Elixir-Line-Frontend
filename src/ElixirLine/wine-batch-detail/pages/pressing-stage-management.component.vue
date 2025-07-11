@@ -384,7 +384,7 @@ export default {
             icon="pi pi-plus"
             @click="onNewItem"
             class="p-button-success"
-            v-if="!pressingStage.id"
+            v-if="!pressingStage.id && canAddStage"
         />
 
         <pv-button

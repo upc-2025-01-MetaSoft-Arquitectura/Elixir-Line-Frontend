@@ -375,7 +375,7 @@ export default {
             icon="pi pi-plus"
             @click="onNewItem"
             class="p-button-success"
-            v-if="!clarificationStage.id"
+            v-if="!clarificationStage.id && canAddStage"
         />
 
         <pv-button

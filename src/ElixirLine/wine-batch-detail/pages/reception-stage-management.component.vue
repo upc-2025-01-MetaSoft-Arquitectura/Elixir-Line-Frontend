@@ -313,7 +313,7 @@ export default {
             icon="pi pi-plus"
             @click="onNewItem"
             class="p-button-success"
-            v-if="!receptionStage.id"
+            v-if="!receptionStage.id "
         />
 
         <pv-button
