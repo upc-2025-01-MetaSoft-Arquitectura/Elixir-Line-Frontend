@@ -64,8 +64,9 @@ export const useAuthenticationStore = defineStore({
 
                     console.log("✔ Login completo:", signInResponse);
 
-                    router.push({ name: 'ElixirLineHome', params: { id: signInResponse.id } });
-
+                    // Redirigir al dashboard directamente tras login exitoso
+                    router.push(`/elixir-line/${signInResponse.id}/vinicultor/dashboard`);
+                    console.log("Redirigiendo al DashBoard");
                 })
                 .catch(error => {
                     this.signedIn = false;
