@@ -117,7 +117,7 @@ export default {
       <div class="left-column">
         <pv-card v-if="!loading">
           <template #title>
-            <router-link to="/vinicultor/tasks" style="text-decoration: none; display: block;">
+            <router-link :to="{ name: 'Tasks', params: { id: userId } }" style="text-decoration: none; display: block;">
               <pv-button style="width: 100%; justify-content: space-between;" class="card-btn">
                 TAREAS PENDIENTES <span class="arrow-icon">&gt;</span>
               </pv-button>
@@ -136,7 +136,7 @@ export default {
 
         <pv-card v-if="!loading">
           <template #title>
-            <router-link to="/vinicultor/tasks" style="text-decoration: none; display: block;">
+            <router-link :to="{ name: 'Tasks', params: { id: userId } }" style="text-decoration: none; display: block;">
               <pv-button style="width: 100%; justify-content: space-between;" class="card-btn">
                 TAREAS PRONTAS A VENCER <span class="arrow-icon">&gt;</span>
               </pv-button>
