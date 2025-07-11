@@ -105,14 +105,42 @@ function itemsForDayAndHour(day, hour) {
 
 const showTaskDialog = ref(false);
 const selectedCalendarItem = ref(null);
+const fieldWorkerName = ref('');
 
-function openTaskDialog(item) {
+async function openTaskDialog(item) {
   selectedCalendarItem.value = item;
+  fieldWorkerName.value = '';
+  try {
+    const res = await taskService.getTaskById(item.task.id);
+    fieldWorkerName.value = res.data.fieldWorkerName || '';
+  } catch (e) {
+    fieldWorkerName.value = '';
+  }
   showTaskDialog.value = true;
 }
 function closeTaskDialog() {
   showTaskDialog.value = false;
   selectedCalendarItem.value = null;
+  fieldWorkerName.value = '';
+}
+
+function formatPeruTime(dateStr) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  // Ajusta a hora Perú (GMT-5)
+  const peruOffset = -5 * 60; // minutos
+  const localOffset = date.getTimezoneOffset();
+  const peruDate = new Date(date.getTime() + (peruOffset - localOffset) * 60000);
+  return format(peruDate, "d MMM yyyy, HH:mm", { locale: es });
+}
+
+const showDatePicker = ref(false);
+function onDateChange(e) {
+  const val = e.target.value;
+  if (val) {
+    selectedDate.value = new Date(val + 'T00:00:00');
+    showDatePicker.value = false;
+  }
 }
 </script>
 
@@ -120,11 +148,17 @@ function closeTaskDialog() {
 <template>
   <div class="calendar-filters-row">
     <div class="calendar-filters">
-      <button @click="goToPrevDay">&#8592;</button>
+      <button class="calendar-nav-btn" @click="goToPrevDay" title="Día anterior">🢀</button>
       <span class="filter-label">
         {{ isToday() ? 'Hoy' : format(selectedDate, 'd MMMM yyyy', { locale: es }) }}
       </span>
-      <button @click="goToNextDay">&#8594;</button>
+      <button class="calendar-nav-btn" @click="goToNextDay" title="Día siguiente">🢂</button>
+      <button :class="['calendar-picker-btn', { active: showDatePicker }]" @click="showDatePicker = !showDatePicker" title="Ir a un día">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="4"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </button>
+      <transition name="fade">
+        <input v-if="showDatePicker" type="date" class="calendar-date-input" :value="format(selectedDate, 'yyyy-MM-dd')" @change="onDateChange" @blur="showDatePicker = false" />
+      </transition>
     </div>
     <div class="calendar-legend">
       <span class="legend-color"></span>
@@ -181,15 +215,34 @@ function closeTaskDialog() {
   </div>
 
   <div v-if="showTaskDialog" class="dialog-overlay" @click.self="closeTaskDialog">
-    <div class="dialog-content">
-      <h3>Detalle de {{ selectedCalendarItem?.type === 'evidence' ? 'Evidencia' : 'Incidencia' }}</h3>
-      <p><strong>Tarea asociada:</strong> {{ selectedCalendarItem?.task?.id }}</p>
-      <p><strong>Nombre tarea:</strong> {{ selectedCalendarItem?.task?.title }}</p>
-      <p><strong>Trabajador:</strong> {{ selectedCalendarItem?.task?.assignee }}</p>
-      <p><strong>Descripción tarea:</strong> {{ selectedCalendarItem?.task?.description }}</p>
-      <p v-if="selectedCalendarItem?.description"><strong>Descripción {{ selectedCalendarItem?.type === 'evidence' ? 'evidencia' : 'incidencia' }}:</strong> {{ selectedCalendarItem?.description }}</p>
-      <img v-if="selectedCalendarItem?.image || selectedCalendarItem?.imageUrl" :src="selectedCalendarItem?.image || selectedCalendarItem?.imageUrl" alt="img" style="width:80px;height:80px;object-fit:cover;border-radius:8px;margin:8px 0;" />
-      <button @click="closeTaskDialog" style="margin-top:12px;">Cerrar</button>
+    <div class="dialog-content calendar-dialog">
+      <h3 class="dialog-title">Detalle de {{ selectedCalendarItem?.type === 'evidence' ? 'Evidencia' : 'Incidencia' }}</h3>
+      <div class="dialog-row">
+        <span class="dialog-label">Tarea asociada:</span>
+        <span>{{ selectedCalendarItem?.task?.id }}</span>
+      </div>
+      <div class="dialog-row">
+        <span class="dialog-label">Nombre tarea:</span>
+        <span>{{ selectedCalendarItem?.task?.title }}</span>
+      </div>
+      <div class="dialog-row">
+        <span class="dialog-label">Descripción tarea:</span>
+        <span>{{ selectedCalendarItem?.task?.description }}</span>
+      </div>
+      <div class="dialog-row" v-if="selectedCalendarItem?.description">
+        <span class="dialog-label">Descripción {{ selectedCalendarItem?.type === 'evidence' ? 'evidencia' : 'incidencia' }}:</span>
+        <span>{{ selectedCalendarItem?.description }}</span>
+      </div>
+      <div class="dialog-row">
+        <span class="dialog-label">Fecha y hora de creación:</span>
+        <span>{{ formatPeruTime(selectedCalendarItem?.createdAt) }}</span>
+      </div>
+      <div class="dialog-row">
+        <span class="dialog-label">Trabajador asignado:</span>
+        <span>{{ fieldWorkerName.split(' ')[0] }}</span>
+      </div>
+      <img v-if="selectedCalendarItem?.image || selectedCalendarItem?.imageUrl" :src="selectedCalendarItem?.image || selectedCalendarItem?.imageUrl" alt="img" class="dialog-img" />
+      <button @click="closeTaskDialog" class="dialog-close-btn">Cerrar</button>
     </div>
   </div>
 
@@ -247,52 +300,136 @@ function closeTaskDialog() {
   min-width: 320px;
 }
 
+.calendar-filters-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  padding: 0 8px;
+  background: #232323;
+}
 .calendar-filters {
+  position: relative;
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
-  gap: 8px;
+  gap: 6px;
+  background: none;
+  border-radius: 0;
+  padding: 0 4px;
+  min-height: 38px;
+  height: 38px;
 }
-.calendar-filters button {
-  background: #e0e7ef;
+.calendar-nav-btn {
+  background: none;
   border: none;
-  border-radius: 4px;
+  color: #ff9800;
   font-size: 18px;
-  padding: 4px 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
   cursor: pointer;
+  transition: background 0.2s;
+  height: 32px;
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.calendar-nav-btn:hover {
+  background: #e3f0ff;
 }
 .filter-label {
-  font-weight: bold;
-  font-size: 1.1em;
-  min-width: 120px;
+  font-weight: 600;
+  font-size: 1em;
+  min-width: 100px;
   text-align: center;
-  display: inline-block;
+  color: #ff9800;
+  background: none;
+  padding: 0 4px;
+  height: 32px;
+  display: flex;
+  align-items: center;
 }
-.selected {
-  background: #e0f3ff !important;
+.calendar-picker-btn {
+  background: none;
+  border: none;
+  padding: 2px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s, border 0.2s;
+  height: 32px;
+  width: 32px;
+  justify-content: center;
+  border: 2px solid transparent;
+}
+.calendar-picker-btn.active {
+  background: #fff3e0;
+  border: 2px solid #ff9800;
+}
+.calendar-picker-btn:hover {
+  background: #fff3e0;
+  border: 2px solid #ff9800;
+}
+.calendar-date-input {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  left: auto;
+  min-width: 140px;
+  max-width: 180px;
+  background: #fff;
+  border: 2px solid #ff9800;
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-size: 16px;
+  color: #1976d2;
+  box-shadow: 0 4px 16px rgba(255,152,0,0.12);
+  outline: none;
+  transition: box-shadow 0.2s, border 0.2s;
+  animation: fadeIn 0.2s;
+  z-index: 1001;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
 }
 .calendar-container {
   width: 100%;
   max-height: 600px;
   overflow-x: auto;
-  background: #f5f5f5;
+  background: #232323;
   position: relative;
 }
 .calendar-table-header-wrapper {
   width: 100%;
   overflow: hidden;
+  border-radius: 16px 16px 0 0;
+  background: #232323;
 }
 .calendar-table-body-scroll {
   max-height: 500px;
   overflow-y: auto;
   width: 100%;
+  border-radius: 0 0 16px 16px;
+  background: #232323;
 }
 .calendar-table {
   min-width: 1000px;
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   table-layout: fixed;
-  background: #fff;
+  background: #232323;
+  box-shadow: 0 2px 16px rgba(24,144,255,0.08);
+  border-radius: 16px;
+  overflow: hidden;
 }
 .hour-label-header {
   background: #f0f0f0;
@@ -302,84 +439,98 @@ thead th, .hour-label-header {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: #f0f0f0;
+  background: #232323;
   text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ff9800;
+  border-bottom: 2px solid #444;
+  padding: 10px 0;
 }
 th, td {
-  border: 1px solid #ddd;
+  border: 1px solid #333;
   text-align: center;
-  padding: 4px;
-  color: #71717A;
-  font-size: 0.95em;
+  padding: 8px 4px;
+  color: #e0e0e0;
+  font-size: 1em;
+  background: #232323;
+  transition: background 0.2s;
 }
 th {
-  background: #f0f0f0;
+  background: #232323;
   font-weight: bold;
 }
 .day-header {
   text-align: left;
-  min-width: 60px; /* Asegura espacio para el texto */
+  min-width: 70px;
+  border-right: 2px solid #444;
+  background: #232323;
 }
 .day-name {
-  color: #71717A;
-  font-size: 10px;
-  font-style: normal;
+  color: #ff9800;
+  font-size: 12px;
   font-weight: 700;
-  line-height: 12px;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
 }
 .day-number {
-  color: #000;
+  color: #fff;
   font-size: 22px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 32px;
+  font-weight: 700;
+  margin-bottom: 2px;
 }
 .hour-label {
-  background: #fafafa;
-  width: 60px;
+  background: #232323;
+  width: 70px;
   font-weight: bold;
   text-align: left;
+  color: #ffffff;
+  font-size: 15px;
+  border-right: 2px solid #444;
 }
 .calendar-cell {
   position: relative;
   vertical-align: top;
-  background: #fff;
-  min-height: 40px;
-  padding: 2px 4px;
-}
-
-.evidence-item {
-  background: #1976d2;
-  color: #fff;
-  border-radius: 6px;
-  padding: 4px 8px;
-  margin: 2px 0;
-  font-size: 13px;
-  font-weight: 500;
-  box-shadow: 0 1px 4px rgba(25, 118, 210, 0.10);
-  display: inline-block;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: pointer;
-  border: none;
+  background: #232323;
+  min-height: 44px;
+  padding: 4px 6px;
   transition: background 0.2s;
 }
-.evidence-item:hover {
-  background: #1565c0;
+.calendar-cell.selected {
+  background: #292929 !important;
 }
- .calendar-filters-row {
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   margin-bottom: 12px;
- }
+.evidence-mini-card {
+  background: #232a36;
+  border: 1px solid #1976d2;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(25,118,210,0.08);
+  transition: box-shadow 0.2s, background 0.2s;
+  cursor: pointer;
+}
+.evidence-mini-card:hover {
+  background: #1a2230;
+  box-shadow: 0 4px 16px rgba(25,118,210,0.16);
+}
+.incidence-mini-card {
+  background: #2d2323;
+  border: 1px solid #ff9800;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(255,152,0,0.08);
+  transition: box-shadow 0.2s, background 0.2s;
+  cursor: pointer;
+}
+.incidence-mini-card:hover {
+  background: #3a2323;
+  box-shadow: 0 4px 16px rgba(255,152,0,0.16);
+}
 .calendar-legend {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-right: 8px;
+  gap: 10px;
+  background: #232323;
+  border-radius: 8px;
+  padding: 8px 18px;
+  box-shadow: none;
 }
 .legend-color {
   width: 18px;
@@ -391,28 +542,8 @@ th {
 }
 .legend-label {
   font-size: 14px;
-  color: #ffffff;
+  color: #e0e0e0;
   font-weight: 600;
-}
-.incidence-item {
-  background: #ff9800;
-  color: #fff;
-  border-radius: 6px;
-  padding: 4px 8px;
-  margin: 2px 0;
-  font-size: 13px;
-  font-weight: 500;
-  box-shadow: 0 1px 4px rgba(255, 152, 0, 0.10);
-  display: inline-block;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.incidence-item:hover {
-  background: #f57c00;
 }
 .legend-color.incidence {
   background: #ff9800;
@@ -421,14 +552,62 @@ th {
 .legend-label.incidence {
   color: #ff9800;
 }
-.evidence-mini-card {
-  background: #e3f0ff;
-  border: 1px solid #1976d2;
-  color: #1976d2;
+.calendar-dialog {
+  background: #232323;
+  box-shadow: 0 4px 24px rgba(24,144,255,0.18);
+  border-radius: 16px;
+  padding: 32px 38px 24px 38px;
+  min-width: 340px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
 }
-.incidence-mini-card {
-  background: #fff3e0;
-  border: 1px solid #ff9800;
+.dialog-title {
+  font-size: 22px;
+  font-weight: 700;
   color: #ff9800;
+  margin-bottom: 18px;
+  letter-spacing: 0.5px;
+  text-align: left;
+}
+.dialog-row {
+  font-size: 15px;
+  color: #ffffff;
+  margin-bottom: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+}
+.dialog-label {
+  font-weight: 600;
+  color: #ff9800;
+  min-width: 140px;
+}
+.dialog-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 8px 0;
+  box-shadow: 0 2px 8px rgba(24,144,255,0.10);
+}
+.dialog-close-btn {
+  margin-top: 18px;
+  background: #2f2f2f;
+  color: #ff9800;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(24,144,255,0.08);
+  transition: background 0.2s;
+}
+.dialog-close-btn:hover {
+  background: #5c5c5c;
 }
 </style>

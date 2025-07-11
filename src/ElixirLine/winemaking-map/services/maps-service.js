@@ -23,7 +23,7 @@ export class MapApiService {
 
     // Actualizar un campo
     updateField(id, field) {
-        return http.put(`${this.resourceEndpoint}/${id}`, field);
+        return http.patch(`${this.resourceEndpoint}/${id}`, field);
     }
 
     // Eliminar un campo

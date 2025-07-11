@@ -5,6 +5,8 @@ import BasePageLayout from "../../../shared/components/base-page-layout.componen
 import { useAuthenticationStore } from "../../security/services/authentication.store.js";
 import { TaskApiService } from "../../task-management/services/task-api.service.js";
 import { batchAndCampaignApiService } from "../../winemaking-process/services/batch-and-campaign-api.service.js";
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 
 export default {
   name: "dashboard-component",
@@ -100,6 +102,89 @@ export default {
     } finally {
       this.loading = false;
     }
+    this.$nextTick(() => {
+      this.renderCampaignChart();
+      this.renderCampaignDonut();
+    });
+  },
+  methods: {
+    renderCampaignChart() {
+      if (!this.campaigns.length) return;
+      const ctx = document.getElementById('campaign-bar-chart').getContext('2d');
+      if (this._campaignChart) {
+        this._campaignChart.destroy();
+      }
+      this._campaignChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: this.campaigns.map(c => c.name || 'Sin nombre'),
+          datasets: [{
+            label: 'Lotes por campaña',
+            data: this.campaigns.map(c => c.batchesQuantity ?? 0),
+            backgroundColor: '#8B0000',
+            borderRadius: 8,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: { padding: { left: 20, right: 20, top: 30, bottom: 30 } },
+          plugins: {
+            legend: { display: false },
+            title: { display: true, text: 'Lotes de vino por campaña', color: '#fff', font: { size: 20 } }
+          },
+          scales: {
+            x: {
+              title: { display: true, text: 'Campaña', color: '#fff', font: { size: 16 } },
+              ticks: { color: '#fff', font: { size: 14 }, maxRotation: 40, minRotation: 40 },
+              grid: { color: 'rgba(255,255,255,0.08)' }
+            },
+            y: {
+              title: { display: true, text: 'Cantidad de lotes', color: '#fff', font: { size: 16 } },
+              beginAtZero: true,
+              ticks: { color: '#fff', font: { size: 14 }, stepSize: 1 },
+              grid: { color: 'rgba(255,255,255,0.08)' }
+            }
+          }
+        }
+      });
+    },
+    renderCampaignDonut() {
+      if (!this.campaigns.length) return;
+      const ctx = document.getElementById('campaign-donut-chart').getContext('2d');
+      if (this._campaignDonut) {
+        this._campaignDonut.destroy();
+      }
+      // Genera colores distintos para cada campaña
+      const colors = this.campaigns.map((c, i) => {
+        const palette = [
+          '#8B0000', '#1976d2', '#ff9800', '#43a047', '#d32f2f', '#7b1fa2', '#009688', '#cddc39', '#f44336', '#00bcd4', '#e91e63', '#3f51b5'
+        ];
+        return palette[i % palette.length];
+      });
+      this._campaignDonut = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: this.campaigns.map(c => c.name || 'Sin nombre'),
+          datasets: [{
+            label: 'Lotes por campaña',
+            data: this.campaigns.map(c => c.batchesQuantity ?? 0),
+            backgroundColor: colors,
+            borderWidth: 2,
+            borderColor: '#18191c',
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'bottom', labels: { color: '#fff', font: { size: 15 } } },
+            title: { display: true, text: 'Distribución de lotes por campaña', color: '#fff', font: { size: 20 } }
+          }
+        }
+      });
+    }
   }
 };
 </script>
@@ -113,77 +198,87 @@ export default {
     </template>
 
     <div class="dashboard-grid">
-      <!-- Columna izquierda -->
-      <div class="left-column">
-        <pv-card v-if="!loading">
-          <template #title>
-            <router-link :to="{ name: 'Tasks', params: { id: userId } }" style="text-decoration: none; display: block;">
-              <pv-button style="width: 100%; justify-content: space-between;" class="card-btn">
-                TAREAS PENDIENTES <span class="arrow-icon">&gt;</span>
-              </pv-button>
-            </router-link>
-          </template>
-          <template #content>
-            <ul class="task-list">
-              <li v-for="(task, index) in pendingTasks" :key="task.id || index" class="task-item">
-                <span class="task-title">{{ task.title || 'Sin título' }}</span>
-                <span class="task-status">({{ task.status || 'Sin estado' }})</span>
-              </li>
-              <li v-if="pendingTasks.length === 0" class="task-empty">No hay tareas pendientes</li>
-            </ul>
-          </template>
-        </pv-card>
+      <div class="dashboard-columns-row">
+        <div class="left-column">
+          <pv-card v-if="!loading">
+            <template #title>
+              <router-link :to="{ name: 'Tasks', params: { id: userId } }" style="text-decoration: none; display: block;">
+                <pv-button style="width: 100%; justify-content: space-between;" class="card-btn">
+                  TAREAS PENDIENTES <span class="arrow-icon">🢂</span>
+                </pv-button>
+              </router-link>
+            </template>
+            <template #content>
+              <ul class="task-list">
+                <li v-for="(task, index) in pendingTasks" :key="task.id || index" class="task-item">
+                  <span class="task-title">{{ task.title || 'Sin título' }}</span>
+                  <span class="task-status">({{ task.status || 'Sin estado' }})</span>
+                </li>
+                <li v-if="pendingTasks.length === 0" class="task-empty">No hay tareas pendientes</li>
+              </ul>
+            </template>
+          </pv-card>
 
-        <pv-card v-if="!loading">
-          <template #title>
-            <router-link :to="{ name: 'Tasks', params: { id: userId } }" style="text-decoration: none; display: block;">
-              <pv-button style="width: 100%; justify-content: space-between;" class="card-btn">
-                TAREAS PRONTAS A VENCER <span class="arrow-icon">&gt;</span>
-              </pv-button>
-            </router-link>
-          </template>
-          <template #content>
-            <ul class="task-list">
-              <li v-for="(task, index) in upcomingTasks" :key="task.id || index" class="task-item">
-                <span class="task-icon">⏰</span>
-                <span class="task-title">{{ task.title || 'Sin título' }}</span>
-                <span class="task-status">(Vence: {{ new Date(task.endDate).toLocaleDateString() || 'Sin fecha' }})</span>
-              </li>
-              <li v-if="upcomingTasks.length === 0" class="task-empty">No hay tareas próximas a vencer</li>
-            </ul>
-          </template>
-        </pv-card>
+          <pv-card v-if="!loading">
+            <template #title>
+              <router-link :to="{ name: 'Tasks', params: { id: userId } }" style="text-decoration: none; display: block;">
+                <pv-button style="width: 100%; justify-content: space-between;" class="card-btn">
+                  TAREAS PRONTAS A VENCER <span class="arrow-icon">🢂</span>
+                </pv-button>
+              </router-link>
+            </template>
+            <template #content>
+              <ul class="task-list">
+                <li v-for="(task, index) in upcomingTasks" :key="task.id || index" class="task-item">
+                  <span class="task-icon">⏰</span>
+                  <span class="task-title">{{ task.title || 'Sin título' }}</span>
+                  <span class="task-status">(Vence: {{ new Date(task.endDate).toLocaleDateString() || 'Sin fecha' }})</span>
+                </li>
+                <li v-if="upcomingTasks.length === 0" class="task-empty">No hay tareas próximas a vencer</li>
+              </ul>
+            </template>
+          </pv-card>
+        </div>
+        <div class="right-column">
+          <pv-card v-if="!loading">
+            <template #title>
+              <router-link :to="{ name: 'WinemakingProcess', params: { id: userId } }" style="text-decoration: none; display: block;">
+                <pv-button style="width: 100%; justify-content: space-between;" class="card-btn">
+                  CANTIDAD DE LOTES DE VINO POR CAMPAÑA <span class="arrow-icon">🢂</span>
+                </pv-button>
+              </router-link>
+            </template>
+            <template #content>
+              <table class="campaign-table">
+                <thead>
+                <tr><th>Campaña</th><th>Lotes</th></tr>
+                </thead>
+                <tbody>
+                <tr v-for="(campaign, index) in campaigns" :key="campaign.id || index">
+                  <td>{{ campaign.name || 'Sin nombre' }}</td>
+                  <td>{{ campaign.batchesQuantity ?? 0 }}</td>
+                </tr>
+                <tr v-if="campaigns.length === 0">
+                  <td colspan="2">No hay campañas registradas</td>
+                </tr>
+                </tbody>
+              </table>
+            </template>
+          </pv-card>
+        </div>
       </div>
-
-      <!-- Columna derecha -->
-      <div class="right-column">
-        <pv-card v-if="!loading">
-          <template #title>
-            <router-link :to="{ name: 'WinemakingProcess', params: { id: userId } }" style="text-decoration: none; display: block;">
-              <pv-button style="width: 100%; justify-content: space-between;" class="card-btn">
-                CANTIDAD DE LOTES DE VINO POR CAMPAÑA <span class="arrow-icon">&gt;</span>
-              </pv-button>
-            </router-link>
-          </template>
-          <template #content>
-            <table class="campaign-table">
-              <thead>
-              <tr><th>Campaña</th><th>Lotes</th></tr>
-              </thead>
-              <tbody>
-              <tr v-for="(campaign, index) in campaigns" :key="campaign.id || index">
-                <td>{{ campaign.name || 'Sin nombre' }}</td>
-                <td>{{ campaign.batchesQuantity ?? 0 }}</td>
-              </tr>
-              <tr v-if="campaigns.length === 0">
-                <td colspan="2">No hay campañas registradas</td>
-              </tr>
-              </tbody>
-            </table>
-          </template>
-        </pv-card>
+      <div class="dashboard-chart-row">
+        <div class="dashboard-chart-container">
+          <canvas id="campaign-bar-chart" height="400"></canvas>
+        </div>
+      </div>
+      <div class="dashboard-donut-row">
+        <div class="dashboard-donut-container">
+          <canvas id="campaign-donut-chart" height="340"></canvas>
+        </div>
       </div>
     </div>
+    
   </base-page-layout>
 </template>
 
@@ -197,11 +292,18 @@ export default {
 
 .dashboard-grid {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 2rem;
   padding: 2rem;
-  justify-content: space-between;
-  align-items: flex-start;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.dashboard-columns-row {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  width: 100%;
 }
 
 .left-column {
@@ -317,4 +419,57 @@ html, body, #app {
   padding-top: 0 !important;
 }
 
+.dashboard-chart-container {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  background: #18191c;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(24,144,255,0.08);
+  padding: 2rem 2rem 1.5rem 2rem;
+}
+
+#campaign-bar-chart {
+  width: 100% !important;
+  max-width: 1450px;
+  margin: 0 auto;
+  display: block;
+  color: #8B0000;
+  height: 520px !important;
+  background: #18191c;
+  border-radius: 12px;
+}
+
+.dashboard-chart-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.dashboard-donut-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.dashboard-donut-container {
+  width: 100%;
+  max-width: 1700px;
+  margin: 0 auto;
+  background: #18191c;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(24,144,255,0.08);
+  padding: 2rem 2rem 1.5rem 2rem;
+}
+
+#campaign-donut-chart {
+  width: 100% !important;
+  max-width: 1550px;
+  margin: 0 auto;
+  display: block;
+  height: 640px !important;
+  background: #18191c;
+  border-radius: 12px;
+}
 </style>
